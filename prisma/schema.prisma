@@ -6,3 +6,148 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+enum ContentStatus {
+  draft
+  published
+  deleted
+
+  @@map("content_status")
+}
+
+enum ContentType {
+  article
+  diary
+  moment
+
+  @@map("content_type")
+}
+
+enum CommentStatus {
+  pending
+  approved
+  spam
+  deleted
+
+  @@map("comment_status")
+}
+
+model Category {
+  id          String            @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  name        String            @db.Text
+  slug        String            @unique @db.Text
+  description String?           @db.Text
+  parentId    String?           @map("parent_id") @db.Uuid
+  createdAt   DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime          @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  parent      Category?         @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children    Category[]        @relation("CategoryHierarchy")
+  contents    ContentCategory[]
+
+  @@index([parentId])
+  @@map("categories")
+}
+
+model Comment {
+  id          String        @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  contentId   String        @map("content_id") @db.Uuid
+  userId      String?       @map("user_id") @db.Uuid
+  parentId    String?       @map("parent_id") @db.Uuid
+  name        String?       @db.Text
+  email       String?       @db.Text
+  url         String?       @db.Text
+  content     String        @db.Text
+  status      CommentStatus
+  ipAddress   String?       @map("ip_address") @db.Inet
+  userAgent   String?       @map("user_agent") @db.Text
+  createdAt   DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime      @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  contentItem Content       @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  user        User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  parent      Comment?      @relation("CommentThread", fields: [parentId], references: [id], onDelete: SetNull)
+  replies     Comment[]     @relation("CommentThread")
+
+  @@index([contentId, status, createdAt])
+  @@index([userId])
+  @@index([parentId])
+  @@map("comments")
+}
+
+model ContentCategory {
+  contentId  String   @map("content_id") @db.Uuid
+  categoryId String   @map("category_id") @db.Uuid
+  content    Content  @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([contentId, categoryId])
+  @@index([categoryId])
+  @@map("content_categories")
+}
+
+model ContentTag {
+  contentId String  @map("content_id") @db.Uuid
+  tagId     String  @map("tag_id") @db.Uuid
+  content   Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+  tag       Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([contentId, tagId])
+  @@index([tagId])
+  @@map("content_tags")
+}
+
+model Content {
+  id          String            @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  title       String            @db.Text
+  slug        String            @db.Text
+  status      ContentStatus
+  type        ContentType
+  description String?           @db.Text
+  content     String            @db.Text
+  authorId    String?           @map("author_id") @db.Uuid
+  createdAt   DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime          @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  author      User?             @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  comments    Comment[]
+  categories  ContentCategory[]
+  tags        ContentTag[]
+
+  @@unique([type, slug])
+  @@index([authorId])
+  @@index([status, type, createdAt])
+  @@map("contents")
+}
+
+model Setting {
+  key         String   @id @db.Text
+  value       Json     @db.JsonB
+  description String?  @db.Text
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@map("settings")
+}
+
+model Tag {
+  id          String       @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  name        String       @db.Text
+  slug        String       @unique @db.Text
+  description String?      @db.Text
+  createdAt   DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime     @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  contents    ContentTag[]
+
+  @@map("tags")
+}
+
+model User {
+  id           String     @id @default(dbgenerated("uuidv7()")) @db.Uuid
+  name         String     @db.Text
+  email        String     @unique @db.Text
+  passwordHash String     @map("password_hash") @db.Text
+  createdAt    DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime   @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  contents     Content[]
+  comments     Comment[]
+
+  @@map("users")
+}
