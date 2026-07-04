@@ -7,6 +7,9 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   css: ['./app/assets/css/main.css'],
   vite: {
+    optimizeDeps: {
+      include: [],
+    },
     build: {
       rollupOptions: {
         onwarn(warning, warn) {
