@@ -23,5 +23,8 @@ logs
 .env.*
 !.env.example
 
+# Legacy migration outputs
+legacy/
+
 # Prisma generated client
 generated/prisma
