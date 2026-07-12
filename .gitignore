@@ -25,6 +25,3 @@ logs
 
 # Legacy migration outputs
 legacy/
-
-# Prisma generated client
-generated/prisma
