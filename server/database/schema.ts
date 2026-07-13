@@ -4,6 +4,7 @@ import {
   foreignKey,
   index,
   pgTable,
+  primaryKey,
   text,
   timestamp,
   uniqueIndex,
@@ -136,9 +137,144 @@ export const tags = pgTable(
   (table) => [uniqueIndex('tags_slug_key').on(table.slug)],
 )
 
+export const contents = pgTable(
+  'contents',
+  {
+    id: uuid('id').primaryKey(),
+    title: text('title').notNull(),
+    slug: text('slug').notNull(),
+    type: text('type').notNull(),
+    description: text('description'),
+    content: text('content').notNull(),
+    authorId: uuid('author_id').notNull(),
+    status: text('status').default('draft').notNull(),
+    ...timestamps(),
+  },
+  (table) => [
+    uniqueIndex('contents_slug_key').on(table.slug),
+    index('contents_author_id_idx').on(table.authorId),
+    index('contents_type_status_created_at_idx').on(table.type, table.status, table.createdAt),
+    foreignKey({
+      columns: [table.authorId],
+      foreignColumns: [users.id],
+      name: 'contents_author_id_fkey',
+    })
+      .onDelete('restrict')
+      .onUpdate('cascade'),
+  ],
+)
+
+export const comments = pgTable(
+  'comments',
+  {
+    id: uuid('id').primaryKey(),
+    contentId: uuid('content_id').notNull(),
+    userId: uuid('user_id'),
+    parentId: uuid('parent_id'),
+    name: text('name'),
+    email: text('email'),
+    url: text('url'),
+    content: text('content').notNull(),
+    status: text('status').default('pending').notNull(),
+    ipAddress: text('ip_address'),
+    userAgent: text('user_agent'),
+    ...timestamps(),
+  },
+  (table) => [
+    index('comments_content_id_status_created_at_idx').on(
+      table.contentId,
+      table.status,
+      table.createdAt,
+    ),
+    index('comments_user_id_idx').on(table.userId),
+    index('comments_parent_id_idx').on(table.parentId),
+    foreignKey({
+      columns: [table.contentId],
+      foreignColumns: [contents.id],
+      name: 'comments_content_id_fkey',
+    })
+      .onDelete('cascade')
+      .onUpdate('cascade'),
+    foreignKey({
+      columns: [table.userId],
+      foreignColumns: [users.id],
+      name: 'comments_user_id_fkey',
+    })
+      .onDelete('set null')
+      .onUpdate('cascade'),
+    foreignKey({
+      columns: [table.parentId],
+      foreignColumns: [table.id],
+      name: 'comments_parent_id_fkey',
+    })
+      .onDelete('cascade')
+      .onUpdate('cascade'),
+  ],
+)
+
+export const contentCategories = pgTable(
+  'content_categories',
+  {
+    contentId: uuid('content_id').notNull(),
+    categoryId: uuid('category_id').notNull(),
+  },
+  (table) => [
+    primaryKey({
+      columns: [table.contentId, table.categoryId],
+      name: 'content_categories_pkey',
+    }),
+    index('content_categories_category_id_idx').on(table.categoryId),
+    foreignKey({
+      columns: [table.contentId],
+      foreignColumns: [contents.id],
+      name: 'content_categories_content_id_fkey',
+    })
+      .onDelete('cascade')
+      .onUpdate('cascade'),
+    foreignKey({
+      columns: [table.categoryId],
+      foreignColumns: [categories.id],
+      name: 'content_categories_category_id_fkey',
+    })
+      .onDelete('cascade')
+      .onUpdate('cascade'),
+  ],
+)
+
+export const contentTags = pgTable(
+  'content_tags',
+  {
+    contentId: uuid('content_id').notNull(),
+    tagId: uuid('tag_id').notNull(),
+  },
+  (table) => [
+    primaryKey({
+      columns: [table.contentId, table.tagId],
+      name: 'content_tags_pkey',
+    }),
+    index('content_tags_tag_id_idx').on(table.tagId),
+    foreignKey({
+      columns: [table.contentId],
+      foreignColumns: [contents.id],
+      name: 'content_tags_content_id_fkey',
+    })
+      .onDelete('cascade')
+      .onUpdate('cascade'),
+    foreignKey({
+      columns: [table.tagId],
+      foreignColumns: [tags.id],
+      name: 'content_tags_tag_id_fkey',
+    })
+      .onDelete('cascade')
+      .onUpdate('cascade'),
+  ],
+)
+
 export const usersRelations = relations(users, ({ many }) => ({
   sessions: many(sessions),
   accounts: many(accounts),
+  contents: many(contents),
+  comments: many(comments),
 }))
 
 export const sessionsRelations = relations(sessions, ({ one }) => ({
@@ -163,5 +299,61 @@ export const categoriesRelations = relations(categories, ({ many, one }) => ({
   }),
   children: many(categories, {
     relationName: 'categoryChildren',
+  }),
+  contentCategories: many(contentCategories),
+}))
+
+export const tagsRelations = relations(tags, ({ many }) => ({
+  contentTags: many(contentTags),
+}))
+
+export const contentsRelations = relations(contents, ({ many, one }) => ({
+  author: one(users, {
+    fields: [contents.authorId],
+    references: [users.id],
+  }),
+  comments: many(comments),
+  contentCategories: many(contentCategories),
+  contentTags: many(contentTags),
+}))
+
+export const commentsRelations = relations(comments, ({ many, one }) => ({
+  content: one(contents, {
+    fields: [comments.contentId],
+    references: [contents.id],
+  }),
+  user: one(users, {
+    fields: [comments.userId],
+    references: [users.id],
+  }),
+  parent: one(comments, {
+    fields: [comments.parentId],
+    references: [comments.id],
+    relationName: 'commentReplies',
+  }),
+  replies: many(comments, {
+    relationName: 'commentReplies',
+  }),
+}))
+
+export const contentCategoriesRelations = relations(contentCategories, ({ one }) => ({
+  content: one(contents, {
+    fields: [contentCategories.contentId],
+    references: [contents.id],
+  }),
+  category: one(categories, {
+    fields: [contentCategories.categoryId],
+    references: [categories.id],
+  }),
+}))
+
+export const contentTagsRelations = relations(contentTags, ({ one }) => ({
+  content: one(contents, {
+    fields: [contentTags.contentId],
+    references: [contents.id],
+  }),
+  tag: one(tags, {
+    fields: [contentTags.tagId],
+    references: [tags.id],
   }),
 }))
