@@ -6,6 +6,33 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   css: ['./app/assets/css/main.css'],
+  mdc: {
+    highlight: {
+      noApiRoute: false,
+      theme: 'github-dark',
+      langs: [
+        'apache',
+        'bat',
+        'css',
+        'html',
+        'ini',
+        'java',
+        'javascript',
+        'json',
+        'jsx',
+        'less',
+        'markdown',
+        'nginx',
+        'php',
+        'shellscript',
+        'sql',
+        'tsx',
+        'typescript',
+        'vue',
+        'yaml',
+      ],
+    },
+  },
   runtimeConfig: {
     public: {
       siteUrl: 'https://www.ikxin.com',

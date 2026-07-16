@@ -14,5 +14,13 @@ if (error.value) {
 </script>
 
 <template>
-  <ContentRenderer v-if="article" :value="article" :prose="false" />
+  <main class="px-4 py-8 sm:px-6 lg:px-8">
+    <ContentRenderer
+      v-if="article"
+      :value="article"
+      :prose="false"
+      tag="article"
+      class="prose prose-neutral mx-auto"
+    />
+  </main>
 </template>

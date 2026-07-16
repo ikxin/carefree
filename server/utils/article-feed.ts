@@ -55,7 +55,7 @@ export async function createArticleFeed(siteUrl: string, format: ArticleFeedForm
     })
   }
 
-  const markdownParser = await createMarkdownParser({ toc: false })
+  const markdownParser = await createMarkdownParser({ highlight: false, toc: false })
 
   for (const article of articles) {
     const articleUrl = new URL(`article/${encodeURIComponent(article.slug)}`, baseUrl).toString()
