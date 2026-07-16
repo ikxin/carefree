@@ -11,6 +11,14 @@ const { data: article, error } = await useFetch(`/api/article/${encodeURICompone
 if (error.value) {
   throw createError(error.value)
 }
+
+useSeoMeta({
+  title: () => article.value?.title,
+  description: () => article.value?.description,
+  ogTitle: () => article.value?.title,
+  ogDescription: () => article.value?.description,
+  ogType: 'article',
+})
 </script>
 
 <template>

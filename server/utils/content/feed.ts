@@ -1,7 +1,7 @@
 import { contents, users } from '#server/database/schema'
+import { getArticleDescription } from '#server/utils/content/description'
 import { db } from '#server/utils/db'
 import { createMarkdownParser } from '@nuxtjs/mdc/runtime'
-import { nodeTextContent } from '@nuxtjs/mdc/runtime/utils/node'
 import { and, desc, eq } from 'drizzle-orm'
 import { Feed } from 'feed'
 
@@ -59,19 +59,14 @@ export async function createArticleFeed(siteUrl: string, format: ArticleFeedForm
 
   for (const article of articles) {
     const articleUrl = new URL(`article/${encodeURIComponent(article.slug)}`, baseUrl).toString()
-    const storedDescription = article.description?.trim()
-    const parsedArticle = storedDescription ? undefined : await markdownParser(article.content)
-    const firstParagraph = parsedArticle?.body.children.find(
-      (node) => node.type === 'element' && node.tag === 'p',
-    )
-    const parsedDescription =
-      typeof parsedArticle?.data.description === 'string'
-        ? parsedArticle.data.description.trim()
-        : undefined
-    const description =
-      storedDescription ||
-      parsedDescription ||
-      (firstParagraph ? nodeTextContent(firstParagraph).trim() : undefined)
+    const parsedContent = article.description?.trim()
+      ? undefined
+      : await markdownParser(article.content)
+    const description = getArticleDescription({
+      title: article.title,
+      storedDescription: article.description,
+      parsedContent,
+    })
 
     feed.addItem({
       title: article.title,
@@ -79,6 +74,7 @@ export async function createArticleFeed(siteUrl: string, format: ArticleFeedForm
       link: articleUrl,
       date: article.updatedAt,
       published: article.createdAt,
+      description,
       ...(format === 'atom' ? { author: [{ name: article.authorName }] } : {}),
       ...(format === 'rss'
         ? {
@@ -90,7 +86,6 @@ export async function createArticleFeed(siteUrl: string, format: ArticleFeedForm
             ],
           }
         : {}),
-      ...(description ? { description } : {}),
     })
   }
 

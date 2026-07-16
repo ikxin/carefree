@@ -1,4 +1,4 @@
-import { createArticleFeed } from '#server/utils/article-feed'
+import { createArticleFeed } from '#server/utils/content/feed'
 
 export default defineEventHandler(async (event) => {
   const { siteUrl } = useRuntimeConfig(event).public
