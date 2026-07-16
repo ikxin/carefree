@@ -6,6 +6,34 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   css: ['./app/assets/css/main.css'],
+  runtimeConfig: {
+    public: {
+      siteUrl: 'https://www.ikxin.com',
+    },
+  },
+  app: {
+    head: {
+      link: [
+        {
+          rel: 'alternate',
+          type: 'application/rss+xml',
+          title: '一纸忘忧 RSS',
+          href: '/feed.xml',
+        },
+        {
+          rel: 'alternate',
+          type: 'application/atom+xml',
+          title: '一纸忘忧 Atom',
+          href: '/atom.xml',
+        },
+      ],
+    },
+  },
+  routeRules: {
+    '/atom.xml': { cache: { maxAge: 600 } },
+    '/feed.xml': { cache: { maxAge: 600 } },
+    '/feed': { redirect: { to: '/feed.xml', statusCode: 301 } },
+  },
   vite: {
     optimizeDeps: {
       include: [],
