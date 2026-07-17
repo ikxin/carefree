@@ -13,6 +13,18 @@ export default defineNuxtConfig({
       '一纸忘忧的个人网站，关于技术探索与日常生活，记录 Web 开发、服务端与 DevOps 实践，分享软件工具、数码体验，以及代码之外的见闻与思考。',
     defaultLocale: 'zh-CN',
   },
+  fonts: {
+    families: [
+      {
+        name: 'Noto Sans SC',
+        provider: 'google',
+        weights: [400, 700],
+        styles: ['normal'],
+        subsets: ['chinese-simplified', 'latin'],
+        global: true,
+      },
+    ],
+  },
   sitemap: {
     sources: ['/api/__sitemap__/urls'],
   },
@@ -83,7 +95,7 @@ export default defineNuxtConfig({
     plugins: [tailwindcss()],
   },
 
-  modules: ['@nuxt/content', '@nuxtjs/i18n', '@nuxtjs/seo'],
+  modules: ['@nuxt/content', '@nuxt/fonts', '@nuxtjs/i18n', '@nuxtjs/seo'],
   i18n: {
     defaultLocale: 'zh-cn',
     locales: [

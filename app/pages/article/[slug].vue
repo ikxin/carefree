@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const route = useRoute()
 const slug = route.params.slug
+const site = useSiteConfig()
 
 if (typeof slug !== 'string') {
   throw createError({ statusCode: 404, statusMessage: 'Article not found' })
@@ -18,7 +19,25 @@ useSeoMeta({
   ogTitle: () => article.value?.title,
   ogDescription: () => article.value?.description,
   ogType: 'article',
+  twitterCard: 'summary_large_image',
+  twitterTitle: () => article.value?.title,
+  twitterDescription: () => article.value?.description,
 })
+
+defineOgImage(
+  'Article',
+  {
+    title: () => article.value?.title ?? '',
+    description: () => article.value?.description ?? '',
+    siteName: () => site.name,
+    siteHost: new URL(site.url).host,
+  },
+  {
+    width: 1200,
+    height: 630,
+    alt: () => `${article.value?.title ?? ''} - ${site.name}`,
+  },
+)
 </script>
 
 <template>
