@@ -6,6 +6,16 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   css: ['./app/assets/css/main.css'],
+  site: {
+    url: 'https://www.ikxin.com',
+    name: '一纸忘忧',
+    description:
+      '一纸忘忧的个人网站，关于技术探索与日常生活，记录 Web 开发、服务端与 DevOps 实践，分享软件工具、数码体验，以及代码之外的见闻与思考。',
+    defaultLocale: 'zh-CN',
+  },
+  sitemap: {
+    sources: ['/api/__sitemap__/urls'],
+  },
   mdc: {
     highlight: {
       noApiRoute: false,
@@ -31,11 +41,6 @@ export default defineNuxtConfig({
         'vue',
         'yaml',
       ],
-    },
-  },
-  runtimeConfig: {
-    public: {
-      siteUrl: 'https://www.ikxin.com',
     },
   },
   app: {
@@ -78,12 +83,12 @@ export default defineNuxtConfig({
     plugins: [tailwindcss()],
   },
 
-  modules: ['@nuxt/content', '@nuxtjs/i18n'],
+  modules: ['@nuxt/content', '@nuxtjs/i18n', '@nuxtjs/seo'],
   i18n: {
     defaultLocale: 'zh-cn',
     locales: [
-      { code: 'zh-cn', name: '简体中文' },
-      { code: 'zh-tw', name: '繁体中文' },
+      { code: 'zh-cn', language: 'zh-CN', name: '简体中文' },
+      { code: 'zh-tw', language: 'zh-TW', name: '繁体中文' },
     ],
   },
 })
