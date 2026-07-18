@@ -80,7 +80,7 @@ export default defineNuxtConfig({
   },
   vite: {
     optimizeDeps: {
-      include: [],
+      include: ['@unhead/schema-org/vue'],
     },
     build: {
       rollupOptions: {
