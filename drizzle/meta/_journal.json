@@ -15,6 +15,13 @@
       "when": 1783945599293,
       "tag": "0001_add_contents_and_comments",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1784464424988,
+      "tag": "0002_add_redirects_and_views",
+      "breakpoints": true
     }
   ]
 }
