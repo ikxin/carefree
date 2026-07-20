@@ -1,5 +1,7 @@
 <script setup lang="ts">
 const site = useSiteConfig()
+const localePath = useLocalePath()
+const { locale } = useI18n()
 const subtitle = '编写代码以构建更美好的世界'
 
 useHead({
@@ -18,7 +20,9 @@ useSeoMeta({
   twitterDescription: () => site.description,
 })
 
-const { data: articles, error } = await useFetch('/api/article')
+const { data: articles, error } = await useFetch('/api/article', {
+  query: { locale },
+})
 
 if (error.value) {
   throw createError(error.value)
@@ -28,7 +32,7 @@ if (error.value) {
 <template>
   <ul>
     <li v-for="article in articles" :key="article.slug">
-      <NuxtLink :to="`/article/${encodeURIComponent(article.slug)}`">
+      <NuxtLink :to="localePath(`/article/${encodeURIComponent(article.slug)}`)">
         {{ article.title }}
       </NuxtLink>
     </li>

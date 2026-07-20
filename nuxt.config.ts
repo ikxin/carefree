@@ -100,7 +100,12 @@ export default defineNuxtConfig({
     defaultLocale: 'zh-cn',
     locales: [
       { code: 'zh-cn', language: 'zh-CN', name: '简体中文' },
-      { code: 'zh-tw', language: 'zh-TW', name: '繁体中文' },
+      { code: 'zh-tw', language: 'zh-TW', name: '繁體中文' },
+      { code: 'en', language: 'en-US', name: 'English' },
+      { code: 'de', language: 'de-DE', name: 'Deutsch' },
+      { code: 'ja', language: 'ja-JP', name: '日本語' },
+      { code: 'ru', language: 'ru-RU', name: 'Русский' },
+      { code: 'ko', language: 'ko-KR', name: '한국어' },
     ],
   },
 })

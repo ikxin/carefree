@@ -2,12 +2,15 @@
 const route = useRoute()
 const slug = route.params.slug
 const site = useSiteConfig()
+const { locale } = useI18n()
 
 if (typeof slug !== 'string') {
   throw createError({ statusCode: 404, statusMessage: 'Article not found' })
 }
 
-const { data: article, error } = await useFetch(`/api/article/${encodeURIComponent(slug)}`)
+const { data: article, error } = await useFetch(`/api/article/${encodeURIComponent(slug)}`, {
+  query: { locale },
+})
 
 if (error.value) {
   throw createError(error.value)

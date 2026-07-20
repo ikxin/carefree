@@ -22,6 +22,13 @@
       "when": 1784464424988,
       "tag": "0002_add_redirects_and_views",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1784528079773,
+      "tag": "0003_add_content_translations",
+      "breakpoints": true
     }
   ]
 }

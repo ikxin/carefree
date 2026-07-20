@@ -167,6 +167,32 @@ export const contents = pgTable(
   ],
 )
 
+export const contentTranslations = pgTable(
+  'content_translations',
+  {
+    contentId: uuid('content_id').notNull(),
+    locale: text('locale').notNull(),
+    title: text('title').notNull(),
+    description: text('description'),
+    content: text('content').notNull(),
+    sourceHash: text('source_hash').notNull(),
+    ...timestamps(),
+  },
+  (table) => [
+    primaryKey({
+      columns: [table.contentId, table.locale],
+      name: 'content_translations_pkey',
+    }),
+    foreignKey({
+      columns: [table.contentId],
+      foreignColumns: [contents.id],
+      name: 'content_translations_content_id_fkey',
+    })
+      .onDelete('cascade')
+      .onUpdate('cascade'),
+  ],
+)
+
 export const redirects = pgTable(
   'redirects',
   {
@@ -340,6 +366,14 @@ export const contentsRelations = relations(contents, ({ many, one }) => ({
   comments: many(comments),
   contentCategories: many(contentCategories),
   contentTags: many(contentTags),
+  translations: many(contentTranslations),
+}))
+
+export const contentTranslationsRelations = relations(contentTranslations, ({ one }) => ({
+  content: one(contents, {
+    fields: [contentTranslations.contentId],
+    references: [contents.id],
+  }),
 }))
 
 export const commentsRelations = relations(comments, ({ many, one }) => ({
