@@ -5,31 +5,13 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineNuxtConfig({
   modules: ['@nuxt/content', '@nuxt/fonts', '@nuxt/scripts', '@nuxtjs/i18n', '@nuxtjs/seo'],
   devtools: { enabled: true },
-  app: {
-    head: {
-      link: [
-        {
-          rel: 'alternate',
-          type: 'application/rss+xml',
-          title: '一纸忘忧 RSS',
-          href: '/feed.xml',
-        },
-        {
-          rel: 'alternate',
-          type: 'application/atom+xml',
-          title: '一纸忘忧 Atom',
-          href: '/atom.xml',
-        },
-      ],
-    },
-  },
   css: ['./app/assets/css/main.css'],
   site: {
     url: 'https://www.ikxin.com',
     name: '一纸忘忧',
+    titleSeparator: '-',
     description:
       '一纸忘忧的个人网站，关于技术探索与日常生活，记录 Web 开发、服务端与 DevOps 实践，分享软件工具、数码体验，以及代码之外的见闻与思考。',
-    defaultLocale: 'zh-CN',
   },
   mdc: {
     highlight: {
@@ -95,11 +77,11 @@ export default defineNuxtConfig({
   i18n: {
     defaultLocale: 'zh-cn',
     locales: [
-      { code: 'zh-cn', language: 'zh-CN', name: '简体中文' },
-      { code: 'zh-tw', language: 'zh-TW', name: '繁體中文' },
-      { code: 'ko', language: 'ko-KR', name: '한국어' },
-      { code: 'en', language: 'en-US', name: 'English' },
-      { code: 'ja', language: 'ja-JP', name: '日本語' },
+      { code: 'zh-cn', language: 'zh-CN', name: '简体中文', file: 'zh-cn.json' },
+      { code: 'zh-tw', language: 'zh-TW', name: '繁體中文', file: 'zh-tw.json' },
+      { code: 'ko', language: 'ko-KR', name: '한국어', file: 'ko.json' },
+      { code: 'en', language: 'en-US', name: 'English', file: 'en.json' },
+      { code: 'ja', language: 'ja-JP', name: '日本語', file: 'ja.json' },
     ],
   },
   scripts: {

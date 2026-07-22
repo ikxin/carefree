@@ -1,22 +1,22 @@
 <script setup lang="ts">
 const site = useSiteConfig()
 const localePath = useLocalePath()
-const { locale } = useI18n()
-const subtitle = '编写代码以构建更美好的世界'
+const { locale, t } = useI18n()
+const subtitle = computed(() => t('nuxtSiteConfig.subtitle'))
 
 useHead({
   titleTemplate: '%siteName %separator %s',
 })
 
 useSeoMeta({
-  title: subtitle,
+  title: () => subtitle.value,
   description: () => site.description,
-  ogTitle: () => `${site.name} | ${subtitle}`,
+  ogTitle: () => `${site.name} - ${subtitle.value}`,
   ogDescription: () => site.description,
   ogType: 'website',
   ogSiteName: () => site.name,
   twitterCard: 'summary',
-  twitterTitle: () => `${site.name} | ${subtitle}`,
+  twitterTitle: () => `${site.name} - ${subtitle.value}`,
   twitterDescription: () => site.description,
 })
 
