@@ -3,5 +3,10 @@
     "name": "一纸忘忧",
     "subtitle": "编写代码以构建更美好的世界",
     "description": "一纸忘忧的个人网站，关于技术探索与日常生活，记录 Web 开发、服务端与 DevOps 实践，分享软件工具、数码体验，以及代码之外的见闻与思考。"
+  },
+  "error_page": {
+    "not_found": "页面未找到",
+    "unexpected": "发生错误",
+    "back_to_home": "返回首页"
   }
 }

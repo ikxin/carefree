@@ -3,5 +3,10 @@
     "name": "一紙忘憂",
     "subtitle": "用程式碼建構更美好的世界",
     "description": "一紙忘憂的個人網站，關於技術探索與日常生活，記錄 Web 開發、後端與 DevOps 實踐，分享軟體工具、數位體驗，以及程式碼之外的見聞與思考。"
+  },
+  "error_page": {
+    "not_found": "找不到頁面",
+    "unexpected": "發生錯誤",
+    "back_to_home": "返回首頁"
   }
 }

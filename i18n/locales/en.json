@@ -3,5 +3,10 @@
     "name": "Carefree",
     "subtitle": "Writing code to build a better world",
     "description": "Carefree is a personal site about technology and everyday life, documenting web development, backend, and DevOps practices, plus software tools, digital experiences, and thoughts beyond code."
+  },
+  "error_page": {
+    "not_found": "Page not found",
+    "unexpected": "Something went wrong",
+    "back_to_home": "Back to home"
   }
 }

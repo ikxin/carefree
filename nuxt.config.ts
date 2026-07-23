@@ -5,7 +5,7 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineNuxtConfig({
   modules: ['@nuxt/content', '@nuxt/fonts', '@nuxt/scripts', '@nuxtjs/i18n', '@nuxtjs/seo'],
   devtools: { enabled: true },
-  css: ['./app/assets/css/main.css'],
+  css: ['./assets/css/main.css'],
   site: {
     url: 'https://www.ikxin.com',
     name: '一纸忘忧',
@@ -45,7 +45,7 @@ export default defineNuxtConfig({
     '/feed.xml': { cache: { maxAge: 600 } },
     '/feed': { redirect: { to: '/feed.xml', statusCode: 301 } },
   },
-  compatibilityDate: '2025-07-15',
+  compatibilityDate: '2026-10-01',
   vite: {
     optimizeDeps: {
       include: ['@unhead/schema-org/vue'],
