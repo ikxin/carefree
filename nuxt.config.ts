@@ -3,7 +3,14 @@
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineNuxtConfig({
-  modules: ['@nuxt/content', '@nuxt/fonts', '@nuxt/scripts', '@nuxtjs/i18n', '@nuxtjs/seo'],
+  modules: [
+    '@nuxt/content',
+    '@nuxt/fonts',
+    '@nuxt/image',
+    '@nuxt/scripts',
+    '@nuxtjs/i18n',
+    '@nuxtjs/seo',
+  ],
   devtools: { enabled: true },
   css: ['./assets/css/main.css'],
   site: {
@@ -83,6 +90,9 @@ export default defineNuxtConfig({
       { code: 'en', language: 'en-US', name: 'English', file: 'en.json' },
       { code: 'ja', language: 'ja-JP', name: '日本語', file: 'ja.json' },
     ],
+  },
+  image: {
+    domains: ['img.8b5.cn'],
   },
   scripts: {
     privacy: false,

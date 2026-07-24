@@ -48,7 +48,6 @@ defineOgImage(
     <ContentRenderer
       v-if="article"
       :value="article"
-      :prose="false"
       tag="article"
       class="prose prose-neutral mx-auto"
     />
