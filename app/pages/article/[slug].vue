@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import ProseImg from '~/components/content/ProseImg.vue'
+
 const route = useRoute()
 const slug = route.params.slug
 const site = useSiteConfig()
@@ -48,6 +50,7 @@ defineOgImage(
     <ContentRenderer
       v-if="article"
       :value="article"
+      :components="{ img: ProseImg }"
       tag="article"
       class="prose prose-neutral mx-auto"
     />

@@ -53,6 +53,11 @@ export default defineNuxtConfig({
     '/feed': { redirect: { to: '/feed.xml', statusCode: 301 } },
   },
   compatibilityDate: '2026-10-01',
+  nitro: {
+    prerender: {
+      concurrency: 1,
+    },
+  },
   vite: {
     optimizeDeps: {
       include: ['@unhead/schema-org/vue'],
@@ -93,6 +98,11 @@ export default defineNuxtConfig({
   },
   image: {
     domains: ['img.8b5.cn'],
+    ipx: {
+      sharpOptions: {
+        limitInputPixels: false,
+      },
+    },
   },
   scripts: {
     privacy: false,
