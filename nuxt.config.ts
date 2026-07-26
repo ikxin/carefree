@@ -10,6 +10,7 @@ export default defineNuxtConfig({
     '@nuxt/scripts',
     '@nuxtjs/i18n',
     '@nuxtjs/seo',
+    '@nuxt/icon',
   ],
   devtools: { enabled: true },
   css: ['./assets/css/main.css'],
