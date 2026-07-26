@@ -8,5 +8,24 @@
     "not_found": "ページが見つかりません",
     "unexpected": "エラーが発生しました",
     "back_to_home": "ホームに戻る"
+  },
+  "home": {
+    "home": "ホーム",
+    "search": "検索",
+    "search_placeholder": "キーワードで検索",
+    "recent_posts": "最近の記事",
+    "hot_posts": "人気の記事",
+    "load_more": "もっと読む",
+    "loading": "読み込み中…",
+    "retry": "再試行",
+    "views": "{count} 回閲覧",
+    "empty": "記事がまだありません",
+    "close": "閉じる",
+    "menu": "メニュー",
+    "switch_to_light": "ライトモードに切り替える",
+    "switch_to_dark": "ダークモードに切り替える"
+  },
+  "footer": {
+    "rights": "無断転載を禁じます"
   }
 }

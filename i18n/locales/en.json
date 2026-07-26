@@ -8,5 +8,24 @@
     "not_found": "Page not found",
     "unexpected": "Something went wrong",
     "back_to_home": "Back to home"
+  },
+  "home": {
+    "home": "Home",
+    "search": "Search",
+    "search_placeholder": "Search by keyword",
+    "recent_posts": "Recent Posts",
+    "hot_posts": "Popular Posts",
+    "load_more": "Load more",
+    "loading": "Loading…",
+    "retry": "Retry",
+    "views": "{count} views",
+    "empty": "No articles yet",
+    "close": "Close",
+    "menu": "Menu",
+    "switch_to_light": "Switch to light mode",
+    "switch_to_dark": "Switch to dark mode"
+  },
+  "footer": {
+    "rights": "All rights reserved"
   }
 }

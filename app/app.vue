@@ -2,6 +2,11 @@
 const site = useSiteConfig()
 
 useHead(() => ({
+  script: [
+    {
+      innerHTML: `if(localStorage.getItem('dark-mode')==='1'){document.documentElement.classList.add('dark')}`,
+    },
+  ],
   link: [
     {
       rel: 'alternate',

@@ -8,5 +8,24 @@
     "not_found": "页面未找到",
     "unexpected": "发生错误",
     "back_to_home": "返回首页"
+  },
+  "home": {
+    "home": "首页",
+    "search": "搜索",
+    "search_placeholder": "输入关键词搜索",
+    "recent_posts": "近期文章",
+    "hot_posts": "热门文章",
+    "load_more": "加载更多",
+    "loading": "加载中…",
+    "retry": "重试",
+    "views": "{count} 人浏览",
+    "empty": "暂无文章",
+    "close": "关闭",
+    "menu": "菜单",
+    "switch_to_light": "切换至浅色模式",
+    "switch_to_dark": "切换至深色模式"
+  },
+  "footer": {
+    "rights": "保留所有权利"
   }
 }

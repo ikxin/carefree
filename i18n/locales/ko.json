@@ -8,5 +8,24 @@
     "not_found": "페이지를 찾을 수 없습니다",
     "unexpected": "오류가 발생했습니다",
     "back_to_home": "홈으로 돌아가기"
+  },
+  "home": {
+    "home": "홈",
+    "search": "검색",
+    "search_placeholder": "키워드로 검색",
+    "recent_posts": "최근 글",
+    "hot_posts": "인기 글",
+    "load_more": "더 보기",
+    "loading": "불러오는 중…",
+    "retry": "다시 시도",
+    "views": "{count}회 조회",
+    "empty": "아직 게시글이 없습니다",
+    "close": "닫기",
+    "menu": "메뉴",
+    "switch_to_light": "라이트 모드로 전환",
+    "switch_to_dark": "다크 모드로 전환"
+  },
+  "footer": {
+    "rights": "모든 권리 보유"
   }
 }
