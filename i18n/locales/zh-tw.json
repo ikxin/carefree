@@ -15,6 +15,7 @@
     "search_placeholder": "輸入關鍵字搜尋",
     "recent_posts": "近期文章",
     "hot_posts": "熱門文章",
+    "tag_cloud": "標籤雲",
     "load_more": "載入更多",
     "loading": "載入中…",
     "retry": "重試",
@@ -24,6 +25,28 @@
     "menu": "選單",
     "switch_to_light": "切換至淺色模式",
     "switch_to_dark": "切換至深色模式"
+  },
+  "comments": {
+    "title": "評論",
+    "anonymous": "匿名訪客",
+    "reply": "回覆",
+    "loading": "正在載入評論…",
+    "load_error": "評論載入失敗",
+    "empty": "暫無評論，來說兩句吧",
+    "form_title": "發佈評論",
+    "replying_to": "正在回覆 {name}",
+    "cancel_reply": "取消回覆",
+    "content": "評論內容",
+    "content_placeholder": "寫下你的評論…",
+    "name": "暱稱",
+    "email": "電子郵件",
+    "website": "網站（選填）",
+    "remember": "在此裝置上記住我的資料",
+    "submit": "發佈評論",
+    "submitting": "正在發佈…",
+    "submitted": "評論已發佈",
+    "rate_limited": "提交過於頻繁，請稍後再試",
+    "submit_error": "評論發佈失敗，請檢查填寫內容後重試"
   },
   "footer": {
     "rights": "保留所有權利"

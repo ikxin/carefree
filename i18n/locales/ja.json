@@ -15,6 +15,7 @@
     "search_placeholder": "キーワードで検索",
     "recent_posts": "最近の記事",
     "hot_posts": "人気の記事",
+    "tag_cloud": "タグクラウド",
     "load_more": "もっと読む",
     "loading": "読み込み中…",
     "retry": "再試行",
@@ -24,6 +25,28 @@
     "menu": "メニュー",
     "switch_to_light": "ライトモードに切り替える",
     "switch_to_dark": "ダークモードに切り替える"
+  },
+  "comments": {
+    "title": "コメント",
+    "anonymous": "匿名ユーザー",
+    "reply": "返信",
+    "loading": "コメントを読み込んでいます…",
+    "load_error": "コメントを読み込めませんでした",
+    "empty": "まだコメントはありません",
+    "form_title": "コメントを投稿",
+    "replying_to": "{name} さんに返信中",
+    "cancel_reply": "返信をキャンセル",
+    "content": "コメント内容",
+    "content_placeholder": "コメントを入力…",
+    "name": "名前",
+    "email": "メールアドレス",
+    "website": "ウェブサイト（任意）",
+    "remember": "この端末に情報を保存する",
+    "submit": "コメントを投稿",
+    "submitting": "投稿中…",
+    "submitted": "コメントを投稿しました",
+    "rate_limited": "投稿間隔が短すぎます。しばらくしてからお試しください。",
+    "submit_error": "コメントを投稿できませんでした。入力内容をご確認ください。"
   },
   "footer": {
     "rights": "無断転載を禁じます"

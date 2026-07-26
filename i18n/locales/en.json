@@ -15,6 +15,7 @@
     "search_placeholder": "Search by keyword",
     "recent_posts": "Recent Posts",
     "hot_posts": "Popular Posts",
+    "tag_cloud": "Tag Cloud",
     "load_more": "Load more",
     "loading": "Loading…",
     "retry": "Retry",
@@ -24,6 +25,28 @@
     "menu": "Menu",
     "switch_to_light": "Switch to light mode",
     "switch_to_dark": "Switch to dark mode"
+  },
+  "comments": {
+    "title": "Comments",
+    "anonymous": "Anonymous",
+    "reply": "Reply",
+    "loading": "Loading comments…",
+    "load_error": "Failed to load comments",
+    "empty": "No comments yet. Start the conversation.",
+    "form_title": "Leave a comment",
+    "replying_to": "Replying to {name}",
+    "cancel_reply": "Cancel reply",
+    "content": "Comment",
+    "content_placeholder": "Write your comment…",
+    "name": "Name",
+    "email": "Email",
+    "website": "Website (optional)",
+    "remember": "Remember my details on this device",
+    "submit": "Post comment",
+    "submitting": "Posting…",
+    "submitted": "Your comment has been posted",
+    "rate_limited": "You are commenting too quickly. Please try again shortly.",
+    "submit_error": "Could not post your comment. Check the fields and try again."
   },
   "footer": {
     "rights": "All rights reserved"

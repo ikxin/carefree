@@ -26,5 +26,6 @@ const props = withDefaults(
     :width="props.width"
     :height="props.height"
     format="webp"
+    loading="lazy"
   />
 </template>

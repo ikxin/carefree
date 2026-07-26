@@ -1,5 +1,15 @@
-import { contentTranslations, contents } from '#server/database/schema'
+import {
+  categories,
+  comments,
+  contentCategories,
+  contents,
+  contentTags,
+  contentTranslations,
+  tags,
+  users,
+} from '#server/database/schema'
 import { getArticleDescription } from '#server/utils/content/description'
+import { extractCover } from '#server/utils/content/excerpt'
 import {
   type ContentLocale,
   createContentSourceHash,
@@ -8,7 +18,7 @@ import {
   isContentLocale,
 } from '#server/utils/content/translate'
 import { db } from '#server/utils/db'
-import { and, eq } from 'drizzle-orm'
+import { and, eq, sql } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
   const slug = getRouterParam(event, 'slug')
@@ -28,8 +38,14 @@ export default defineEventHandler(async (event) => {
       title: contents.title,
       description: contents.description,
       content: contents.content,
+      slug: contents.slug,
+      views: contents.views,
+      createdAt: contents.createdAt,
+      updatedAt: contents.updatedAt,
+      authorName: users.name,
     })
     .from(contents)
+    .innerJoin(users, eq(contents.authorId, users.id))
     .where(
       and(eq(contents.slug, slug), eq(contents.type, 'article'), eq(contents.status, 'publish')),
     )
@@ -89,11 +105,37 @@ export default defineEventHandler(async (event) => {
     storedDescription: resolvedArticle.description,
     parsedContent,
   })
+  const [articleCategories, articleTags, commentCountRows] = await Promise.all([
+    db
+      .select({ name: categories.name, slug: categories.slug })
+      .from(contentCategories)
+      .innerJoin(categories, eq(contentCategories.categoryId, categories.id))
+      .where(eq(contentCategories.contentId, article.id))
+      .limit(1),
+    db
+      .select({ name: tags.name, slug: tags.slug })
+      .from(contentTags)
+      .innerJoin(tags, eq(contentTags.tagId, tags.id))
+      .where(eq(contentTags.contentId, article.id)),
+    db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(comments)
+      .where(and(eq(comments.contentId, article.id), eq(comments.status, 'approved'))),
+  ])
 
   return {
     ...parsedContent,
     title: resolvedArticle.title,
     description,
+    slug: article.slug,
+    cover: extractCover(article.content),
+    views: article.views,
+    createdAt: article.createdAt,
+    updatedAt: article.updatedAt,
+    author: { name: article.authorName },
+    category: articleCategories[0] ?? null,
+    tags: articleTags,
+    commentCount: commentCountRows[0]?.count ?? 0,
     locale: resolvedLocale,
     translationAvailable: resolvedLocale === requestedLocale,
   }

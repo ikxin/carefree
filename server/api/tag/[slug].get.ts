@@ -1,11 +1,19 @@
-import { contents, contentTags, contentTranslations, tags } from '#server/database/schema'
+import {
+  categories,
+  contentCategories,
+  contents,
+  contentTags,
+  contentTranslations,
+  tags,
+} from '#server/database/schema'
+import { extractCover, extractExcerpt } from '#server/utils/content/excerpt'
 import {
   createContentSourceHash,
   defaultContentLocale,
   isContentLocale,
 } from '#server/utils/content/translate'
 import { db } from '#server/utils/db'
-import { and, desc, eq } from 'drizzle-orm'
+import { and, desc, eq, inArray } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
   const slug = getRouterParam(event, 'slug')
@@ -41,7 +49,11 @@ export default defineEventHandler(async (event) => {
       description: contents.description,
       content: contents.content,
       slug: contents.slug,
+      views: contents.views,
+      createdAt: contents.createdAt,
       translatedTitle: contentTranslations.title,
+      translatedDescription: contentTranslations.description,
+      translatedContent: contentTranslations.content,
       translationSourceHash: contentTranslations.sourceHash,
     })
     .from(contents)
@@ -62,17 +74,58 @@ export default defineEventHandler(async (event) => {
     )
     .orderBy(desc(contents.createdAt))
 
+  const articleIds = articles.map((article) => article.id)
+  const [categoryRows, tagRows] = articleIds.length
+    ? await Promise.all([
+        db
+          .select({
+            contentId: contentCategories.contentId,
+            name: categories.name,
+            slug: categories.slug,
+          })
+          .from(contentCategories)
+          .innerJoin(categories, eq(contentCategories.categoryId, categories.id))
+          .where(inArray(contentCategories.contentId, articleIds)),
+        db
+          .select({
+            contentId: contentTags.contentId,
+            name: tags.name,
+            slug: tags.slug,
+          })
+          .from(contentTags)
+          .innerJoin(tags, eq(contentTags.tagId, tags.id))
+          .where(inArray(contentTags.contentId, articleIds)),
+      ])
+    : [[], []]
+
   return {
     name: tag.name,
     slug: tag.slug,
     description: tag.description,
-    articles: articles.map((article) => ({
-      title:
+    articles: articles.map((article) => {
+      const category = categoryRows.find((row) => row.contentId === article.id)
+      const hasCurrentTranslation =
         article.translatedTitle !== null &&
         article.translationSourceHash === createContentSourceHash(article)
-          ? article.translatedTitle
-          : article.title,
-      slug: article.slug,
-    })),
+      const description = hasCurrentTranslation
+        ? article.translatedDescription
+        : article.description
+      const content = hasCurrentTranslation
+        ? (article.translatedContent ?? article.content)
+        : article.content
+
+      return {
+        title: hasCurrentTranslation ? (article.translatedTitle ?? article.title) : article.title,
+        slug: article.slug,
+        description: description?.trim() || extractExcerpt(content),
+        cover: extractCover(article.content),
+        views: article.views,
+        createdAt: article.createdAt,
+        category: category ? { name: category.name, slug: category.slug } : null,
+        tags: tagRows
+          .filter((row) => row.contentId === article.id)
+          .map((row) => ({ name: row.name, slug: row.slug })),
+      }
+    }),
   }
 })

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 const route = useRoute()
-const localePath = useLocalePath()
 const { locale } = useI18n()
 const slug = route.params.slug
 
@@ -23,11 +22,10 @@ useSeoMeta({
 </script>
 
 <template>
-  <ul>
-    <li v-for="article in tag?.articles" :key="article.slug">
-      <NuxtLink :to="localePath(`/article/${encodeURIComponent(article.slug)}`)">
-        {{ article.title }}
-      </NuxtLink>
-    </li>
-  </ul>
+  <ArchivePage
+    v-if="tag"
+    :title="tag.name"
+    :description="tag.description"
+    :articles="tag.articles"
+  />
 </template>

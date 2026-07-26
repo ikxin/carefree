@@ -2,13 +2,14 @@
 const { t, locale } = useI18n()
 const localePath = useLocalePath()
 
-const [{ data: recent }, { data: hot }] = await Promise.all([
+const [{ data: recent }, { data: hot }, { data: tagCloud }] = await Promise.all([
   useFetch('/api/article', {
     query: { locale, limit: 4 },
   }),
   useFetch('/api/article', {
     query: { locale, limit: 5, sort: 'views' },
   }),
+  useFetch('/api/tag'),
 ])
 
 const hotPosts = computed(() => hot.value?.articles ?? [])
@@ -58,6 +59,29 @@ const hotRest = computed(() => hotPosts.value.slice(1))
           </span>
         </li>
       </ul>
+    </section>
+
+    <section v-if="tagCloud?.length" class="rounded bg-card p-5 dark:bg-card-dark">
+      <h3
+        class="relative mb-5 border-b border-neutral-100 pb-4 pl-5 text-base font-bold before:absolute before:left-0.5 before:top-1.5 before:size-2 before:rounded-full before:bg-linear-to-t before:from-[#6598ff] before:to-primary-deep dark:border-neutral-700"
+      >
+        {{ t('home.tag_cloud') }}
+      </h3>
+      <div class="flex flex-wrap gap-2">
+        <NuxtLink
+          v-for="tag in tagCloud"
+          :key="tag.slug"
+          :to="localePath(`/tag/${encodeURIComponent(tag.slug)}`)"
+          class="group flex min-h-8 items-center gap-1.5 rounded bg-neutral-100 px-3 py-1.5 text-xs transition-colors hover:bg-primary hover:text-white dark:bg-neutral-700"
+        >
+          <span class="max-w-28 truncate">{{ tag.name }}</span>
+          <span
+            class="text-[10px] text-neutral-400 transition-colors group-hover:text-white/80 dark:text-neutral-500"
+          >
+            {{ tag.count }}
+          </span>
+        </NuxtLink>
+      </div>
     </section>
 
     <section v-if="hotPosts.length" class="rounded bg-card p-5 dark:bg-card-dark">

@@ -22,8 +22,9 @@ const { t } = useI18n()
   <article class="rounded bg-card p-3 sm:p-5 dark:bg-card-dark">
     <div class="flex gap-3 sm:gap-4">
       <NuxtLink
+        v-if="article.cover"
         :to="localePath(`/article/${encodeURIComponent(article.slug)}`)"
-        class="group block w-1/4 shrink-0 overflow-hidden rounded"
+        class="group block w-20 shrink-0 overflow-hidden rounded sm:w-1/4"
       >
         <div class="aspect-10/7">
           <PostCover
@@ -55,17 +56,17 @@ const { t } = useI18n()
           <div class="flex min-w-0 items-center gap-3 sm:gap-5">
             <NuxtLink
               v-if="article.category"
-              :to="localePath(`/category/${article.category.slug}`)"
-              class="flex shrink-0 items-center gap-1.5 transition-colors hover:text-primary"
+              :to="localePath(`/category/${encodeURIComponent(article.category.slug)}`)"
+              class="flex min-w-0 max-w-[55%] items-center gap-1.5 transition-colors hover:text-primary sm:max-w-none sm:shrink-0"
             >
-              <Icon name="lucide:align-left" class="size-3.5" />
-              {{ article.category.name }}
+              <Icon name="lucide:align-left" class="size-3.5 shrink-0" />
+              <span class="truncate">{{ article.category.name }}</span>
             </NuxtLink>
             <span class="hidden items-center gap-1.5 sm:flex">
               <Icon name="lucide:clock" class="size-3.5" />
               {{ formatDate(article.createdAt) }}
             </span>
-            <span class="flex items-center gap-1.5">
+            <span class="flex shrink-0 items-center gap-1.5">
               <Icon name="lucide:eye" class="size-3.5" />
               {{ t('home.views', { count: article.views }) }}
             </span>
@@ -73,9 +74,9 @@ const { t } = useI18n()
 
           <div class="hidden min-w-0 items-center gap-3 md:flex">
             <NuxtLink
-              v-for="tag in article.tags"
+              v-for="tag in article.tags.slice(0, 3)"
               :key="tag.slug"
-              :to="localePath(`/tag/${tag.slug}`)"
+              :to="localePath(`/tag/${encodeURIComponent(tag.slug)}`)"
               class="flex items-center gap-0.5 transition-colors hover:text-primary"
             >
               <Icon name="lucide:hash" class="size-3" />

@@ -15,6 +15,7 @@
     "search_placeholder": "키워드로 검색",
     "recent_posts": "최근 글",
     "hot_posts": "인기 글",
+    "tag_cloud": "태그 클라우드",
     "load_more": "더 보기",
     "loading": "불러오는 중…",
     "retry": "다시 시도",
@@ -24,6 +25,28 @@
     "menu": "메뉴",
     "switch_to_light": "라이트 모드로 전환",
     "switch_to_dark": "다크 모드로 전환"
+  },
+  "comments": {
+    "title": "댓글",
+    "anonymous": "익명 방문자",
+    "reply": "답글",
+    "loading": "댓글을 불러오는 중…",
+    "load_error": "댓글을 불러오지 못했습니다",
+    "empty": "아직 댓글이 없습니다",
+    "form_title": "댓글 작성",
+    "replying_to": "{name}님에게 답글 작성 중",
+    "cancel_reply": "답글 취소",
+    "content": "댓글 내용",
+    "content_placeholder": "댓글을 작성하세요…",
+    "name": "이름",
+    "email": "이메일",
+    "website": "웹사이트(선택)",
+    "remember": "이 기기에 내 정보 저장",
+    "submit": "댓글 등록",
+    "submitting": "등록 중…",
+    "submitted": "댓글이 등록되었습니다",
+    "rate_limited": "댓글을 너무 자주 작성하고 있습니다. 잠시 후 다시 시도해 주세요.",
+    "submit_error": "댓글을 등록하지 못했습니다. 입력 내용을 확인해 주세요."
   },
   "footer": {
     "rights": "모든 권리 보유"
