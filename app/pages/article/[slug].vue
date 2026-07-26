@@ -52,7 +52,7 @@ defineOgImage(
       :value="article"
       :components="{ img: ProseImg }"
       tag="article"
-      class="prose prose-neutral mx-auto"
+      class="mx-auto"
     />
   </main>
 </template>

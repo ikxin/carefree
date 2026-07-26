@@ -23,7 +23,6 @@
     "@nuxtjs/i18n": "^10.5.0",
     "@nuxtjs/mdc": "^0.22.2",
     "@nuxtjs/seo": "^5.3.6",
-    "@tailwindcss/typography": "^0.5.20",
     "@tailwindcss/vite": "^4.3.3",
     "@takumi-rs/core": "^2.4.2",
     "@types/pg": "^8.20.0",
