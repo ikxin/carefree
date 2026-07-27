@@ -6,7 +6,7 @@ import {
   contentTranslations,
   tags,
 } from '#server/database/schema'
-import { extractCover, extractExcerpt } from '#server/utils/content/excerpt'
+import { extractCover, extractExcerpt, markdownImagePattern } from '#server/utils/content/excerpt'
 import {
   createContentSourceHash,
   defaultContentLocale,
@@ -36,6 +36,18 @@ function parsePositiveInteger(value: unknown, fallback: number, parameter: strin
   return parsed
 }
 
+function parseBoolean(value: unknown, fallback: boolean, parameter: string) {
+  if (value === undefined) {
+    return fallback
+  }
+
+  if (value !== 'true' && value !== 'false') {
+    throw createError({ statusCode: 400, statusMessage: `Invalid ${parameter} parameter` })
+  }
+
+  return value === 'true'
+}
+
 export default defineEventHandler(async (event) => {
   const query = getQuery(event)
   const requestedLocale = query.locale ?? defaultContentLocale
@@ -46,7 +58,8 @@ export default defineEventHandler(async (event) => {
 
   const page = parsePositiveInteger(query.page, 1, 'page')
   const limit = Math.min(maxLimit, parsePositiveInteger(query.limit, defaultLimit, 'limit'))
-  const sort = query.sort === 'views' ? 'views' : 'latest'
+  const withCover = parseBoolean(query.withCover, false, 'withCover')
+  const sort = query.sort === 'views' || query.sort === 'random' ? query.sort : 'latest'
   const offset = (page - 1) * limit
 
   if (!Number.isSafeInteger(offset)) {
@@ -57,7 +70,11 @@ export default defineEventHandler(async (event) => {
     eq(contentTranslations.contentId, contents.id),
     eq(contentTranslations.locale, requestedLocale),
   )
-  const contentCondition = and(eq(contents.type, 'article'), eq(contents.status, 'publish'))
+  const contentCondition = and(
+    eq(contents.type, 'article'),
+    eq(contents.status, 'publish'),
+    withCover ? sql`${contents.content} ~ ${markdownImagePattern.source}` : undefined,
+  )
 
   const [countRows, articles] = await Promise.all([
     db
@@ -82,9 +99,11 @@ export default defineEventHandler(async (event) => {
       .leftJoin(contentTranslations, translationCondition)
       .where(contentCondition)
       .orderBy(
-        ...(sort === 'views'
-          ? [desc(contents.views), desc(contents.createdAt), desc(contents.id)]
-          : [desc(contents.createdAt), desc(contents.id)]),
+        ...(sort === 'random'
+          ? [sql`random()`]
+          : sort === 'views'
+            ? [desc(contents.views), desc(contents.createdAt), desc(contents.id)]
+            : [desc(contents.createdAt), desc(contents.id)]),
       )
       .limit(limit)
       .offset(offset),

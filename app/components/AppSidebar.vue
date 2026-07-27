@@ -46,17 +46,27 @@ const hotRest = computed(() => hotPosts.value.slice(1))
         <li
           v-for="article in recent.articles"
           :key="article.slug"
-          class="group relative border-l-2 border-neutral-100 pb-5 pl-5 last:pb-0 before:absolute before:-left-0.75 before:top-2 before:z-10 before:size-1 before:rounded-full before:bg-card after:absolute after:-left-2 after:top-1 after:size-3.5 after:rounded-full after:border-3 after:border-card after:bg-primary after:transition-colors group-hover:after:bg-amber-400 dark:border-neutral-700 dark:before:bg-card-dark dark:after:border-card-dark"
+          class="relative border-l-2 border-neutral-100 pb-5 pl-5 last:pb-0 dark:border-neutral-700"
         >
           <NuxtLink
             :to="localePath(`/article/${encodeURIComponent(article.slug)}`)"
-            class="mb-1.5 line-clamp-2 block text-[13px] transition-colors hover:text-primary"
+            class="group block"
           >
-            {{ article.title }}
+            <span
+              aria-hidden="true"
+              class="absolute -left-px top-1 z-10 flex size-3.5 -translate-x-1/2 items-center justify-center rounded-full border-3 border-card bg-primary transition-[background-color,box-shadow,transform] duration-200 ease-out group-hover:scale-110 group-hover:bg-amber-400 group-hover:shadow-[0_0_0_3px_rgb(251_191_36_/_0.18)] group-focus-visible:scale-110 group-focus-visible:bg-amber-400 group-focus-visible:shadow-[0_0_0_3px_rgb(251_191_36_/_0.18)] motion-reduce:transition-none dark:border-card-dark"
+            >
+              <span class="size-1 rounded-full bg-card dark:bg-card-dark" />
+            </span>
+            <span
+              class="mb-1.5 line-clamp-2 text-[13px] transition-colors group-hover:text-primary group-focus-visible:text-primary"
+            >
+              {{ article.title }}
+            </span>
+            <span class="block text-xs font-light text-neutral-400">
+              {{ formatDate(article.createdAt) }}
+            </span>
           </NuxtLink>
-          <span class="block text-xs font-light text-neutral-400">
-            {{ formatDate(article.createdAt) }}
-          </span>
         </li>
       </ul>
     </section>
@@ -67,12 +77,12 @@ const hotRest = computed(() => hotPosts.value.slice(1))
       >
         {{ t('home.tag_cloud') }}
       </h3>
-      <div class="flex flex-wrap gap-2">
+      <div class="flex flex-wrap justify-center gap-1.5">
         <NuxtLink
           v-for="tag in tagCloud"
           :key="tag.slug"
           :to="localePath(`/tag/${encodeURIComponent(tag.slug)}`)"
-          class="group flex min-h-8 items-center gap-1.5 rounded bg-neutral-100 px-3 py-1.5 text-xs transition-colors hover:bg-primary hover:text-white dark:bg-neutral-700"
+          class="group flex min-h-8 items-center gap-1.5 rounded bg-neutral-100 px-2.5 py-1 text-xs transition-colors hover:bg-primary hover:text-white dark:bg-neutral-700"
         >
           <span class="max-w-28 truncate">{{ tag.name }}</span>
           <span
@@ -94,7 +104,13 @@ const hotRest = computed(() => hotPosts.value.slice(1))
         <li v-if="hotFirst" class="relative mb-5 overflow-hidden rounded">
           <NuxtLink :to="localePath(`/article/${encodeURIComponent(hotFirst.slug)}`)" class="block">
             <div class="aspect-10/7">
-              <PostCover :src="hotFirst.cover" :alt="hotFirst.title" />
+              <PostCover
+                :src="hotFirst.cover"
+                :alt="hotFirst.title"
+                width="10"
+                height="7"
+                sizes="lg:20vw xl:257px"
+              />
             </div>
             <div
               class="pointer-events-none absolute inset-0 bg-linear-to-t from-black/70 to-transparent"
@@ -114,7 +130,7 @@ const hotRest = computed(() => hotPosts.value.slice(1))
           >
             <div class="mr-3 w-18.75 shrink-0 overflow-hidden rounded">
               <div class="aspect-10/7">
-                <PostCover :src="article.cover" :alt="article.title" />
+                <PostCover :src="article.cover" :alt="article.title" width="75" height="53" />
               </div>
             </div>
             <div class="min-w-0">

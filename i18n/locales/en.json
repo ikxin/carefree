@@ -23,6 +23,8 @@
     "empty": "No articles yet",
     "close": "Close",
     "menu": "Menu",
+    "previous_slide": "Previous slide",
+    "next_slide": "Next slide",
     "switch_to_light": "Switch to light mode",
     "switch_to_dark": "Switch to dark mode"
   },

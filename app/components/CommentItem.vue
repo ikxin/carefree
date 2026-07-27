@@ -93,7 +93,7 @@ const formattedDate = computed(() =>
         </div>
 
         <p
-          class="mt-4 break-words whitespace-pre-wrap text-sm leading-7 text-neutral-600 dark:text-neutral-300"
+          class="mt-4 wrap-break-word whitespace-pre-wrap text-sm leading-7 text-neutral-600 dark:text-neutral-300"
         >
           {{ comment.content }}
         </p>

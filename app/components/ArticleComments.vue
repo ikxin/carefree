@@ -176,7 +176,7 @@ onMounted(() => {
         <button
           type="button"
           class="flex items-center gap-1.5 text-primary transition-colors hover:text-primary-deep"
-          @click="refresh"
+          @click="refresh()"
         >
           <Icon name="lucide:refresh-cw" class="size-3.5" />
           {{ t('home.retry') }}
@@ -272,7 +272,7 @@ onMounted(() => {
         </div>
 
         <label
-          class="pointer-events-none absolute -left-[10000px] top-auto size-px overflow-hidden"
+          class="pointer-events-none absolute left-[-10000px] top-auto size-px overflow-hidden"
           aria-hidden="true"
         >
           Company

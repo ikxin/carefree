@@ -7,10 +7,12 @@ const props = withDefaults(
     alt?: string
     width?: string | number
     height?: string | number
+    sizes?: string
   }>(),
   {
     src: '',
     alt: '',
+    sizes: '78vw xxs:78vw xs:88vw sm:88vw md:90vw lg:67vw xl:867px',
   },
 )
 </script>
@@ -25,6 +27,7 @@ const props = withDefaults(
     }"
     :width="props.width"
     :height="props.height"
+    :sizes="props.sizes"
     format="webp"
     loading="lazy"
   />

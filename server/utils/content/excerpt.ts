@@ -1,4 +1,5 @@
 const excerptMaxLength = 120
+export const markdownImagePattern = /!\[[^\]]*\]\(([^)\s]+)[^)]*\)/
 
 export function extractExcerpt(markdown: string) {
   const text = markdown
@@ -15,6 +16,6 @@ export function extractExcerpt(markdown: string) {
 }
 
 export function extractCover(markdown: string) {
-  const match = markdown.match(/!\[[^\]]*\]\(([^)\s]+)[^)]*\)/)
+  const match = markdown.match(markdownImagePattern)
   return match?.[1] ?? null
 }

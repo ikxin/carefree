@@ -67,7 +67,7 @@ defineOgImage(
             <header
               class="border-b border-neutral-100 px-5 py-6 sm:px-8 sm:py-8 dark:border-neutral-700"
             >
-              <h1 class="break-words text-xl font-bold leading-snug sm:text-2xl">
+              <h1 class="wrap-break-word text-xl font-bold leading-snug sm:text-2xl">
                 {{ article.title }}
               </h1>
               <div

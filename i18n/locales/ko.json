@@ -23,6 +23,8 @@
     "empty": "아직 게시글이 없습니다",
     "close": "닫기",
     "menu": "메뉴",
+    "previous_slide": "이전 슬라이드",
+    "next_slide": "다음 슬라이드",
     "switch_to_light": "라이트 모드로 전환",
     "switch_to_dark": "다크 모드로 전환"
   },

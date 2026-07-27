@@ -19,6 +19,7 @@ useSeoMeta({
   twitterDescription: () => site.description,
 })
 
+const bannerSize = 10
 const pageSize = 10
 const requestQuery = ref({
   locale: locale.value,
@@ -26,15 +27,18 @@ const requestQuery = ref({
   limit: pageSize,
 })
 
-const {
-  data: articleResponse,
-  error: articleError,
-  pending,
-  execute: executeArticles,
-} = await useFetch('/api/article', {
-  query: requestQuery,
-  watch: false,
-})
+const [
+  { data: bannerResponse },
+  { data: articleResponse, error: articleError, pending, execute: executeArticles },
+] = await Promise.all([
+  useFetch('/api/article', {
+    query: { locale, limit: bannerSize, sort: 'random', withCover: true },
+  }),
+  useFetch('/api/article', {
+    query: requestQuery,
+    watch: false,
+  }),
+])
 
 const articles = ref(articleResponse.value?.articles ?? [])
 const page = ref(articleResponse.value?.page ?? 1)
@@ -90,8 +94,20 @@ onBeforeUnmount(() => {
   requestVersion += 1
 })
 
-const bannerArticles = computed(() => articles.value.slice(0, 5))
-const listArticles = computed(() => articles.value.slice(5))
+function hasCover<T extends { cover: string | null }>(
+  article: T,
+): article is T & { cover: string } {
+  return article.cover !== null
+}
+
+const bannerArticles = computed(() => (bannerResponse.value?.articles ?? []).filter(hasCover))
+const bannerArticleSlugs = computed(
+  () => new Set(bannerArticles.value.map((article) => article.slug)),
+)
+const listArticles = computed(() =>
+  articles.value.filter((article) => !bannerArticleSlugs.value.has(article.slug)),
+)
+const hasArticles = computed(() => bannerArticles.value.length > 0 || articles.value.length > 0)
 </script>
 
 <template>
@@ -119,7 +135,7 @@ const listArticles = computed(() => articles.value.slice(5))
           </div>
 
           <p
-            v-else-if="!articles.length && !pending"
+            v-else-if="!hasArticles && !pending && !hasMore"
             class="rounded bg-card p-10 text-center text-sm text-neutral-400 dark:bg-card-dark"
           >
             {{ t('home.empty') }}

@@ -23,6 +23,8 @@
     "empty": "記事がまだありません",
     "close": "閉じる",
     "menu": "メニュー",
+    "previous_slide": "前のスライド",
+    "next_slide": "次のスライド",
     "switch_to_light": "ライトモードに切り替える",
     "switch_to_dark": "ダークモードに切り替える"
   },

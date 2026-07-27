@@ -24,5 +24,5 @@ export default defineEventHandler(async () => {
     .groupBy(tags.id, tags.name, tags.slug)
     .having(gt(articleCount, 0))
     .orderBy(desc(articleCount), asc(tags.name))
-    .limit(24)
+    .limit(20)
 })

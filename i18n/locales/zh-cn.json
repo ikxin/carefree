@@ -23,6 +23,8 @@
     "empty": "暂无文章",
     "close": "关闭",
     "menu": "菜单",
+    "previous_slide": "上一张轮播图",
+    "next_slide": "下一张轮播图",
     "switch_to_light": "切换至浅色模式",
     "switch_to_dark": "切换至深色模式"
   },

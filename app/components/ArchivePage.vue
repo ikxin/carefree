@@ -30,7 +30,7 @@ const { t } = useI18n()
                 aria-hidden="true"
                 class="size-2 shrink-0 rounded-full bg-linear-to-t from-[#6598ff] to-primary-deep"
               />
-              <span class="min-w-0 break-words">{{ title }}</span>
+              <span class="min-w-0 wrap-break-word">{{ title }}</span>
             </h1>
             <p v-if="description" class="mb-0 mt-2 text-sm font-light leading-7 text-neutral-400">
               {{ description }}

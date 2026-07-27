@@ -2,6 +2,8 @@
 
 import tailwindcss from '@tailwindcss/vite'
 
+const imageCacheMaxAge = 60 * 60 * 24 * 30
+
 export default defineNuxtConfig({
   modules: [
     '@nuxt/content',
@@ -99,7 +101,16 @@ export default defineNuxtConfig({
   },
   image: {
     domains: ['img.8b5.cn'],
+    screens: {
+      xxs: 320,
+      xs: 412,
+    },
     ipx: {
+      maxAge: imageCacheMaxAge,
+      http: {
+        maxAge: imageCacheMaxAge,
+        ignoreCacheControl: true,
+      },
       sharpOptions: {
         limitInputPixels: false,
       },

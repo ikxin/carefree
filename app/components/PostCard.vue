@@ -30,6 +30,9 @@ const { t } = useI18n()
           <PostCover
             :src="article.cover"
             :alt="article.title"
+            width="10"
+            height="7"
+            sizes="80px sm:23vw lg:18vw xl:224px"
             class="transition-transform duration-500 group-hover:scale-110"
           />
         </div>
