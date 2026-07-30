@@ -52,5 +52,17 @@
   },
   "footer": {
     "rights": "保留所有權利"
+  },
+  "article": {
+    "copy_code": "複製程式碼",
+    "code_copied": "已複製",
+    "expand_code": "展開程式碼",
+    "collapse_code": "收合程式碼",
+    "wrap_code": "自動換行",
+    "unwrap_code": "取消換行",
+    "show_line_numbers": "顯示行號",
+    "hide_line_numbers": "隱藏行號",
+    "fullscreen": "全螢幕",
+    "exit_fullscreen": "退出全螢幕"
   }
 }

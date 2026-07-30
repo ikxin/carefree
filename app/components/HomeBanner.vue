@@ -169,7 +169,7 @@ onBeforeUnmount(stopTimer)
             :alt="post.title"
             sizes="30vw sm:31vw lg:16vw xl:198px"
             loading="eager"
-            class="transition-transform duration-300 group-hover/card:scale-110"
+            class="transition-transform duration-300 group-hover/card:scale-110 lg:absolute lg:inset-0"
           />
           <div
             class="pointer-events-none absolute inset-0 bg-linear-to-t from-black/70 to-transparent"
@@ -198,7 +198,7 @@ onBeforeUnmount(stopTimer)
             :alt="sidePost.title"
             sizes="30vw sm:31vw lg:24vw xl:303px"
             loading="eager"
-            class="transition-transform duration-300 group-hover/card:scale-110"
+            class="transition-transform duration-300 group-hover/card:scale-110 lg:absolute lg:inset-0"
           />
           <div
             class="pointer-events-none absolute inset-0 bg-linear-to-t from-black/70 to-transparent"

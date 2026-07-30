@@ -26,7 +26,10 @@ export default defineNuxtConfig({
   mdc: {
     highlight: {
       noApiRoute: false,
-      theme: 'github-dark',
+      theme: {
+        default: 'github-light',
+        dark: 'github-dark',
+      },
       langs: [
         'apache',
         'bat',

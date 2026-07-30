@@ -52,5 +52,17 @@
   },
   "footer": {
     "rights": "All rights reserved"
+  },
+  "article": {
+    "copy_code": "Copy code",
+    "code_copied": "Copied",
+    "expand_code": "Expand code",
+    "collapse_code": "Collapse code",
+    "wrap_code": "Wrap lines",
+    "unwrap_code": "Unwrap lines",
+    "show_line_numbers": "Show line numbers",
+    "hide_line_numbers": "Hide line numbers",
+    "fullscreen": "Fullscreen",
+    "exit_fullscreen": "Exit fullscreen"
   }
 }

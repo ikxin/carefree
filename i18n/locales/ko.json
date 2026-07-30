@@ -52,5 +52,17 @@
   },
   "footer": {
     "rights": "모든 권리 보유"
+  },
+  "article": {
+    "copy_code": "코드 복사",
+    "code_copied": "복사됨",
+    "expand_code": "코드 펼치기",
+    "collapse_code": "코드 접기",
+    "wrap_code": "줄 바꿈",
+    "unwrap_code": "줄 바꿈 해제",
+    "show_line_numbers": "줄 번호 표시",
+    "hide_line_numbers": "줄 번호 숨기기",
+    "fullscreen": "전체 화면",
+    "exit_fullscreen": "전체 화면 종료"
   }
 }
