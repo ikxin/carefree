@@ -63,6 +63,14 @@
     "show_line_numbers": "顯示行號",
     "hide_line_numbers": "隱藏行號",
     "fullscreen": "全螢幕",
-    "exit_fullscreen": "退出全螢幕"
+    "exit_fullscreen": "退出全螢幕",
+    "zoom_in": "放大",
+    "zoom_out": "縮小",
+    "rotate_image": "旋轉圖片",
+    "download_image": "下載圖片",
+    "close_lightbox": "關閉燈箱",
+    "prev_image": "上一張圖片",
+    "next_image": "下一張圖片",
+    "lightbox_image": "第 {index} 張圖片"
   }
 }

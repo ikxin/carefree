@@ -63,6 +63,14 @@
     "show_line_numbers": "行番号を表示",
     "hide_line_numbers": "行番号を非表示",
     "fullscreen": "全画面表示",
-    "exit_fullscreen": "全画面を終了"
+    "exit_fullscreen": "全画面を終了",
+    "zoom_in": "拡大",
+    "zoom_out": "縮小",
+    "rotate_image": "画像を回転",
+    "download_image": "画像をダウンロード",
+    "close_lightbox": "ライトボックスを閉じる",
+    "prev_image": "前の画像",
+    "next_image": "次の画像",
+    "lightbox_image": "画像 {index}"
   }
 }

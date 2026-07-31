@@ -63,6 +63,14 @@
     "show_line_numbers": "Show line numbers",
     "hide_line_numbers": "Hide line numbers",
     "fullscreen": "Fullscreen",
-    "exit_fullscreen": "Exit fullscreen"
+    "exit_fullscreen": "Exit fullscreen",
+    "zoom_in": "Zoom in",
+    "zoom_out": "Zoom out",
+    "rotate_image": "Rotate image",
+    "download_image": "Download image",
+    "close_lightbox": "Close lightbox",
+    "prev_image": "Previous image",
+    "next_image": "Next image",
+    "lightbox_image": "Image {index}"
   }
 }

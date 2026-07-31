@@ -96,6 +96,7 @@ defineOgImage(
               :value="article"
               :components="{ img: ProseImg, pre: ProsePre }"
               tag="div"
+              data-lightbox
               class="px-5 py-7 text-[15px] leading-8 text-neutral-700 sm:px-8 sm:py-9 sm:text-base sm:leading-9 dark:text-neutral-300 [&_a]:text-primary [&_a]:underline-offset-4 [&_a]:transition-colors [&_a:hover]:text-primary-deep [&_a:hover]:underline [&_blockquote]:my-7 [&_blockquote]:border-l-4 [&_blockquote]:border-primary [&_blockquote]:bg-neutral-50 [&_blockquote]:px-5 [&_blockquote]:py-3 [&_blockquote]:text-neutral-500 dark:[&_blockquote]:bg-neutral-800 dark:[&_blockquote]:text-neutral-400 [&_code]:font-mono [&_figure]:my-8 [&_h1]:mb-5 [&_h1]:mt-10 [&_h1]:text-2xl [&_h1]:font-bold [&_h2]:mb-5 [&_h2]:mt-10 [&_h2]:text-xl [&_h2]:font-bold [&_h3]:mb-4 [&_h3]:mt-8 [&_h3]:text-lg [&_h3]:font-bold [&_h4]:mb-3 [&_h4]:mt-7 [&_h4]:font-bold [&_hr]:my-10 [&_hr]:border-neutral-200 dark:[&_hr]:border-neutral-700 [&_img]:mx-auto [&_img]:h-auto [&_img]:max-w-full [&_img]:rounded [&_li]:my-2 [&_ol]:my-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:mb-6 [&_p:last-child]:mb-0 [&_table]:my-8 [&_table]:block [&_table]:w-full [&_table]:overflow-x-auto [&_td]:border [&_td]:border-neutral-200 [&_td]:px-4 [&_td]:py-2 dark:[&_td]:border-neutral-700 [&_th]:border [&_th]:border-neutral-200 [&_th]:bg-neutral-50 [&_th]:px-4 [&_th]:py-2 [&_th]:text-left dark:[&_th]:border-neutral-700 dark:[&_th]:bg-neutral-800 [&_ul]:my-6 [&_ul]:list-disc [&_ul]:pl-6"
             />
 
@@ -144,5 +145,7 @@ defineOgImage(
         </div>
       </div>
     </section>
+
+    <ImageLightbox />
   </main>
 </template>

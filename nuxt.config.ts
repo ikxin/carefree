@@ -15,7 +15,7 @@ export default defineNuxtConfig({
     '@nuxt/icon',
   ],
   devtools: { enabled: true },
-  css: ['./assets/css/main.css'],
+  css: ['~/assets/css/main.css'],
   site: {
     url: 'https://www.ikxin.com',
     name: '一纸忘忧',
