@@ -54,6 +54,7 @@
     "rights": "모든 권리 보유"
   },
   "article": {
+    "table_of_contents": "목차",
     "copy_code": "코드 복사",
     "code_copied": "복사됨",
     "expand_code": "코드 펼치기",

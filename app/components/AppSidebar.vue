@@ -18,7 +18,9 @@ const hotRest = computed(() => hotPosts.value.slice(1))
 </script>
 
 <template>
-  <aside class="sticky top-24 flex flex-col gap-5">
+  <aside class="sticky top-22 flex flex-col gap-5">
+    <slot />
+
     <section class="rounded bg-card p-5 dark:bg-card-dark">
       <div class="relative">
         <input
@@ -54,7 +56,7 @@ const hotRest = computed(() => hotPosts.value.slice(1))
           >
             <span
               aria-hidden="true"
-              class="absolute -left-px top-1 z-10 flex size-3.5 -translate-x-1/2 items-center justify-center rounded-full border-3 border-card bg-primary transition-[background-color,box-shadow,transform] duration-200 ease-out group-hover:scale-110 group-hover:bg-amber-400 group-hover:shadow-[0_0_0_3px_rgb(251_191_36_/_0.18)] group-focus-visible:scale-110 group-focus-visible:bg-amber-400 group-focus-visible:shadow-[0_0_0_3px_rgb(251_191_36_/_0.18)] motion-reduce:transition-none dark:border-card-dark"
+              class="absolute -left-px top-1 z-10 flex size-3.5 -translate-x-1/2 items-center justify-center rounded-full border-3 border-card bg-primary transition-[background-color,box-shadow,transform] duration-200 ease-out group-hover:scale-110 group-hover:bg-amber-400 group-hover:shadow-[0_0_0_3px_rgb(251_191_36/0.18)] group-focus-visible:scale-110 group-focus-visible:bg-amber-400 group-focus-visible:shadow-[0_0_0_3px_rgb(251_191_36/0.18)] motion-reduce:transition-none dark:border-card-dark"
             >
               <span class="size-1 rounded-full bg-card dark:bg-card-dark" />
             </span>

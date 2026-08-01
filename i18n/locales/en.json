@@ -54,6 +54,7 @@
     "rights": "All rights reserved"
   },
   "article": {
+    "table_of_contents": "Contents",
     "copy_code": "Copy code",
     "code_copied": "Copied",
     "expand_code": "Expand code",

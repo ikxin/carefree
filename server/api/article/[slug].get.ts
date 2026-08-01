@@ -99,7 +99,9 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  const parsedContent = await parseMarkdown(resolvedArticle.content)
+  const parsedContent = await parseMarkdown(resolvedArticle.content, {
+    toc: { depth: 3, searchDepth: 3 },
+  })
   const description = getArticleDescription({
     title: resolvedArticle.title,
     storedDescription: resolvedArticle.description,

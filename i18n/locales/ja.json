@@ -54,6 +54,7 @@
     "rights": "無断転載を禁じます"
   },
   "article": {
+    "table_of_contents": "目次",
     "copy_code": "コードをコピー",
     "code_copied": "コピーしました",
     "expand_code": "コードを展開",

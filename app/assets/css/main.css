@@ -3,6 +3,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
+  --font-sans: 'Noto Sans SC', sans-serif;
   --color-primary: #4270f5;
   --color-primary-deep: #0a59f8;
   --color-canvas: #f7f7f7;
