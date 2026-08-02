@@ -1,5 +1,6 @@
 import {
   categories,
+  comments,
   contentCategories,
   contents,
   contentTags,
@@ -13,7 +14,7 @@ import {
   isContentLocale,
 } from '#server/utils/content/translate'
 import { db } from '#server/utils/db'
-import { and, desc, eq, inArray } from 'drizzle-orm'
+import { and, desc, eq, inArray, sql } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
   const slug = getRouterParam(event, 'slug')
@@ -50,6 +51,12 @@ export default defineEventHandler(async (event) => {
       content: contents.content,
       slug: contents.slug,
       views: contents.views,
+      commentCount: sql<number>`(
+        select count(*)::int
+        from ${comments}
+        where ${comments.contentId} = ${contents.id}
+          and ${comments.status} = 'approved'
+      )`,
       createdAt: contents.createdAt,
       translatedTitle: contentTranslations.title,
       translatedDescription: contentTranslations.description,
@@ -120,6 +127,7 @@ export default defineEventHandler(async (event) => {
         description: description?.trim() || extractExcerpt(content),
         cover: extractCover(article.content),
         views: article.views,
+        commentCount: article.commentCount,
         createdAt: article.createdAt,
         category: category ? { name: category.name, slug: category.slug } : null,
         tags: tagRows

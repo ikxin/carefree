@@ -1,6 +1,8 @@
-import { comments, contents } from '#server/database/schema'
+import { comments, contents, users } from '#server/database/schema'
 import { auth } from '#server/utils/auth'
+import { getAvatarUrl } from '#server/utils/avatar'
 import { db } from '#server/utils/db'
+import { getClientInfo } from '#server/utils/userAgent'
 import { and, eq, gt } from 'drizzle-orm'
 import { validate as validateUuid, v7 as uuidv7 } from 'uuid'
 
@@ -61,6 +63,7 @@ export default defineEventHandler(async (event) => {
   const guestName = normalizeName(readString(payload, 'name'))
   const guestEmail = readString(payload, 'email').toLowerCase()
   const guestUrlValue = readString(payload, 'url')
+  const userAgent = getHeader(event, 'user-agent')?.slice(0, userAgentMaxLength) ?? null
 
   if (!content || content.length > commentMaxLength) {
     throw createError({ statusCode: 400, statusMessage: 'Invalid comment content' })
@@ -108,10 +111,17 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: 'Article not found' })
   }
 
+  let replyTo: { id: string; name: string | null } | null = null
+
   if (parentId) {
     const [parentComment] = await db
-      .select({ id: comments.id })
+      .select({
+        id: comments.id,
+        guestName: comments.name,
+        userName: users.name,
+      })
       .from(comments)
+      .leftJoin(users, eq(comments.userId, users.id))
       .where(
         and(
           eq(comments.id, parentId),
@@ -123,6 +133,11 @@ export default defineEventHandler(async (event) => {
 
     if (!parentComment) {
       throw createError({ statusCode: 400, statusMessage: 'Invalid parent comment' })
+    }
+
+    replyTo = {
+      id: parentComment.id,
+      name: parentComment.userName ?? parentComment.guestName,
     }
   }
 
@@ -159,7 +174,7 @@ export default defineEventHandler(async (event) => {
       content,
       status: 'approved',
       ipAddress: getRequestIP(event) ?? null,
-      userAgent: getHeader(event, 'user-agent')?.slice(0, userAgentMaxLength) ?? null,
+      userAgent,
     })
     .returning({ createdAt: comments.createdAt })
 
@@ -173,9 +188,11 @@ export default defineEventHandler(async (event) => {
       createdAt: createdComment?.createdAt ?? new Date(),
       author: {
         name: session?.user.name ?? guestName,
-        image: session?.user.image ?? null,
+        image: getAvatarUrl(session?.user.email ?? guestEmail),
         url: session?.user ? null : guestUrl,
       },
+      replyTo,
+      client: getClientInfo(userAgent),
       replies: [],
     },
   }

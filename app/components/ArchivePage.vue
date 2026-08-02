@@ -5,6 +5,7 @@ interface ArchiveArticle {
   description: string
   cover: string | null
   views: number
+  commentCount: number
   createdAt: string
   category: { name: string; slug: string } | null
   tags: { name: string; slug: string }[]

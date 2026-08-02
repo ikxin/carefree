@@ -9,6 +9,18 @@ interface Comment {
     image: string | null
     url: string | null
   }
+  replyTo: {
+    id: string
+    name: string | null
+  } | null
+  client: {
+    browser: string | null
+    os: string | null
+    device: {
+      label: string
+      type: string | null
+    } | null
+  } | null
   replies: Comment[]
 }
 

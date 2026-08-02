@@ -1,5 +1,6 @@
 import {
   categories,
+  comments,
   contentCategories,
   contents,
   contentTags,
@@ -89,6 +90,12 @@ export default defineEventHandler(async (event) => {
         content: contents.content,
         slug: contents.slug,
         views: contents.views,
+        commentCount: sql<number>`(
+          select count(*)::int
+          from ${comments}
+          where ${comments.contentId} = ${contents.id}
+            and ${comments.status} = 'approved'
+        )`,
         createdAt: contents.createdAt,
         translatedTitle: contentTranslations.title,
         translatedDescription: contentTranslations.description,
@@ -154,6 +161,7 @@ export default defineEventHandler(async (event) => {
         description: description?.trim() || extractExcerpt(content),
         cover: extractCover(article.content),
         views: article.views,
+        commentCount: article.commentCount,
         createdAt: article.createdAt,
         category: category ? { name: category.name, slug: category.slug } : null,
         tags: tagRows

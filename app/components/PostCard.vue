@@ -5,6 +5,7 @@ interface Article {
   description: string
   cover: string | null
   views: number
+  commentCount: number
   createdAt: string
   category: { name: string; slug: string } | null
   tags: { name: string; slug: string }[]
@@ -56,7 +57,7 @@ const { t } = useI18n()
         </div>
 
         <div class="flex items-center justify-between gap-2 text-xs font-light text-neutral-400">
-          <div class="flex min-w-0 items-center gap-3 sm:gap-5">
+          <div class="flex min-w-0 items-center gap-2.5 sm:gap-4">
             <NuxtLink
               v-if="article.category"
               :to="localePath(`/category/${encodeURIComponent(article.category.slug)}`)"
@@ -69,10 +70,28 @@ const { t } = useI18n()
               <Icon name="lucide:clock" class="size-3.5" />
               {{ formatDate(article.createdAt) }}
             </span>
-            <span class="flex shrink-0 items-center gap-1.5">
-              <Icon name="lucide:eye" class="size-3.5" />
-              {{ t('home.views', { count: article.views }) }}
+            <span
+              class="flex shrink-0 items-center gap-1.5"
+              :title="t('home.views', { count: article.views })"
+            >
+              <Icon name="lucide:eye" class="size-3.5" aria-hidden="true" />
+              <span class="sm:hidden" aria-hidden="true">{{ article.views }}</span>
+              <span class="sr-only sm:not-sr-only">
+                {{ t('home.views', { count: article.views }) }}
+              </span>
             </span>
+            <NuxtLink
+              :to="`${localePath(`/article/${encodeURIComponent(article.slug)}`)}#comments`"
+              class="flex shrink-0 items-center gap-1.5 transition-colors hover:text-primary"
+              :aria-label="t('home.comments', { count: article.commentCount })"
+              :title="t('home.comments', { count: article.commentCount })"
+            >
+              <Icon name="lucide:message-square" class="size-3.5" aria-hidden="true" />
+              <span class="sm:hidden" aria-hidden="true">{{ article.commentCount }}</span>
+              <span class="hidden sm:inline" aria-hidden="true">
+                {{ t('home.comments', { count: article.commentCount }) }}
+              </span>
+            </NuxtLink>
           </div>
 
           <div class="hidden min-w-0 items-center gap-3 md:flex">

@@ -1,6 +1,8 @@
 import { comments, contents, users } from '#server/database/schema'
 import { auth } from '#server/utils/auth'
+import { getAvatarUrl } from '#server/utils/avatar'
 import { db } from '#server/utils/db'
+import { getClientInfo, type ClientInfo } from '#server/utils/userAgent'
 import { and, asc, eq } from 'drizzle-orm'
 
 interface CommentNode {
@@ -13,7 +15,34 @@ interface CommentNode {
     image: string | null
     url: string | null
   }
+  replyTo: {
+    id: string
+    name: string | null
+  } | null
+  client: ClientInfo | null
   replies: CommentNode[]
+}
+
+function findRootComment(comment: CommentNode, nodesById: Map<string, CommentNode>) {
+  const visited = new Set<string>()
+  let current = comment
+
+  while (current.parentId) {
+    if (visited.has(current.id)) {
+      return null
+    }
+
+    visited.add(current.id)
+    const parent = nodesById.get(current.parentId)
+
+    if (!parent) {
+      break
+    }
+
+    current = parent
+  }
+
+  return current
 }
 
 export default defineEventHandler(async (event) => {
@@ -42,10 +71,12 @@ export default defineEventHandler(async (event) => {
         parentId: comments.parentId,
         content: comments.content,
         createdAt: comments.createdAt,
+        userAgent: comments.userAgent,
         guestName: comments.name,
+        guestEmail: comments.email,
         guestUrl: comments.url,
         userName: users.name,
-        userImage: users.image,
+        userEmail: users.email,
       })
       .from(comments)
       .leftJoin(users, eq(comments.userId, users.id))
@@ -54,6 +85,19 @@ export default defineEventHandler(async (event) => {
     auth.api.getSession({ headers: event.headers }),
   ])
 
+  const clientsByUserAgent = new Map<string, ClientInfo | null>()
+  const resolveClientInfo = (userAgent: string | null) => {
+    if (!userAgent) {
+      return null
+    }
+
+    if (!clientsByUserAgent.has(userAgent)) {
+      clientsByUserAgent.set(userAgent, getClientInfo(userAgent))
+    }
+
+    return clientsByUserAgent.get(userAgent) ?? null
+  }
+
   const nodes: CommentNode[] = rows.map((row) => ({
     id: row.id,
     parentId: row.parentId,
@@ -61,9 +105,11 @@ export default defineEventHandler(async (event) => {
     createdAt: row.createdAt,
     author: {
       name: row.userName ?? row.guestName,
-      image: row.userImage,
+      image: getAvatarUrl(row.userEmail ?? row.guestEmail),
       url: row.guestUrl,
     },
+    replyTo: null,
+    client: resolveClientInfo(row.userAgent),
     replies: [],
   }))
   const nodesById = new Map(nodes.map((comment) => [comment.id, comment]))
@@ -71,9 +117,14 @@ export default defineEventHandler(async (event) => {
 
   for (const comment of nodes) {
     const parent = comment.parentId ? nodesById.get(comment.parentId) : undefined
+    const root = findRootComment(comment, nodesById)
 
-    if (parent && parent.id !== comment.id) {
-      parent.replies.push(comment)
+    if (parent && root && root.id !== comment.id) {
+      comment.replyTo = {
+        id: parent.id,
+        name: parent.author.name,
+      }
+      root.replies.push(comment)
     } else {
       rootComments.push(comment)
     }
