@@ -13,5 +13,5 @@
 }
 
 body {
-  @apply bg-canvas text-neutral-800 antialiased dark:bg-canvas-dark dark:text-neutral-300;
+  @apply touch-manipulation bg-canvas text-neutral-800 antialiased dark:bg-canvas-dark dark:text-neutral-300;
 }

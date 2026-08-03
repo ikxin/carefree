@@ -6,13 +6,46 @@ const MIN_SCALE = 0.5
 const MAX_SCALE = 5
 const SCALE_STEP = 0.25
 const WHEEL_ZOOM_SENSITIVITY = 0.002
+const GESTURE_DIRECTION_LOCK_DISTANCE = 8
+const SWIPE_MIN_DISTANCE = 24
+const SWIPE_DISTANCE_RATIO = 0.18
+const SWIPE_MAX_DISTANCE = 96
+const SWIPE_VELOCITY = 0.45
+const DISMISS_MIN_DISTANCE = 32
+const DISMISS_DISTANCE_RATIO = 0.15
+const DISMISS_MAX_DISTANCE = 120
+const DISMISS_VELOCITY = 0.45
+const SCALE_SNAP_EPSILON = 0.04
+
+type Point = { x: number; y: number }
+type GestureMode = 'idle' | 'pending' | 'blocked' | 'pan' | 'swipe' | 'dismiss' | 'pinch'
+
+interface SingleGestureStart {
+  point: Point
+  offset: Point
+  time: number
+  viewportWidth: number
+  viewportHeight: number
+}
+
+interface PinchGestureStart {
+  center: Point
+  distance: number
+  scale: number
+  offset: Point
+  imageCenter: Point
+}
 
 const scale = ref(1)
 const rotation = ref(0)
 const offset = ref({ x: 0, y: 0 })
 const dragging = ref(false)
 
-let dragStart = { x: 0, y: 0 }
+const activePointers = new Map<number, Point>()
+let gestureMode: GestureMode = 'idle'
+let singleGestureStart: SingleGestureStart | null = null
+let pinchGestureStart: PinchGestureStart | null = null
+let dismissing = false
 
 function resetZoom() {
   scale.value = 1
@@ -80,21 +113,251 @@ function onWheel(event: WheelEvent) {
   zoomTo(scale.value * Math.exp(-delta * WHEEL_ZOOM_SENSITIVITY), event)
 }
 
-function onPointerDown(event: PointerEvent) {
+function getGesturePoints() {
+  return Array.from(activePointers.values()).slice(0, 2)
+}
+
+function getCenter(first: Point, second: Point) {
+  return {
+    x: (first.x + second.x) / 2,
+    y: (first.y + second.y) / 2,
+  }
+}
+
+function getDistance(first: Point, second: Point) {
+  return Math.hypot(second.x - first.x, second.y - first.y)
+}
+
+function startPinch(target: HTMLElement) {
+  const [first, second] = getGesturePoints()
+  if (!first || !second) {
+    return
+  }
+
+  const rect = target.getBoundingClientRect()
+  const center = getCenter(first, second)
+
+  gestureMode = 'pinch'
+  singleGestureStart = null
   dragging.value = true
-  dragStart = { x: event.clientX - offset.value.x, y: event.clientY - offset.value.y }
-  ;(event.currentTarget as HTMLElement).setPointerCapture(event.pointerId)
+  pinchGestureStart = {
+    center,
+    distance: Math.max(getDistance(first, second), 1),
+    scale: scale.value,
+    offset: { ...offset.value },
+    imageCenter: {
+      x: rect.left + rect.width / 2,
+      y: rect.top + rect.height / 2,
+    },
+  }
+}
+
+function startSingleGesture(
+  target: HTMLElement,
+  point: Point,
+  time: number,
+  canStartTouchGesture: boolean,
+) {
+  const viewportRect = target.parentElement?.getBoundingClientRect()
+  singleGestureStart = {
+    point,
+    offset: { ...offset.value },
+    time,
+    viewportWidth: viewportRect?.width ?? window.innerWidth,
+    viewportHeight: viewportRect?.height ?? window.innerHeight,
+  }
+
+  gestureMode = canStartTouchGesture ? 'pending' : 'pan'
+  dragging.value = gestureMode === 'pan'
+}
+
+function onPointerDown(event: PointerEvent) {
+  if ((event.pointerType === 'mouse' && event.button !== 0) || activePointers.size >= 2) {
+    return
+  }
+
+  const target = event.currentTarget
+  if (!(target instanceof HTMLElement)) {
+    return
+  }
+
+  event.preventDefault()
+  activePointers.set(event.pointerId, { x: event.clientX, y: event.clientY })
+  target.setPointerCapture(event.pointerId)
+
+  if (activePointers.size === 2) {
+    startPinch(target)
+    return
+  }
+
+  startSingleGesture(
+    target,
+    { x: event.clientX, y: event.clientY },
+    event.timeStamp,
+    event.pointerType === 'touch' && scale.value <= 1,
+  )
 }
 
 function onPointerMove(event: PointerEvent) {
-  if (!dragging.value) {
+  if (!activePointers.has(event.pointerId)) {
     return
   }
-  offset.value = { x: event.clientX - dragStart.x, y: event.clientY - dragStart.y }
+
+  activePointers.set(event.pointerId, { x: event.clientX, y: event.clientY })
+
+  if (gestureMode === 'pinch' && pinchGestureStart) {
+    const [first, second] = getGesturePoints()
+    if (!first || !second) {
+      return
+    }
+
+    const center = getCenter(first, second)
+    const nextScale = clampScale(
+      pinchGestureStart.scale * (getDistance(first, second) / pinchGestureStart.distance),
+    )
+    const ratio = nextScale / pinchGestureStart.scale
+
+    scale.value = nextScale
+    offset.value = {
+      x:
+        pinchGestureStart.offset.x +
+        (center.x - pinchGestureStart.center.x) +
+        (pinchGestureStart.center.x - pinchGestureStart.imageCenter.x) * (1 - ratio),
+      y:
+        pinchGestureStart.offset.y +
+        (center.y - pinchGestureStart.center.y) +
+        (pinchGestureStart.center.y - pinchGestureStart.imageCenter.y) * (1 - ratio),
+    }
+    return
+  }
+
+  if (!singleGestureStart) {
+    return
+  }
+
+  const deltaX = event.clientX - singleGestureStart.point.x
+  const deltaY = event.clientY - singleGestureStart.point.y
+
+  if (gestureMode === 'pending') {
+    if (Math.hypot(deltaX, deltaY) < GESTURE_DIRECTION_LOCK_DISTANCE) {
+      return
+    }
+
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+      gestureMode = images.value.length > 1 ? 'swipe' : 'blocked'
+    } else {
+      gestureMode = deltaY > 0 ? 'dismiss' : 'blocked'
+    }
+    dragging.value = gestureMode === 'swipe' || gestureMode === 'dismiss'
+  }
+
+  if (gestureMode === 'swipe') {
+    offset.value = {
+      x: singleGestureStart.offset.x + deltaX,
+      y: singleGestureStart.offset.y,
+    }
+  } else if (gestureMode === 'dismiss') {
+    offset.value = {
+      x: singleGestureStart.offset.x,
+      y: singleGestureStart.offset.y + Math.max(deltaY, 0),
+    }
+  } else if (gestureMode === 'pan') {
+    offset.value = {
+      x: singleGestureStart.offset.x + deltaX,
+      y: singleGestureStart.offset.y + deltaY,
+    }
+  }
 }
 
-function onPointerUp() {
+function finishPinch() {
+  if (Math.abs(scale.value - 1) <= SCALE_SNAP_EPSILON) {
+    scale.value = 1
+  }
+  if (scale.value <= 1) {
+    offset.value = { x: 0, y: 0 }
+  }
+}
+
+function onPointerEnd(event: PointerEvent, cancelled = false) {
+  if (!activePointers.has(event.pointerId)) {
+    return
+  }
+
+  activePointers.set(event.pointerId, { x: event.clientX, y: event.clientY })
+  activePointers.delete(event.pointerId)
+
+  if (gestureMode === 'pinch') {
+    if (activePointers.size > 0) {
+      finishPinch()
+      const [remainingPoint] = getGesturePoints()
+      const target = event.currentTarget
+      pinchGestureStart = null
+
+      if (remainingPoint && target instanceof HTMLElement) {
+        startSingleGesture(target, remainingPoint, event.timeStamp, scale.value <= 1)
+      } else {
+        resetGesture()
+      }
+      return
+    }
+    finishPinch()
+  } else if (gestureMode === 'swipe' && singleGestureStart) {
+    const deltaX = event.clientX - singleGestureStart.point.x
+    const duration = Math.max(event.timeStamp - singleGestureStart.time, 1)
+    const distanceThreshold = Math.min(
+      singleGestureStart.viewportWidth * SWIPE_DISTANCE_RATIO,
+      SWIPE_MAX_DISTANCE,
+    )
+    const shouldSwitch =
+      !cancelled &&
+      (Math.abs(deltaX) >= distanceThreshold ||
+        (Math.abs(deltaX) >= SWIPE_MIN_DISTANCE && Math.abs(deltaX) / duration >= SWIPE_VELOCITY))
+
+    offset.value = { ...singleGestureStart.offset }
+    if (shouldSwitch) {
+      if (deltaX < 0) {
+        next()
+      } else {
+        prev()
+      }
+    }
+  } else if (gestureMode === 'dismiss' && singleGestureStart) {
+    const deltaY = Math.max(event.clientY - singleGestureStart.point.y, 0)
+    const duration = Math.max(event.timeStamp - singleGestureStart.time, 1)
+    const distanceThreshold = Math.min(
+      singleGestureStart.viewportHeight * DISMISS_DISTANCE_RATIO,
+      DISMISS_MAX_DISTANCE,
+    )
+    const shouldClose =
+      !cancelled &&
+      (deltaY >= distanceThreshold ||
+        (deltaY >= DISMISS_MIN_DISTANCE && deltaY / duration >= DISMISS_VELOCITY))
+
+    if (shouldClose) {
+      dismissing = true
+      close()
+    } else {
+      offset.value = { ...singleGestureStart.offset }
+    }
+  }
+
   dragging.value = false
+  gestureMode = 'idle'
+  singleGestureStart = null
+  pinchGestureStart = null
+}
+
+function resetGesture() {
+  activePointers.clear()
+  gestureMode = 'idle'
+  singleGestureStart = null
+  pinchGestureStart = null
+  dragging.value = false
+}
+
+function onAfterLeave() {
+  dismissing = false
+  resetView()
 }
 
 function onKeydown(event: KeyboardEvent) {
@@ -110,14 +373,24 @@ function onKeydown(event: KeyboardEvent) {
 watch(visible, (value) => {
   document.documentElement.style.overflow = value ? 'hidden' : ''
   if (value) {
+    if (dismissing) {
+      dismissing = false
+      resetView()
+    }
     document.addEventListener('keydown', onKeydown)
   } else {
     document.removeEventListener('keydown', onKeydown)
-    resetView()
+    resetGesture()
+    if (!dismissing) {
+      resetView()
+    }
   }
 })
 
-watch(currentIndex, resetView)
+watch(currentIndex, () => {
+  resetGesture()
+  resetView()
+})
 
 onBeforeUnmount(() => {
   document.documentElement.style.overflow = ''
@@ -140,6 +413,7 @@ const arrowButtonClass =
         leave-active-class="transition-opacity duration-200 motion-reduce:transition-none"
         enter-from-class="opacity-0"
         leave-to-class="opacity-0"
+        @after-leave="onAfterLeave"
       >
         <div
           v-if="visible"
@@ -241,7 +515,7 @@ const arrowButtonClass =
               :modifiers="{
                 animated: true,
               }"
-              class="max-h-full max-w-full touch-none object-contain select-none"
+              class="max-h-full max-w-full touch-none object-contain select-none will-change-transform"
               :class="dragging ? 'cursor-grabbing' : 'cursor-grab'"
               :style="{
                 transform: `translate(${offset.x}px, ${offset.y}px) scale(${scale}) rotate(${rotation}deg)`,
@@ -251,8 +525,8 @@ const arrowButtonClass =
               @click.stop
               @pointerdown="onPointerDown"
               @pointermove="onPointerMove"
-              @pointerup="onPointerUp"
-              @pointercancel="onPointerUp"
+              @pointerup="onPointerEnd"
+              @pointercancel="onPointerEnd($event, true)"
               @wheel.prevent="onWheel"
             />
           </div>
