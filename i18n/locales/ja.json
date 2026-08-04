@@ -74,6 +74,7 @@
     "close_lightbox": "ライトボックスを閉じる",
     "prev_image": "前の画像",
     "next_image": "次の画像",
-    "lightbox_image": "画像 {index}"
+    "image_load_error": "画像を読み込めませんでした。しばらくしてからもう一度お試しください。",
+    "lightbox_modal": "画像プレビュー"
   }
 }

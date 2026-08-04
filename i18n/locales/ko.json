@@ -74,6 +74,7 @@
     "close_lightbox": "라이트박스 닫기",
     "prev_image": "이전 이미지",
     "next_image": "다음 이미지",
-    "lightbox_image": "이미지 {index}"
+    "image_load_error": "이미지를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.",
+    "lightbox_modal": "이미지 미리보기"
   }
 }

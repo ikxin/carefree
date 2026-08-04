@@ -74,6 +74,7 @@
     "close_lightbox": "關閉燈箱",
     "prev_image": "上一張圖片",
     "next_image": "下一張圖片",
-    "lightbox_image": "第 {index} 張圖片"
+    "image_load_error": "圖片載入失敗，請稍後再試",
+    "lightbox_modal": "圖片預覽"
   }
 }

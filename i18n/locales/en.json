@@ -74,6 +74,7 @@
     "close_lightbox": "Close lightbox",
     "prev_image": "Previous image",
     "next_image": "Next image",
-    "lightbox_image": "Image {index}"
+    "image_load_error": "The image could not be loaded. Please try again later.",
+    "lightbox_modal": "Image preview"
   }
 }
