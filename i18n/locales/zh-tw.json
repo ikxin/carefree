@@ -26,6 +26,7 @@
     "menu": "選單",
     "previous_slide": "上一張輪播圖",
     "next_slide": "下一張輪播圖",
+    "go_to_slide": "跳轉到第 {number} 張輪播圖",
     "switch_to_light": "切換至淺色模式",
     "switch_to_dark": "切換至深色模式"
   },

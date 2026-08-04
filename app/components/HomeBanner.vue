@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import { Carousel, type CarouselInstance } from '@fancyapps/ui/dist/carousel/'
+import { Autoplay } from '@fancyapps/ui/dist/carousel/carousel.autoplay.js'
+import { Dots } from '@fancyapps/ui/dist/carousel/carousel.dots.js'
+
 interface BannerArticle {
   title: string
   slug: string
@@ -12,122 +16,186 @@ const props = defineProps<{
 }>()
 
 const localePath = useLocalePath()
-const { t } = useI18n()
+const { locale, t } = useI18n()
 
 const slideCount = computed(() => Math.max(1, props.articles.length - 3))
 const slides = computed(() => props.articles.slice(0, slideCount.value))
 const centerPosts = computed(() => props.articles.slice(slideCount.value, slideCount.value + 2))
 const sidePost = computed(() => props.articles[slideCount.value + 2])
-const activeSlide = computed(() => slides.value[current.value])
 
-const current = ref(0)
-const { pause, resume } = useIntervalFn(
-  () => {
-    const count = slides.value.length
-    if (count > 1) {
-      current.value = (current.value + 1) % count
-    }
-  },
-  5000,
-  { immediate: false },
-)
+const carouselElement = useTemplateRef<HTMLElement>('carousel')
+const carouselReady = ref(false)
+const dragThreshold = 5
 
-const resetTimer = () => {
-  pause()
-  if (import.meta.client && slides.value.length > 1) {
-    resume()
+let carouselInstance: CarouselInstance | undefined
+let carouselVersion = 0
+let mounted = false
+let pointerStart: { x: number; y: number } | undefined
+let pointerDragged = false
+
+const initCarousel = () => {
+  if (!carouselElement.value || !slides.value.length) {
+    return
   }
-}
 
-const go = (index: number) => {
-  current.value = index
-  resetTimer()
+  carouselInstance = Carousel(
+    carouselElement.value,
+    {
+      center: false,
+      Dots: slides.value.length > 1,
+      infinite: slides.value.length > 1,
+      l10n: {
+        GOTO: t('home.go_to_slide', { number: '%d' }),
+      },
+      slidesPerPage: 1,
+      transition: 'slide',
+      Autoplay:
+        slides.value.length > 1
+          ? {
+              pauseOnHover: false,
+              showProgressbar: false,
+              timeout: 5000,
+            }
+          : false,
+      on: {
+        ready: () => {
+          carouselReady.value = true
+        },
+      },
+    },
+    { Autoplay, Dots },
+  ).init()
 }
 
 const prev = () => {
-  current.value = (current.value - 1 + slides.value.length) % slides.value.length
-  resetTimer()
+  carouselInstance?.prev()
 }
 
 const next = () => {
-  current.value = (current.value + 1) % slides.value.length
-  resetTimer()
+  carouselInstance?.next()
 }
 
-onMounted(resetTimer)
+const destroyCarousel = () => {
+  carouselVersion += 1
+  carouselInstance?.destroy()
+  carouselInstance = undefined
+  carouselReady.value = false
+  pointerStart = undefined
+  pointerDragged = false
+}
 
-watch(
-  () => slides.value.map((slide) => slide.slug).join(','),
-  () => {
-    current.value = 0
-    resetTimer()
-  },
-)
+const handlePointerDown = (event: PointerEvent) => {
+  if (!event.isPrimary) {
+    return
+  }
+
+  pointerStart = { x: event.clientX, y: event.clientY }
+  pointerDragged = false
+}
+
+const handlePointerMove = (event: PointerEvent) => {
+  if (!event.isPrimary || !pointerStart) {
+    return
+  }
+
+  if (
+    Math.abs(event.clientX - pointerStart.x) >= dragThreshold ||
+    Math.abs(event.clientY - pointerStart.y) >= dragThreshold
+  ) {
+    pointerDragged = true
+  }
+}
+
+const handlePointerEnd = (event: PointerEvent) => {
+  if (event.isPrimary) {
+    pointerStart = undefined
+  }
+}
+
+const preventDraggedNavigation = (event: MouseEvent) => {
+  if (event.detail !== 0 && pointerDragged) {
+    event.preventDefault()
+    event.stopPropagation()
+  }
+
+  pointerDragged = false
+}
+
+onMounted(() => {
+  mounted = true
+  initCarousel()
+})
+
+watch([locale, () => slides.value.map((slide) => slide.slug).join(',')], async () => {
+  destroyCarousel()
+  const version = carouselVersion
+
+  await nextTick()
+
+  if (mounted && version === carouselVersion) {
+    initCarousel()
+  }
+})
+
+onBeforeUnmount(() => {
+  mounted = false
+  destroyCarousel()
+})
 </script>
 
 <template>
   <section v-if="articles.length" class="mx-auto mb-6 max-w-7xl px-4">
     <div class="grid grid-cols-3 gap-2 sm:gap-3 lg:grid-cols-12">
       <div class="group relative col-span-3 overflow-hidden rounded lg:col-span-7">
-        <div class="relative aspect-7/4">
-          <Transition
-            enter-active-class="transition-opacity duration-500"
-            enter-from-class="opacity-0"
-            leave-active-class="transition-opacity duration-500"
-            leave-to-class="opacity-0"
-          >
+        <div
+          ref="carousel"
+          class="f-carousel aspect-7/4 touch-pan-y text-white [--f-carousel-dots-top:auto] [--f-carousel-dots-bottom:0.5rem] [&.has-dots]:mb-0!"
+          @click.capture="preventDraggedNavigation"
+          @pointerdown.capture="handlePointerDown"
+          @pointermove.capture="handlePointerMove"
+          @pointerup.capture="handlePointerEnd"
+          @pointercancel.capture="handlePointerEnd"
+        >
+          <div class="f-carousel__viewport">
             <NuxtLink
-              v-if="activeSlide"
-              :key="activeSlide.slug"
-              :to="localePath(`/article/${encodeURIComponent(activeSlide.slug)}`)"
-              class="group/slide absolute inset-0 block overflow-hidden"
+              v-for="(slide, index) in slides"
+              :key="slide.slug"
+              :to="localePath(`/article/${encodeURIComponent(slide.slug)}`)"
+              class="f-carousel__slide group/slide block h-full select-none overflow-hidden"
+              :class="{ 'pointer-events-none invisible': !carouselReady && index > 0 }"
+              :aria-hidden="!carouselReady && index > 0 ? 'true' : undefined"
+              :tabindex="!carouselReady && index > 0 ? -1 : undefined"
             >
-              <PostCover
-                :src="activeSlide.cover"
-                :alt="activeSlide.title"
-                width="7"
-                height="4"
-                sizes="92vw xxs:92vw xs:92vw sm:95vw md:96vw lg:58vw xl:724px"
-                loading="eager"
-                fetchpriority="high"
-                class="transition-transform duration-300 group-hover/slide:scale-110"
-              />
-              <div
-                class="pointer-events-none absolute inset-0 bg-linear-to-t from-black/70 to-transparent"
-              />
-              <h2
-                class="absolute inset-x-5 bottom-5 z-10 m-0 max-h-12 line-clamp-2 overflow-hidden text-base leading-6 font-bold text-white sm:inset-x-6 sm:bottom-5 sm:max-h-14 sm:text-lg sm:leading-7"
-              >
-                {{ activeSlide.title }}
-              </h2>
-              <i
-                class="absolute left-0 top-0 z-10 bg-primary-deep px-2 py-1 text-xs not-italic text-white"
-              >
-                {{ activeSlide.category?.name }}
-              </i>
+              <div class="relative size-full overflow-hidden">
+                <PostCover
+                  :src="slide.cover"
+                  :alt="slide.title"
+                  width="7"
+                  height="4"
+                  sizes="92vw xxs:92vw xs:92vw sm:95vw md:96vw lg:58vw xl:724px"
+                  :loading="index === 0 ? 'eager' : 'lazy'"
+                  :fetchpriority="index === 0 ? 'high' : 'auto'"
+                  class="pointer-events-none transition-transform duration-300 group-hover/slide:scale-110"
+                />
+                <div
+                  class="pointer-events-none absolute inset-0 bg-linear-to-t from-black/70 to-transparent"
+                />
+                <h2
+                  class="absolute inset-x-5 bottom-10 z-10 m-0 max-h-12 line-clamp-2 overflow-hidden text-base leading-6 font-bold text-white sm:inset-x-6 sm:bottom-10 sm:max-h-14 sm:text-lg sm:leading-7"
+                >
+                  {{ slide.title }}
+                </h2>
+                <i
+                  class="absolute left-0 top-0 z-10 bg-primary-deep px-2 py-1 text-xs not-italic text-white"
+                >
+                  {{ slide.category?.name }}
+                </i>
+              </div>
             </NuxtLink>
-          </Transition>
+          </div>
         </div>
 
         <template v-if="slides.length > 1">
-          <div class="absolute right-2 top-2 z-10 flex">
-            <button
-              v-for="(slide, index) in slides"
-              :key="slide.slug"
-              type="button"
-              class="flex size-6 items-center justify-center focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-              :aria-label="slide.title"
-              :aria-current="current === index ? 'true' : undefined"
-              @click="go(index)"
-            >
-              <span
-                aria-hidden="true"
-                class="size-2.5 rounded-full bg-white/50 transition-colors"
-                :class="{ 'bg-white': current === index }"
-              />
-            </button>
-          </div>
-
           <button
             type="button"
             class="absolute left-4 top-1/2 z-10 flex size-10 -translate-y-1/2 items-center justify-center rounded-full bg-[#242424] text-white opacity-0 transition-all hover:bg-primary focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white group-hover:opacity-100"
