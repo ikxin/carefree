@@ -13,6 +13,7 @@ export default defineNuxtConfig({
     '@nuxtjs/i18n',
     '@nuxtjs/seo',
     '@nuxt/icon',
+    '@vueuse/nuxt',
   ],
   devtools: { enabled: true },
   css: ['~/assets/css/main.css'],

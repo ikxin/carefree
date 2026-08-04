@@ -30,6 +30,12 @@ interface CommentResponse {
   authenticated: boolean
 }
 
+interface CommentIdentity {
+  email: string
+  name: string
+  url: string
+}
+
 const props = defineProps<{
   slug: string
 }>()
@@ -46,6 +52,21 @@ const submitError = ref('')
 const submitMessage = ref('')
 const rememberIdentity = ref(false)
 const identityStorageKey = 'comment-identity'
+const storedIdentity = useLocalStorage<CommentIdentity | null>(identityStorageKey, null, {
+  initOnMounted: true,
+  writeDefaults: false,
+  serializer: {
+    read: (value) => {
+      try {
+        return JSON.parse(value) as CommentIdentity
+      } catch {
+        return null
+      }
+    },
+    write: (value) => JSON.stringify(value) ?? 'null',
+  },
+  onError: () => {},
+})
 const form = reactive({
   content: '',
   name: '',
@@ -81,17 +102,14 @@ const cancelReply = () => {
 }
 
 const persistIdentity = () => {
-  if (!import.meta.client || signedIn.value) {
+  if (signedIn.value) {
     return
   }
 
   if (rememberIdentity.value) {
-    localStorage.setItem(
-      identityStorageKey,
-      JSON.stringify({ name: form.name, email: form.email, url: form.url }),
-    )
+    storedIdentity.value = { name: form.name, email: form.email, url: form.url }
   } else {
-    localStorage.removeItem(identityStorageKey)
+    storedIdentity.value = null
   }
 }
 
@@ -140,25 +158,16 @@ onMounted(() => {
     return
   }
 
-  try {
-    const storedIdentity = localStorage.getItem(identityStorageKey)
-
-    if (!storedIdentity) {
-      return
-    }
-
-    const identity = JSON.parse(storedIdentity) as Partial<{
-      name: string
-      email: string
-      url: string
-    }>
-    form.name = typeof identity.name === 'string' ? identity.name : ''
-    form.email = typeof identity.email === 'string' ? identity.email : ''
-    form.url = typeof identity.url === 'string' ? identity.url : ''
-    rememberIdentity.value = true
-  } catch {
-    localStorage.removeItem(identityStorageKey)
+  const identity = storedIdentity.value
+  if (!identity || typeof identity !== 'object') {
+    storedIdentity.value = null
+    return
   }
+
+  form.name = typeof identity.name === 'string' ? identity.name : ''
+  form.email = typeof identity.email === 'string' ? identity.email : ''
+  form.url = typeof identity.url === 'string' ? identity.url : ''
+  rememberIdentity.value = true
 })
 </script>
 

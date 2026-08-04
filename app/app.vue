@@ -1,10 +1,23 @@
 <script setup lang="ts">
 const site = useSiteConfig()
 
+const colorModeBootstrapScript = `(() => {
+  let mode = 'auto'
+
+  try {
+    mode = localStorage.getItem('vueuse-color-scheme') || 'auto'
+  } catch {}
+
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+  const isDark = mode === 'dark' || (mode !== 'light' && prefersDark)
+
+  document.documentElement.classList.add(isDark ? 'dark' : 'light')
+})()`
+
 useHead(() => ({
   script: [
     {
-      innerHTML: `if(localStorage.getItem('dark-mode')==='1'){document.documentElement.classList.add('dark')}`,
+      innerHTML: colorModeBootstrapScript,
     },
   ],
   link: [

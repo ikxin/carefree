@@ -2,50 +2,33 @@
 const site = useSiteConfig()
 const localePath = useLocalePath()
 const { t } = useI18n()
-const { isDark, toggle } = useDarkMode()
+const mounted = useMounted()
+const colorMode = useColorMode()
+const isDark = computed(() => mounted.value && colorMode.value === 'dark')
+
+const toggleColorMode = () => {
+  colorMode.value = colorMode.value === 'dark' ? 'light' : 'dark'
+}
 
 const { data: navCategories } = await useFetch('/api/category')
 
 const searchOpen = ref(false)
 const menuOpen = ref(false)
 const openChildren = ref<string | null>(null)
-let desktopMediaQuery: MediaQueryList | undefined
-let previousRootOverflow: string | undefined
+const isDesktop = useMediaQuery('(min-width: 1024px)')
+const menuScrollLocked = useScrollLock(() => (import.meta.client ? document.documentElement : null))
 
-const restoreRootOverflow = () => {
-  if (import.meta.client && previousRootOverflow !== undefined) {
-    document.documentElement.style.overflow = previousRootOverflow
-    previousRootOverflow = undefined
-  }
-}
-
-const closeMenuOnDesktop = (event: MediaQueryListEvent) => {
-  if (event.matches) {
+watch(
+  menuOpen,
+  (open) => {
+    menuScrollLocked.value = open
+  },
+  { flush: 'sync' },
+)
+watch(isDesktop, (desktop) => {
+  if (desktop) {
     menuOpen.value = false
   }
-}
-
-watch(menuOpen, (open) => {
-  if (!import.meta.client) {
-    return
-  }
-
-  if (open) {
-    previousRootOverflow ??= document.documentElement.style.overflow
-    document.documentElement.style.overflow = 'hidden'
-  } else {
-    restoreRootOverflow()
-  }
-})
-
-onMounted(() => {
-  desktopMediaQuery = window.matchMedia('(min-width: 1024px)')
-  desktopMediaQuery.addEventListener('change', closeMenuOnDesktop)
-})
-
-onBeforeUnmount(() => {
-  desktopMediaQuery?.removeEventListener('change', closeMenuOnDesktop)
-  restoreRootOverflow()
 })
 </script>
 
@@ -118,7 +101,7 @@ onBeforeUnmount(() => {
             type="button"
             class="flex size-8 items-center justify-center rounded-full bg-neutral-100 text-neutral-500 transition-colors hover:bg-neutral-200 dark:bg-neutral-800 dark:text-amber-400 dark:hover:bg-neutral-700"
             :aria-label="isDark ? t('home.switch_to_light') : t('home.switch_to_dark')"
-            @click="toggle"
+            @click="toggleColorMode"
           >
             <Icon :name="isDark ? 'lucide:sun' : 'lucide:moon'" class="size-4" />
           </button>

@@ -370,16 +370,34 @@ function onKeydown(event: KeyboardEvent) {
   }
 }
 
+const lightboxScrollLocked = useScrollLock(() =>
+  import.meta.client ? document.documentElement : null,
+)
+
+watch(
+  visible,
+  (value) => {
+    lightboxScrollLocked.value = value
+  },
+  { flush: 'sync' },
+)
+useEventListener(
+  () => (import.meta.client && visible.value ? document : null),
+  'keydown',
+  (event) => {
+    if (event instanceof KeyboardEvent) {
+      onKeydown(event)
+    }
+  },
+)
+
 watch(visible, (value) => {
-  document.documentElement.style.overflow = value ? 'hidden' : ''
   if (value) {
     if (dismissing) {
       dismissing = false
       resetView()
     }
-    document.addEventListener('keydown', onKeydown)
   } else {
-    document.removeEventListener('keydown', onKeydown)
     resetGesture()
     if (!dismissing) {
       resetView()
@@ -393,8 +411,6 @@ watch(currentIndex, () => {
 })
 
 onBeforeUnmount(() => {
-  document.documentElement.style.overflow = ''
-  document.removeEventListener('keydown', onKeydown)
   reset()
 })
 

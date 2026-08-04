@@ -30,6 +30,8 @@
     "@takumi-rs/core": "^2.5.3",
     "@types/pg": "^8.20.0",
     "@types/ua-parser-js": "^0.7.39",
+    "@vueuse/core": "^14.4.0",
+    "@vueuse/nuxt": "^14.4.0",
     "better-auth": "^1.6.25",
     "better-sqlite3": "^13.0.2",
     "dotenv": "^17.4.2",

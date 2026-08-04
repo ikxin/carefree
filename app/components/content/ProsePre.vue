@@ -98,32 +98,17 @@ const languageIcon = computed(() => {
 })
 
 const preEl = useTemplateRef('pre')
-const copied = ref(false)
-let copyTimer: ReturnType<typeof setTimeout> | undefined
+const { copied, copy } = useClipboard({ copiedDuring: 2000 })
 
 async function copyCode() {
   const code = preEl.value?.textContent ?? props.code
 
   try {
-    await navigator.clipboard.writeText(code.trimEnd())
+    await copy(code.trimEnd())
   } catch {
-    return
+    // 剪贴板权限被拒绝时保持原按钮状态
   }
-  copied.value = true
-  clearTimeout(copyTimer)
-  copyTimer = setTimeout(() => {
-    copied.value = false
-  }, 2000)
 }
-
-onBeforeUnmount(() => {
-  clearTimeout(copyTimer)
-  window.removeEventListener('resize', updateCodeBlockLayout)
-  document.removeEventListener('keydown', onFullscreenKeydown)
-  if (fullscreen.value) {
-    document.documentElement.style.overflow = ''
-  }
-})
 
 const COLLAPSE_THRESHOLD = 20
 
@@ -140,23 +125,48 @@ function toggleExpanded() {
   expanded.value = !expanded.value
 }
 
-const wrap = ref(false)
-const showLineNumbers = ref(true)
-const fullscreen = ref(false)
-const canScrollRight = ref(false)
-
 const PREFS_KEY = 'code-block-prefs'
 
-function savePrefs() {
-  try {
-    localStorage.setItem(
-      PREFS_KEY,
-      JSON.stringify({ wrap: wrap.value, lineNumbers: showLineNumbers.value }),
-    )
-  } catch {
-    // 隐私模式等场景下写入失败可忽略
-  }
+interface CodeBlockPreferences {
+  lineNumbers: boolean
+  wrap: boolean
 }
+
+const preferences = useLocalStorage<CodeBlockPreferences>(
+  PREFS_KEY,
+  { lineNumbers: true, wrap: false },
+  {
+    initOnMounted: true,
+    mergeDefaults: true,
+    writeDefaults: false,
+    onError: () => {},
+  },
+)
+const wrap = computed({
+  get: () => preferences.value.wrap,
+  set: (value: boolean) => {
+    preferences.value = { ...preferences.value, wrap: value }
+  },
+})
+const showLineNumbers = computed({
+  get: () => preferences.value.lineNumbers,
+  set: (value: boolean) => {
+    preferences.value = { ...preferences.value, lineNumbers: value }
+  },
+})
+const fullscreen = ref(false)
+const canScrollRight = ref(false)
+const fullscreenScrollLocked = useScrollLock(() =>
+  import.meta.client ? document.documentElement : null,
+)
+
+watch(
+  fullscreen,
+  (value) => {
+    fullscreenScrollLocked.value = value
+  },
+  { flush: 'sync' },
+)
 
 function updateScrollHint() {
   const el = preEl.value
@@ -173,43 +183,24 @@ function updateCodeBlockLayout() {
   updateScrollHint()
 }
 
-onMounted(() => {
-  try {
-    const prefs = JSON.parse(localStorage.getItem(PREFS_KEY) || '{}')
-    if (typeof prefs.wrap === 'boolean') {
-      wrap.value = prefs.wrap
-    }
-    if (typeof prefs.lineNumbers === 'boolean') {
-      showLineNumbers.value = prefs.lineNumbers
-    }
-  } catch {
-    // 本地偏好损坏时忽略，使用默认值
-  }
-  updateCodeBlockLayout()
-  window.addEventListener('resize', updateCodeBlockLayout)
-})
+onMounted(updateCodeBlockLayout)
+useResizeObserver(preEl, updateCodeBlockLayout)
 
-// 折行或行号切换后保存偏好，并同步展开代码块的高度和滚动提示
+// 折行或行号切换后同步展开代码块的高度和滚动提示
 watch([wrap, showLineNumbers], async () => {
-  savePrefs()
   await nextTick()
   updateCodeBlockLayout()
 })
 
-function onFullscreenKeydown(event: KeyboardEvent) {
-  if (event.key === 'Escape') {
-    fullscreen.value = false
-  }
-}
-
-watch(fullscreen, (value) => {
-  document.documentElement.style.overflow = value ? 'hidden' : ''
-  if (value) {
-    document.addEventListener('keydown', onFullscreenKeydown)
-  } else {
-    document.removeEventListener('keydown', onFullscreenKeydown)
-  }
-})
+useEventListener(
+  () => (import.meta.client && fullscreen.value ? document : null),
+  'keydown',
+  (event) => {
+    if (event instanceof KeyboardEvent && event.key === 'Escape') {
+      fullscreen.value = false
+    }
+  },
+)
 
 const preClasses = [
   'p-4 text-sm leading-6',

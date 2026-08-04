@@ -55,16 +55,11 @@ const refreshHeadings = async () => {
 
 watch(flatLinks, refreshHeadings)
 
-onMounted(() => {
-  refreshHeadings()
-  window.addEventListener('scroll', scheduleActiveHeadingUpdate, { passive: true })
-  window.addEventListener('resize', scheduleActiveHeadingUpdate)
-})
+onMounted(refreshHeadings)
+useEventListener('scroll', scheduleActiveHeadingUpdate, { passive: true })
+useEventListener('resize', scheduleActiveHeadingUpdate)
 
 onBeforeUnmount(() => {
-  window.removeEventListener('scroll', scheduleActiveHeadingUpdate)
-  window.removeEventListener('resize', scheduleActiveHeadingUpdate)
-
   if (animationFrame !== undefined) {
     window.cancelAnimationFrame(animationFrame)
   }

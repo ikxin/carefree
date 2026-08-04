@@ -21,26 +21,21 @@ const sidePost = computed(() => props.articles[slideCount.value + 2])
 const activeSlide = computed(() => slides.value[current.value])
 
 const current = ref(0)
-let timer: ReturnType<typeof setInterval> | undefined
-
-const stopTimer = () => {
-  if (timer) {
-    clearInterval(timer)
-    timer = undefined
-  }
-}
+const { pause, resume } = useIntervalFn(
+  () => {
+    const count = slides.value.length
+    if (count > 1) {
+      current.value = (current.value + 1) % count
+    }
+  },
+  5000,
+  { immediate: false },
+)
 
 const resetTimer = () => {
-  stopTimer()
-
-  if (slides.value.length > 1) {
-    timer = setInterval(() => {
-      const slideCount = slides.value.length
-
-      if (slideCount > 1) {
-        current.value = (current.value + 1) % slideCount
-      }
-    }, 5000)
+  pause()
+  if (import.meta.client && slides.value.length > 1) {
+    resume()
   }
 }
 
@@ -65,14 +60,9 @@ watch(
   () => slides.value.map((slide) => slide.slug).join(','),
   () => {
     current.value = 0
-
-    if (import.meta.client) {
-      resetTimer()
-    }
+    resetTimer()
   },
 )
-
-onBeforeUnmount(stopTimer)
 </script>
 
 <template>
