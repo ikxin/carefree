@@ -14,7 +14,7 @@
     "lint:fix": "oxlint --fix"
   },
   "dependencies": {
-    "@better-auth/drizzle-adapter": "^1.6.25",
+    "@better-auth/drizzle-adapter": "^1.7.1",
     "@fancyapps/ui": "^6.1.14",
     "@iconify-json/lucide": "^1.2.120",
     "@iconify-json/material-icon-theme": "^1.2.69",
@@ -30,10 +30,9 @@
     "@tailwindcss/vite": "^4.3.3",
     "@takumi-rs/core": "^2.5.3",
     "@types/pg": "^8.20.0",
-    "@types/ua-parser-js": "^0.7.39",
     "@vueuse/core": "^14.4.0",
     "@vueuse/nuxt": "^14.4.0",
-    "better-auth": "^1.6.25",
+    "better-auth": "^1.7.1",
     "better-sqlite3": "^13.0.2",
     "dotenv": "^17.4.2",
     "drizzle-kit": "^0.31.10",
@@ -45,7 +44,7 @@
     "oxlint": "^1.76.0",
     "pg": "^8.22.0",
     "tailwindcss": "^4.3.3",
-    "ua-parser-js": "^1.0.41",
+    "ua-parser-js": "^2.0.10",
     "uuid": "^14.0.1",
     "vue": "^3.5.40",
     "vue-router": "^5.2.0"

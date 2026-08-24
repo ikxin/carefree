@@ -29,6 +29,13 @@
       "when": 1784528079773,
       "tag": "0003_add_content_translations",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1787564147481,
+      "tag": "0004_add_accounts_issuer",
+      "breakpoints": true
     }
   ]
 }
