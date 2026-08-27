@@ -18,6 +18,8 @@ if (error.value) {
 useSeoMeta({
   title: () => tag.value?.name,
   description: () => tag.value?.description ?? undefined,
+  ogTitle: () => tag.value?.name,
+  ogDescription: () => tag.value?.description ?? undefined,
 })
 </script>
 

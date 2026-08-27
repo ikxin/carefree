@@ -36,9 +36,6 @@ useSeoMeta({
   ogTitle: () => article.value?.title,
   ogDescription: () => article.value?.description,
   ogType: 'article',
-  twitterCard: 'summary_large_image',
-  twitterTitle: () => article.value?.title,
-  twitterDescription: () => article.value?.description,
   articlePublishedTime: () => article.value?.createdAt,
   articleModifiedTime: () => article.value?.updatedAt,
 })

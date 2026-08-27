@@ -14,9 +14,6 @@ useSeoMeta({
   ogDescription: () => site.description,
   ogType: 'website',
   ogSiteName: () => site.name,
-  twitterCard: 'summary',
-  twitterTitle: () => `${site.name} - ${subtitle.value}`,
-  twitterDescription: () => site.description,
 })
 
 const bannerSize = 10

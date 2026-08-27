@@ -139,6 +139,9 @@ export default defineNuxtConfig({
       },
     },
   },
+  seo: {
+    automaticOgAndTwitterTags: false,
+  },
   sitemap: {
     sources: ['/api/__sitemap__/urls'],
   },
