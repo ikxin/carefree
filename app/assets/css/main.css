@@ -12,6 +12,41 @@
   --color-card-dark: #2a2a2b;
 }
 
+@keyframes color-mode-transition-keep-alive {
+  to {
+    z-index: -1;
+  }
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: color-mode-transition-keep-alive 500ms linear forwards;
+  mix-blend-mode: normal;
+}
+
+.dark::view-transition-old(root) {
+  z-index: 1;
+}
+
+.dark::view-transition-new(root) {
+  z-index: 999;
+}
+
+::view-transition-old(root) {
+  z-index: 999;
+}
+
+::view-transition-new(root) {
+  z-index: 1;
+}
+
+.color-mode-transition,
+.color-mode-transition *,
+.color-mode-transition *::before,
+.color-mode-transition *::after {
+  transition: none !important;
+}
+
 body {
   @apply touch-manipulation bg-canvas text-neutral-800 antialiased dark:bg-canvas-dark dark:text-neutral-300;
 }

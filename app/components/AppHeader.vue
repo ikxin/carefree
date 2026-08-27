@@ -1,13 +1,117 @@
 <script setup lang="ts">
+type ColorMode = 'light' | 'dark'
+
+interface ViewTransition {
+  ready: Promise<void>
+  finished: Promise<void>
+}
+
+type ViewTransitionDocument = Document & {
+  startViewTransition?: (update: () => Promise<void>) => ViewTransition
+}
+
+const colorModeTransitionDuration = 500
+
 const site = useSiteConfig()
 const localePath = useLocalePath()
 const { t } = useI18n()
 const mounted = useMounted()
 const colorMode = useColorMode()
+const reducedMotion = usePreferredReducedMotion()
 const isDark = computed(() => mounted.value && colorMode.value === 'dark')
+let colorModeTransitioning = false
 
-const toggleColorMode = () => {
-  colorMode.value = colorMode.value === 'dark' ? 'light' : 'dark'
+const applyColorMode = async (mode: ColorMode) => {
+  colorMode.value = mode
+  await nextTick()
+}
+
+const animateColorModeClipPath = (
+  rule: CSSStyleRule,
+  x: number,
+  y: number,
+  startRadius: number,
+  endRadius: number,
+) =>
+  new Promise<void>((resolve) => {
+    const startTime = performance.now()
+
+    const drawFrame = (currentTime: number) => {
+      const progress = Math.min((currentTime - startTime) / colorModeTransitionDuration, 1)
+      const easedProgress = progress * progress
+      const radius = startRadius + (endRadius - startRadius) * easedProgress
+
+      rule.style.clipPath = `circle(${radius}px at ${x}px ${y}px)`
+
+      if (progress < 1) {
+        requestAnimationFrame(drawFrame)
+      } else {
+        resolve()
+      }
+    }
+
+    requestAnimationFrame(drawFrame)
+  })
+
+const toggleColorMode = async (event: MouseEvent) => {
+  if (colorModeTransitioning) {
+    return
+  }
+
+  const wasDark = colorMode.value === 'dark'
+  const nextMode = wasDark ? 'light' : 'dark'
+  const viewTransitionDocument = document as ViewTransitionDocument
+
+  if (
+    typeof viewTransitionDocument.startViewTransition !== 'function' ||
+    reducedMotion.value === 'reduce'
+  ) {
+    colorMode.value = nextMode
+    return
+  }
+
+  const buttonRect = (event.currentTarget as HTMLButtonElement).getBoundingClientRect()
+  const x = buttonRect.left + buttonRect.width / 2
+  const y = buttonRect.top + buttonRect.height / 2
+  const endRadius = Math.hypot(
+    Math.max(x, window.innerWidth - x),
+    Math.max(y, window.innerHeight - y),
+  )
+
+  colorModeTransitioning = true
+
+  const transition = viewTransitionDocument.startViewTransition(async () => {
+    await applyColorMode(nextMode)
+  })
+  const root = document.documentElement
+  let transitionStyle: HTMLStyleElement | null = null
+
+  try {
+    await transition.ready
+    root.classList.add('color-mode-transition')
+
+    const pseudoElement = wasDark ? '::view-transition-old(root)' : '::view-transition-new(root)'
+    const startRadius = wasDark ? endRadius : 0
+    const targetRadius = wasDark ? 0 : endRadius
+
+    transitionStyle = document.createElement('style')
+    transitionStyle.textContent = `${pseudoElement} { clip-path: circle(${startRadius}px at ${x}px ${y}px); }`
+    document.head.append(transitionStyle)
+
+    const clipPathRule = transitionStyle.sheet?.cssRules[0]
+    const clipPathAnimation =
+      clipPathRule instanceof CSSStyleRule
+        ? animateColorModeClipPath(clipPathRule, x, y, startRadius, targetRadius)
+        : Promise.resolve()
+
+    await Promise.allSettled([clipPathAnimation, transition.finished])
+  } catch {
+    await applyColorMode(nextMode)
+  } finally {
+    transitionStyle?.remove()
+    root.classList.remove('color-mode-transition')
+    colorModeTransitioning = false
+  }
 }
 
 const { data: navCategories } = await useFetch('/api/category')
