@@ -2,6 +2,7 @@ import { drizzleAdapter } from '@better-auth/drizzle-adapter'
 import * as schema from '#server/database/schema'
 import { db } from '#server/utils/db'
 import { betterAuth } from 'better-auth'
+import { admin } from 'better-auth/plugins'
 import { v7 as uuidv7 } from 'uuid'
 
 export const auth = betterAuth({
@@ -15,6 +16,7 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
+  plugins: [admin()],
   advanced: {
     database: {
       generateId: () => uuidv7(),

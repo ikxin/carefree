@@ -29,6 +29,10 @@ export const users = pgTable(
     email: text('email').notNull(),
     emailVerified: boolean('email_verified').default(false).notNull(),
     image: text('image'),
+    role: text('role'),
+    banned: boolean('banned').default(false),
+    banReason: text('ban_reason'),
+    banExpires: timestamp('ban_expires', { mode: 'date', precision: 3 }),
     ...timestamps(),
   },
   (table) => [uniqueIndex('users_email_key').on(table.email)],
@@ -43,6 +47,7 @@ export const sessions = pgTable(
     expiresAt: timestamp('expires_at', { mode: 'date', precision: 3 }).notNull(),
     ipAddress: text('ip_address'),
     userAgent: text('user_agent'),
+    impersonatedBy: uuid('impersonated_by'),
     ...timestamps(),
   },
   (table) => [
