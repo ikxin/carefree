@@ -32,6 +32,6 @@ const props = withDefaults(
     :sizes="props.sizes"
     format="webp"
     loading="lazy"
-    class="cursor-zoom-in"
+    class="mx-auto h-auto max-w-full cursor-zoom-in rounded-md"
   />
 </template>

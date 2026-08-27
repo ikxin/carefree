@@ -1,18 +1,15 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 
-import tailwindcss from '@tailwindcss/vite'
-
 const imageCacheMaxAge = 60 * 60 * 24 * 30
 
 export default defineNuxtConfig({
   modules: [
-    '@nuxt/content',
-    '@nuxt/fonts',
     '@nuxt/image',
     '@nuxt/scripts',
+    '@nuxt/ui',
+    '@nuxt/content',
     '@nuxtjs/i18n',
     '@nuxtjs/seo',
-    '@nuxt/icon',
     '@vueuse/nuxt',
   ],
   devtools: { enabled: true },
@@ -84,7 +81,6 @@ export default defineNuxtConfig({
         },
       },
     },
-    plugins: [tailwindcss()],
   },
   fonts: {
     families: [
@@ -133,6 +129,7 @@ export default defineNuxtConfig({
         trigger: 'onNuxtReady',
       },
       umamiAnalytics: {
+        domains: ['www.ikxin.com', 'ikxin.com'],
         hostUrl: 'https://umami.ikxin.com',
         websiteId: '4c17308b-8dc9-4f03-ad7f-642cd3ffde8d',
         trigger: 'onNuxtReady',

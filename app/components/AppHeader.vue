@@ -22,7 +22,7 @@ const isDark = computed(() => mounted.value && colorMode.value === 'dark')
 let colorModeTransitioning = false
 
 const applyColorMode = async (mode: ColorMode) => {
-  colorMode.value = mode
+  colorMode.preference = mode
   await nextTick()
 }
 
@@ -66,7 +66,7 @@ const toggleColorMode = async (event: MouseEvent) => {
     typeof viewTransitionDocument.startViewTransition !== 'function' ||
     reducedMotion.value === 'reduce'
   ) {
-    colorMode.value = nextMode
+    await applyColorMode(nextMode)
     return
   }
 

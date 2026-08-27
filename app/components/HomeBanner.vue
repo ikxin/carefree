@@ -225,7 +225,7 @@ onBeforeUnmount(() => {
           <PostCover
             :src="post.cover"
             :alt="post.title"
-            sizes="30vw sm:31vw lg:16vw xl:198px"
+            sizes="xxs:30vw sm:31vw lg:16vw xl:198px"
             loading="eager"
             class="transition-transform duration-300 group-hover/card:scale-110 lg:absolute lg:inset-0"
           />
@@ -254,7 +254,7 @@ onBeforeUnmount(() => {
           <PostCover
             :src="sidePost.cover"
             :alt="sidePost.title"
-            sizes="30vw sm:31vw lg:24vw xl:303px"
+            sizes="xxs:30vw sm:31vw lg:24vw xl:303px"
             loading="eager"
             class="transition-transform duration-300 group-hover/card:scale-110 lg:absolute lg:inset-0"
           />
