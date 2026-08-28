@@ -38,15 +38,18 @@ const languageNames: Record<string, string> = {
   md: 'Markdown',
   nginx: 'Nginx',
   php: 'PHP',
+  plaintext: 'Plain Text',
   shellscript: 'Shell',
   shell: 'Shell',
   bash: 'Bash',
   sh: 'Shell',
   zsh: 'Zsh',
   sql: 'SQL',
+  text: 'Plain Text',
   tsx: 'TSX',
   typescript: 'TypeScript',
   ts: 'TypeScript',
+  txt: 'Plain Text',
   vue: 'Vue',
   yaml: 'YAML',
   yml: 'YAML',
@@ -54,7 +57,7 @@ const languageNames: Record<string, string> = {
 
 const languageLabel = computed(() => {
   const lang = props.language?.toLowerCase()
-  if (!lang || lang === 'text') {
+  if (!lang) {
     return ''
   }
   return languageNames[lang] ?? lang.toUpperCase()
@@ -75,15 +78,18 @@ const languageIcons: Record<string, string> = {
   md: 'material-icon-theme:markdown',
   nginx: 'material-icon-theme:nginx',
   php: 'material-icon-theme:php',
+  plaintext: 'material-icon-theme:document',
   shellscript: 'material-icon-theme:console',
   shell: 'material-icon-theme:console',
   bash: 'material-icon-theme:console',
   sh: 'material-icon-theme:console',
   zsh: 'material-icon-theme:console',
   sql: 'material-icon-theme:database',
+  text: 'material-icon-theme:document',
   tsx: 'material-icon-theme:react-ts',
   typescript: 'material-icon-theme:typescript',
   ts: 'material-icon-theme:typescript',
+  txt: 'material-icon-theme:document',
   vue: 'material-icon-theme:vue',
   yaml: 'material-icon-theme:yaml',
   yml: 'material-icon-theme:yaml',
@@ -91,7 +97,7 @@ const languageIcons: Record<string, string> = {
 
 const languageIcon = computed(() => {
   const lang = props.language?.toLowerCase()
-  if (!lang || lang === 'text') {
+  if (!lang) {
     return ''
   }
   return languageIcons[lang] ?? 'material-icon-theme:document'
@@ -101,7 +107,7 @@ const preEl = useTemplateRef('pre')
 const { copied, copy } = useClipboard({ copiedDuring: 2000 })
 
 async function copyCode() {
-  const code = preEl.value?.textContent ?? props.code
+  const code = props.code || preEl.value?.textContent || ''
 
   try {
     await copy(code.trimEnd())
@@ -110,20 +116,16 @@ async function copyCode() {
   }
 }
 
-const COLLAPSE_THRESHOLD = 20
+const codeLines = computed(() => props.code.trimEnd().split('\n'))
+const renderPlainTextLines = computed(
+  () => props.language?.toLowerCase() === 'text' && props.highlights.length === 0,
+)
 
-const lineCount = computed(() => props.code.trimEnd().split('\n').length)
-const collapsible = computed(() => lineCount.value > COLLAPSE_THRESHOLD)
-const expanded = ref(false)
-const contentHeight = ref(0)
+const lineNumberWidth = computed(() => {
+  const digits = Math.max(3, String(codeLines.value.length).length)
 
-function toggleExpanded() {
-  // 展开/收起前测量实际高度，保证高度过渡从精确像素值开始
-  if (preEl.value) {
-    contentHeight.value = preEl.value.scrollHeight
-  }
-  expanded.value = !expanded.value
-}
+  return `calc(${digits}ch + 2rem)`
+})
 
 const PREFS_KEY = 'code-block-prefs'
 
@@ -155,6 +157,7 @@ const showLineNumbers = computed({
   },
 })
 const fullscreen = ref(false)
+const canScrollLeft = ref(false)
 const canScrollRight = ref(false)
 const fullscreenScrollLocked = useScrollLock(() =>
   import.meta.client ? document.documentElement : null,
@@ -173,23 +176,21 @@ function updateScrollHint() {
   if (!el) {
     return
   }
-  canScrollRight.value = el.scrollWidth - el.clientWidth - el.scrollLeft > 1
+
+  const maxScrollLeft = Math.max(0, el.scrollWidth - el.clientWidth)
+  const scrollLeft = Math.min(Math.abs(el.scrollLeft), maxScrollLeft)
+
+  canScrollLeft.value = scrollLeft > 1
+  canScrollRight.value = maxScrollLeft - scrollLeft > 1
 }
 
-function updateCodeBlockLayout() {
-  if (expanded.value && preEl.value) {
-    contentHeight.value = preEl.value.scrollHeight
-  }
-  updateScrollHint()
-}
+onMounted(updateScrollHint)
+useResizeObserver(preEl, updateScrollHint)
 
-onMounted(updateCodeBlockLayout)
-useResizeObserver(preEl, updateCodeBlockLayout)
-
-// 折行或行号切换后同步展开代码块的高度和滚动提示
+// 折行或行号切换后同步滚动提示
 watch([wrap, showLineNumbers], async () => {
   await nextTick()
-  updateCodeBlockLayout()
+  updateScrollHint()
 })
 
 useEventListener(
@@ -203,7 +204,7 @@ useEventListener(
 )
 
 const preClasses = [
-  'p-4 text-sm leading-6',
+  'py-4 pr-4 text-sm leading-6',
   // 代码块元素块级化，宽度由折行状态动态控制
   '[&_code]:block [&_code]:min-w-full',
   // 行块级化，保证行背景整行显示
@@ -227,10 +228,33 @@ const preClasses = [
 // 行号：CSS counter 生成，可切换
 const lineNumberClasses = [
   '[counter-reset:line]',
-  '[&_.line]:before:mr-4 [&_.line]:before:inline-block [&_.line]:before:w-[3ch] [&_.line]:before:select-none [&_.line]:before:text-right [&_.line]:before:text-neutral-400/70 dark:[&_.line]:before:text-neutral-500 [&_.line]:before:[counter-increment:line] [&_.line]:before:content-[counter(line)]',
+  // 横向滚动时将行号固定在左侧
+  '[&_.line]:before:sticky [&_.line]:before:left-0 [&_.line]:before:z-10',
+  // 留出 2px 间隔，避免高层级实色背景因亚像素取整覆盖代码首字符
+  '[&_.line]:before:mr-[2px] [&_.line]:before:inline-block [&_.line]:before:w-[var(--line-number-width)] [&_.line]:before:pr-4',
+  // 使用实色背景遮住从行号下方滚过的代码
+  '[&_.line]:before:bg-neutral-100 dark:[&_.line]:before:bg-neutral-900',
+  '[&_.line]:before:select-none [&_.line]:before:text-right [&_.line]:before:text-neutral-400/70 dark:[&_.line]:before:text-neutral-500',
+  '[&_.line]:before:[counter-increment:line] [&_.line]:before:content-[counter(line)]',
   // diff 行的行号列替换为 +/- 符号
   "[&_.line.diff.add]:before:text-emerald-600 dark:[&_.line.diff.add]:before:text-emerald-400 [&_.line.diff.add]:before:content-['+']",
   "[&_.line.diff.remove]:before:text-red-600 dark:[&_.line.diff.remove]:before:text-red-400 [&_.line.diff.remove]:before:content-['-']",
+]
+
+// 滚动边缘提示：参考 Ant Design 固定列，以窄幅内阴影提示还有隐藏内容
+const scrollHintClasses = [
+  'pointer-events-none absolute inset-y-0 z-20 w-[30px]',
+  'transition-[box-shadow] duration-300 ease-[cubic-bezier(0.25,0.1,0.25,1)] motion-reduce:transition-none',
+]
+
+const scrollStartHintClasses = [
+  'shadow-[inset_10px_0_8px_-8px_rgba(10,10,10,0.18)]',
+  'dark:shadow-[inset_10px_0_8px_-8px_rgba(250,250,250,0.16)]',
+]
+
+const scrollEndHintClasses = [
+  'shadow-[inset_-10px_0_8px_-8px_rgba(10,10,10,0.18)]',
+  'dark:shadow-[inset_-10px_0_8px_-8px_rgba(250,250,250,0.16)]',
 ]
 </script>
 
@@ -320,20 +344,16 @@ const lineNumberClasses = [
     </div>
 
     <div
-      class="relative overflow-hidden transition-[height] duration-500 ease-in-out motion-reduce:transition-none"
+      class="relative overflow-hidden"
       :class="fullscreen ? 'min-h-0 flex-1' : ''"
-      :style="
-        collapsible && !fullscreen
-          ? { height: expanded ? `${contentHeight}px` : '24rem' }
-          : undefined
-      "
+      :style="{ '--line-number-width': lineNumberWidth }"
     >
       <pre
         ref="pre"
         :class="[
           props.class,
           preClasses,
-          showLineNumbers ? lineNumberClasses : '',
+          showLineNumbers ? lineNumberClasses : 'pl-4',
           fullscreen
             ? wrap
               ? 'h-full overflow-x-hidden overflow-y-auto whitespace-pre-wrap break-all [&_code]:w-full'
@@ -343,34 +363,27 @@ const lineNumberClasses = [
               : 'overflow-x-auto [&_code]:w-max',
         ]"
         @scroll="updateScrollHint"
-      ><slot /></pre>
+      ><code v-if="renderPlainTextLines"><span
+          v-for="(line, index) in codeLines"
+          :key="index"
+          class="line"
+        >{{ line || '\u200b' }}</span></code><slot v-else /></pre>
       <div
-        class="pointer-events-none absolute inset-y-0 right-0 w-10 bg-linear-to-l from-neutral-100 via-neutral-100/90 to-transparent transition-opacity duration-300 motion-reduce:transition-none dark:from-neutral-900 dark:via-neutral-900/90"
-        :class="canScrollRight && !wrap ? 'opacity-100' : 'opacity-0'"
+        aria-hidden="true"
+        :class="[
+          scrollHintClasses,
+          showLineNumbers ? 'left-(--line-number-width) font-mono text-sm' : 'left-0',
+          canScrollLeft && !wrap ? scrollStartHintClasses : 'shadow-none',
+        ]"
       />
       <div
-        v-if="collapsible && !fullscreen && !expanded"
-        class="pointer-events-none absolute inset-x-0 bottom-0 flex h-24 items-end justify-center bg-linear-to-t from-neutral-100 via-neutral-100/85 to-transparent pb-3 dark:from-neutral-900 dark:via-neutral-900/85"
-      >
-        <button
-          type="button"
-          class="pointer-events-auto flex items-center gap-1 rounded-full bg-card px-3 py-1.5 text-xs text-neutral-500 shadow-sm ring-1 ring-neutral-200 transition-colors hover:text-neutral-700 dark:bg-card-dark dark:text-neutral-400 dark:ring-neutral-700 dark:hover:text-neutral-200"
-          @click="toggleExpanded"
-        >
-          <Icon name="lucide:chevrons-down" class="size-3.5" />
-          {{ t('article.expand_code') }}
-        </button>
-      </div>
+        aria-hidden="true"
+        :class="[
+          scrollHintClasses,
+          'right-0',
+          canScrollRight && !wrap ? scrollEndHintClasses : 'shadow-none',
+        ]"
+      />
     </div>
-
-    <button
-      v-if="collapsible && expanded && !fullscreen"
-      type="button"
-      class="flex w-full items-center justify-center gap-1 border-t border-neutral-200 py-2 text-xs text-neutral-400 transition-colors hover:text-neutral-600 dark:border-neutral-800 dark:hover:text-neutral-300"
-      @click="toggleExpanded"
-    >
-      <Icon name="lucide:chevrons-up" class="size-3.5" />
-      {{ t('article.collapse_code') }}
-    </button>
   </div>
 </template>

@@ -61,8 +61,6 @@
     "table_of_contents": "목차",
     "copy_code": "코드 복사",
     "code_copied": "복사됨",
-    "expand_code": "코드 펼치기",
-    "collapse_code": "코드 접기",
     "wrap_code": "줄 바꿈",
     "unwrap_code": "줄 바꿈 해제",
     "show_line_numbers": "줄 번호 표시",
