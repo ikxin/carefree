@@ -24,6 +24,6 @@
 ## 图标约束
 
 - 项目已集成 `@nuxt/icon` 模块，只能使用该模块提供的图标
-- UI 图标仅限使用 `@iconify-json/lucide`，图标命名格式为 `lucide:icon-name`
-- 代码块语言图标仅限使用 `@iconify-json/material-icon-theme`，图标命名格式为 `material-icon-theme:icon-name`
-- 禁止引入其他图标库或图标包
+- 只能使用 `package.json` 的 `dependencies` 字段中已有图标包提供的图标
+- 图标命名必须使用对应图标包的 Iconify 前缀，格式为 `collection:icon-name`
+- 禁止为使用新图标而引入额外的图标库或图标包

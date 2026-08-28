@@ -14,12 +14,40 @@ const colorModeTransitionDuration = 500
 
 const site = useSiteConfig()
 const localePath = useLocalePath()
-const { t } = useI18n()
+const switchLocalePath = useSwitchLocalePath()
+const { locale, locales, t } = useI18n()
 const mounted = useMounted()
 const colorMode = useColorMode()
 const reducedMotion = usePreferredReducedMotion()
 const isDark = computed(() => mounted.value && colorMode.value === 'dark')
 let colorModeTransitioning = false
+
+const localeFlags: Record<string, string> = {
+  'zh-cn': 'flag:cn-4x3',
+  'zh-tw': 'flag:tw-4x3',
+  ko: 'flag:kr-4x3',
+  en: 'flag:us-4x3',
+  ja: 'flag:jp-4x3',
+}
+
+const localeItems = computed(() =>
+  locales.value.map((configuredLocale) => {
+    const code = typeof configuredLocale === 'string' ? configuredLocale : configuredLocale.code
+
+    return {
+      code,
+      label:
+        typeof configuredLocale === 'string'
+          ? configuredLocale
+          : (configuredLocale.name ?? configuredLocale.code),
+      icon: localeFlags[code] ?? 'lucide:languages',
+      to: switchLocalePath(code),
+      locale: false,
+      active: code === locale.value,
+      exact: true,
+    }
+  }),
+)
 
 const applyColorMode = async (mode: ColorMode) => {
   colorMode.preference = mode
@@ -201,22 +229,49 @@ watch(isDesktop, (desktop) => {
         </div>
 
         <div class="flex items-center gap-2">
-          <button
+          <UDropdownMenu
+            :items="localeItems"
+            :content="{ align: 'end' }"
+            :ui="{ content: 'min-w-40', itemLeadingIcon: 'h-4 w-5 rounded-[2px]' }"
+          >
+            <UButton
+              type="button"
+              icon="lucide:languages"
+              color="neutral"
+              variant="ghost"
+              square
+              class="size-8 justify-center rounded-full p-0"
+              :aria-label="t('home.switch_language')"
+              :ui="{ leadingIcon: 'size-4' }"
+            />
+
+            <template #item-trailing="{ item }">
+              <Icon v-if="item.code === locale" name="lucide:check" class="size-4 text-primary" />
+            </template>
+          </UDropdownMenu>
+
+          <UButton
             type="button"
-            class="flex size-8 items-center justify-center rounded-full bg-neutral-100 text-neutral-500 transition-colors hover:bg-neutral-200 dark:bg-neutral-800 dark:text-amber-400 dark:hover:bg-neutral-700"
+            :icon="isDark ? 'lucide:sun' : 'lucide:moon'"
+            color="neutral"
+            variant="soft"
+            square
+            class="size-8 justify-center rounded-full p-0"
             :aria-label="isDark ? t('home.switch_to_light') : t('home.switch_to_dark')"
+            :ui="{ leadingIcon: 'size-4' }"
             @click="toggleColorMode"
-          >
-            <Icon :name="isDark ? 'lucide:sun' : 'lucide:moon'" class="size-4" />
-          </button>
-          <button
+          />
+          <UButton
             type="button"
-            class="flex size-8 items-center justify-center rounded-full text-neutral-500 transition-colors hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800"
+            icon="lucide:search"
+            color="neutral"
+            variant="ghost"
+            square
+            class="size-8 justify-center rounded-full p-0"
             :aria-label="t('home.search')"
+            :ui="{ leadingIcon: 'size-4' }"
             @click="searchOpen = !searchOpen"
-          >
-            <Icon name="lucide:search" class="size-4" />
-          </button>
+          />
         </div>
       </div>
     </div>
