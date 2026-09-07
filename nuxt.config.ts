@@ -12,6 +12,14 @@ export default defineNuxtConfig({
     '@nuxtjs/seo',
     '@vueuse/nuxt',
   ],
+  $development: {
+    scripts: {
+      registry: {
+        googleAnalytics: false,
+        umamiAnalytics: false,
+      },
+    },
+  },
   devtools: { enabled: true },
   css: [
     '~/assets/css/main.css',
