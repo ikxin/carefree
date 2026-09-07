@@ -122,7 +122,7 @@ const renderPlainTextLines = computed(
 )
 
 const lineNumberWidth = computed(() => {
-  const digits = Math.max(3, String(codeLines.value.length).length)
+  const digits = String(codeLines.value.length).length
 
   return `calc(${digits}ch + 2rem)`
 })
@@ -231,7 +231,7 @@ const lineNumberClasses = [
   // 横向滚动时将行号固定在左侧
   '[&_.line]:before:sticky [&_.line]:before:left-0 [&_.line]:before:z-10',
   // 留出 2px 间隔，避免高层级实色背景因亚像素取整覆盖代码首字符
-  '[&_.line]:before:mr-[2px] [&_.line]:before:inline-block [&_.line]:before:w-[var(--line-number-width)] [&_.line]:before:pr-4',
+  '[&_.line]:before:mr-[2px] [&_.line]:before:inline-block [&_.line]:before:w-[var(--line-number-width)] [&_.line]:before:px-4',
   // 使用实色背景遮住从行号下方滚过的代码
   '[&_.line]:before:bg-neutral-100 dark:[&_.line]:before:bg-neutral-900',
   '[&_.line]:before:select-none [&_.line]:before:text-right [&_.line]:before:text-neutral-400/70 dark:[&_.line]:before:text-neutral-500',
@@ -359,8 +359,8 @@ const scrollEndHintClasses = [
               ? 'h-full overflow-x-hidden overflow-y-auto whitespace-pre-wrap break-all [&_code]:w-full'
               : 'h-full overflow-auto [&_code]:w-max'
             : wrap
-              ? 'overflow-x-hidden whitespace-pre-wrap break-all [&_code]:w-full'
-              : 'overflow-x-auto [&_code]:w-max',
+              ? 'max-h-125 overflow-x-hidden overflow-y-auto whitespace-pre-wrap break-all [&_code]:w-full'
+              : 'max-h-125 overflow-auto [&_code]:w-max',
         ]"
         @scroll="updateScrollHint"
       ><code v-if="renderPlainTextLines"><span
