@@ -20,6 +20,22 @@ if (error.value) {
   throw createError(error.value)
 }
 
+onMounted(async () => {
+  if (!article.value) return
+
+  try {
+    const { views } = await $fetch(`/api/article/${encodeURIComponent(slug)}/views`, {
+      method: 'POST',
+    })
+
+    if (article.value) {
+      article.value = { ...article.value, views }
+    }
+  } catch (error) {
+    console.error('记录文章浏览量失败', error)
+  }
+})
+
 const formattedViews = computed(() =>
   new Intl.NumberFormat(locale.value).format(article.value?.views ?? 0),
 )
