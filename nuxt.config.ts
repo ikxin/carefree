@@ -20,7 +20,7 @@ export default defineNuxtConfig({
       },
     },
   },
-  devtools: { enabled: true },
+  devtools: { enabled: false },
   css: [
     '~/assets/css/main.css',
     '@fancyapps/ui/dist/carousel/carousel.css',
@@ -148,6 +148,7 @@ export default defineNuxtConfig({
     automaticOgAndTwitterTags: false,
   },
   sitemap: {
+    exclude: ['/admin', '/admin/**'],
     sources: ['/api/__sitemap__/urls'],
   },
 })
