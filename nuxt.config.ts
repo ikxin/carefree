@@ -25,12 +25,7 @@ export default defineNuxtConfig({
     },
   },
   devtools: { enabled: false },
-  css: [
-    '~/assets/css/main.css',
-    '@fancyapps/ui/dist/carousel/carousel.css',
-    '@fancyapps/ui/dist/carousel/carousel.dots.css',
-    '@fancyapps/ui/dist/fancybox/fancybox.css',
-  ],
+  css: ['~/assets/css/main.css'],
   site: {
     url: 'https://www.ikxin.com',
     name: '一纸忘忧',

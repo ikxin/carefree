@@ -263,7 +263,7 @@ onBeforeUnmount(() => document.removeEventListener('click', handleLocaleDocument
                   class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-800"
                   @click="localeOpen = false"
                 >
-                  <Icon :name="item.icon" class="h-4 w-5 rounded-[2px]" />
+                  <Icon :name="item.icon" class="h-4 w-5 rounded-xs" />
                   <span class="flex-1">{{ item.label }}</span>
                   <Icon
                     v-if="item.code === locale"

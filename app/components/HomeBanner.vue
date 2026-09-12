@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import '@fancyapps/ui/dist/carousel/carousel.css'
+import '@fancyapps/ui/dist/carousel/carousel.dots.css'
 import { Carousel, type CarouselInstance } from '@fancyapps/ui/dist/carousel/'
 import { Autoplay } from '@fancyapps/ui/dist/carousel/carousel.autoplay.js'
 import { Dots } from '@fancyapps/ui/dist/carousel/carousel.dots.js'

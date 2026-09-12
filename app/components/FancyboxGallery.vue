@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import '@fancyapps/ui/dist/fancybox/fancybox.css'
 import { Fancybox, type FancyboxOptions } from '@fancyapps/ui/dist/fancybox/'
 
 const gallery = useTemplateRef<HTMLElement>('gallery')
