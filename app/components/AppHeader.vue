@@ -50,7 +50,7 @@ const localeItems = computed(() =>
 )
 
 const applyColorMode = async (mode: ColorMode) => {
-  colorMode.value = mode
+  colorMode.preference = mode
   await nextTick()
 }
 

@@ -6,14 +6,15 @@ const imageCacheMaxAge = 60 * 60 * 24 * 30
 
 export default defineNuxtConfig({
   modules: [
-    '@nuxt/content',
+    '@vueuse/nuxt',
+    '@nuxtjs/color-mode',
     '@nuxt/fonts',
+    '@nuxt/icon',
     '@nuxt/image',
     '@nuxt/scripts',
+    '@nuxt/content',
     '@nuxtjs/i18n',
     '@nuxtjs/seo',
-    '@nuxt/icon',
-    '@vueuse/nuxt',
   ],
   $development: {
     scripts: {
@@ -36,6 +37,11 @@ export default defineNuxtConfig({
     titleSeparator: '-',
     description:
       '一纸忘忧的个人网站，关于技术探索与日常生活，记录 Web 开发、服务端与 DevOps 实践，分享软件工具、数码体验，以及代码之外的见闻与思考。',
+  },
+  colorMode: {
+    preference: 'system',
+    fallback: 'light',
+    dataValue: 'bs-theme',
   },
   mdc: {
     highlight: {
