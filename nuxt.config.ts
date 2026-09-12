@@ -1,15 +1,18 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 
+import tailwindcss from '@tailwindcss/vite'
+
 const imageCacheMaxAge = 60 * 60 * 24 * 30
 
 export default defineNuxtConfig({
   modules: [
+    '@nuxt/content',
+    '@nuxt/fonts',
     '@nuxt/image',
     '@nuxt/scripts',
-    '@nuxt/ui',
-    '@nuxt/content',
     '@nuxtjs/i18n',
     '@nuxtjs/seo',
+    '@nuxt/icon',
     '@vueuse/nuxt',
   ],
   $development: {
@@ -89,6 +92,7 @@ export default defineNuxtConfig({
         },
       },
     },
+    plugins: [tailwindcss()],
   },
   fonts: {
     families: [
@@ -148,7 +152,6 @@ export default defineNuxtConfig({
     automaticOgAndTwitterTags: false,
   },
   sitemap: {
-    exclude: ['/admin', '/admin/**'],
     sources: ['/api/__sitemap__/urls'],
   },
 })

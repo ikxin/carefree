@@ -50,7 +50,7 @@ const localeItems = computed(() =>
 )
 
 const applyColorMode = async (mode: ColorMode) => {
-  colorMode.preference = mode
+  colorMode.value = mode
   await nextTick()
 }
 
@@ -145,10 +145,18 @@ const toggleColorMode = async (event: MouseEvent) => {
 const { data: navCategories } = await useFetch('/api/category')
 
 const searchOpen = ref(false)
+const localeOpen = ref(false)
+const localeMenu = ref<HTMLElement | null>(null)
 const menuOpen = ref(false)
 const openChildren = ref<string | null>(null)
 const isDesktop = useMediaQuery('(min-width: 1024px)')
 const menuScrollLocked = useScrollLock(() => (import.meta.client ? document.documentElement : null))
+
+const handleLocaleDocumentClick = (event: MouseEvent) => {
+  if (!localeMenu.value?.contains(event.target as Node)) {
+    localeOpen.value = false
+  }
+}
 
 watch(
   menuOpen,
@@ -162,6 +170,8 @@ watch(isDesktop, (desktop) => {
     menuOpen.value = false
   }
 })
+onMounted(() => document.addEventListener('click', handleLocaleDocumentClick))
+onBeforeUnmount(() => document.removeEventListener('click', handleLocaleDocumentClick))
 </script>
 
 <template>
@@ -229,49 +239,58 @@ watch(isDesktop, (desktop) => {
         </div>
 
         <div class="flex items-center gap-2">
-          <UDropdownMenu
-            :items="localeItems"
-            :content="{ align: 'end' }"
-            :ui="{ content: 'min-w-40', itemLeadingIcon: 'h-4 w-5 rounded-[2px]' }"
-          >
-            <UButton
+          <div ref="localeMenu" class="relative" @keydown.esc="localeOpen = false">
+            <button
               type="button"
-              icon="lucide:languages"
-              color="neutral"
-              variant="ghost"
-              square
-              class="size-8 justify-center rounded-full p-0"
+              class="flex size-8 items-center justify-center rounded-full text-neutral-500 transition-colors hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800"
               :aria-label="t('home.switch_language')"
-              :ui="{ leadingIcon: 'size-4' }"
-            />
+              :aria-expanded="localeOpen"
+              aria-haspopup="menu"
+              @click.stop="localeOpen = !localeOpen"
+            >
+              <Icon name="lucide:languages" class="size-4" />
+            </button>
 
-            <template #item-trailing="{ item }">
-              <Icon v-if="item.code === locale" name="lucide:check" class="size-4 text-primary" />
-            </template>
-          </UDropdownMenu>
+            <ul
+              v-if="localeOpen"
+              role="menu"
+              class="absolute right-0 top-full z-50 mt-2 min-w-40 rounded-xl bg-card p-2 shadow-[0_8px_20px_5px_rgba(0,0,0,0.08)] dark:bg-card-dark dark:shadow-[0_8px_20px_5px_rgba(0,0,0,0.4)]"
+            >
+              <li v-for="item in localeItems" :key="item.code" role="none">
+                <NuxtLink
+                  :to="item.to"
+                  role="menuitem"
+                  class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                  @click="localeOpen = false"
+                >
+                  <Icon :name="item.icon" class="h-4 w-5 rounded-[2px]" />
+                  <span class="flex-1">{{ item.label }}</span>
+                  <Icon
+                    v-if="item.code === locale"
+                    name="lucide:check"
+                    class="size-4 text-primary"
+                  />
+                </NuxtLink>
+              </li>
+            </ul>
+          </div>
 
-          <UButton
+          <button
             type="button"
-            :icon="isDark ? 'lucide:sun' : 'lucide:moon'"
-            color="neutral"
-            variant="soft"
-            square
-            class="size-8 justify-center rounded-full p-0"
+            class="flex size-8 items-center justify-center rounded-full bg-neutral-100 text-neutral-500 transition-colors hover:bg-neutral-200 dark:bg-neutral-800 dark:text-amber-400 dark:hover:bg-neutral-700"
             :aria-label="isDark ? t('home.switch_to_light') : t('home.switch_to_dark')"
-            :ui="{ leadingIcon: 'size-4' }"
             @click="toggleColorMode"
-          />
-          <UButton
+          >
+            <Icon :name="isDark ? 'lucide:sun' : 'lucide:moon'" class="size-4" />
+          </button>
+          <button
             type="button"
-            icon="lucide:search"
-            color="neutral"
-            variant="ghost"
-            square
-            class="size-8 justify-center rounded-full p-0"
+            class="flex size-8 items-center justify-center rounded-full text-neutral-500 transition-colors hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800"
             :aria-label="t('home.search')"
-            :ui="{ leadingIcon: 'size-4' }"
             @click="searchOpen = !searchOpen"
-          />
+          >
+            <Icon name="lucide:search" class="size-4" />
+          </button>
         </div>
       </div>
     </div>
