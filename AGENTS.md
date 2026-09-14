@@ -27,3 +27,10 @@
 - 只能使用 `package.json` 的 `dependencies` 字段中已有图标包提供的图标
 - 图标命名必须使用对应图标包的 Iconify 前缀，格式为 `collection:icon-name`
 - 禁止为使用新图标而引入额外的图标库或图标包
+
+## 数据库规范
+
+- 停用 Drizzle 迁移工作流，不执行 `drizzle-kit migrate` 指令，不创建迁移 SQL 文件、快照和迁移日志
+- 数据库结构调整使用 `drizzle-kit push` 或 Codex 直接执行 SQL 语句
+- 通过 SQL 修改数据库结构时必须同步更新 `server/database/schema.ts` 文件，保持数据库定义与数据库一致
+- 数据库操作前确认目标连接和影响范围，仅操作本次任务指定的数据库，涉及不可逆转换时必须取得授权后再执行
