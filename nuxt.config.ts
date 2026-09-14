@@ -91,7 +91,8 @@ export default defineNuxtConfig({
       },
     },
     prerender: {
-      concurrency: 1,
+      concurrency: 8,
+      ignore: ['/_ipx'],
     },
   },
   vite: {
@@ -135,6 +136,9 @@ export default defineNuxtConfig({
         limitInputPixels: false,
       },
     },
+  },
+  linkChecker: {
+    skipInspections: ['absolute-site-urls'],
   },
   scripts: {
     privacy: false,

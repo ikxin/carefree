@@ -25,6 +25,7 @@ const { t } = useI18n()
       <NuxtLink
         v-if="article.cover"
         :to="localePath(`/article/${encodeURIComponent(article.slug)}`)"
+        :aria-label="article.title"
         class="group block w-20 shrink-0 overflow-hidden rounded sm:w-1/4"
       >
         <div class="aspect-10/7">
