@@ -24,7 +24,9 @@ export default defineNuxtConfig({
       },
     },
   },
-  devtools: { enabled: false },
+  devtools: {
+    enabled: false,
+  },
   css: ['~/assets/css/main.css'],
   site: {
     url: 'https://www.ikxin.com',
@@ -75,24 +77,24 @@ export default defineNuxtConfig({
   },
   compatibilityDate: '2026-10-01',
   nitro: {
+    experimental: {
+      openAPI: true,
+    },
+    openAPI: {
+      meta: {
+        version: '0.1.0',
+      },
+      production: 'runtime',
+      ui: {
+        scalar: {},
+        swagger: {},
+      },
+    },
     prerender: {
       concurrency: 1,
     },
   },
   vite: {
-    optimizeDeps: {
-      include: ['@unhead/schema-org/vue'],
-    },
-    build: {
-      rollupOptions: {
-        onwarn(warning, warn) {
-          if (warning.code === 'SOURCEMAP_BROKEN') {
-            return
-          }
-          warn(warning)
-        },
-      },
-    },
     plugins: [tailwindcss()],
   },
   fonts: {
