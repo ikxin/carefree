@@ -1,3 +1,4 @@
+import { getArticlePublicId } from '#server/utils/content/publicId'
 import { comments, contents, users } from '#server/database/schema'
 import { auth } from '#server/utils/auth'
 import { getAvatarUrl } from '#server/utils/avatar'
@@ -46,17 +47,17 @@ function findRootComment(comment: CommentNode, nodesById: Map<string, CommentNod
 }
 
 export default defineEventHandler(async (event) => {
-  const slug = getRouterParam(event, 'slug')
-
-  if (!slug) {
-    throw createError({ statusCode: 404, statusMessage: 'Article not found' })
-  }
+  const publicId = getArticlePublicId(event)
 
   const [article] = await db
     .select({ id: contents.id })
     .from(contents)
     .where(
-      and(eq(contents.slug, slug), eq(contents.type, 'article'), eq(contents.status, 'publish')),
+      and(
+        eq(contents.publicId, publicId),
+        eq(contents.type, 'article'),
+        eq(contents.status, 'publish'),
+      ),
     )
     .limit(1)
 

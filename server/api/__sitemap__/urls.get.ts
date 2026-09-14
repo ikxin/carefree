@@ -7,7 +7,7 @@ export default defineSitemapEventHandler(async () => {
   const [articles, categoryArchives, tagArchives] = await Promise.all([
     db
       .select({
-        slug: contents.slug,
+        publicId: contents.publicId,
         updatedAt: contents.updatedAt,
       })
       .from(contents)
@@ -37,7 +37,7 @@ export default defineSitemapEventHandler(async () => {
 
   return [
     ...articles.map((article) => ({
-      loc: `/article/${article.slug}`,
+      loc: `/article/${article.publicId}`,
       lastmod: article.updatedAt,
       _i18nTransform: true,
     })),

@@ -16,7 +16,7 @@ export async function createArticleFeed(siteUrl: string, format: ArticleFeedForm
   const articles = await db
     .select({
       title: contents.title,
-      slug: contents.slug,
+      publicId: contents.publicId,
       description: contents.description,
       content: contents.content,
       createdAt: contents.createdAt,
@@ -58,7 +58,10 @@ export async function createArticleFeed(siteUrl: string, format: ArticleFeedForm
   const markdownParser = await createMarkdownParser({ highlight: false, toc: false })
 
   for (const article of articles) {
-    const articleUrl = new URL(`article/${encodeURIComponent(article.slug)}`, baseUrl).toString()
+    const articleUrl = new URL(
+      `article/${encodeURIComponent(article.publicId)}`,
+      baseUrl,
+    ).toString()
     const parsedContent = article.description?.trim()
       ? undefined
       : await markdownParser(article.content)

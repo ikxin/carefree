@@ -7,7 +7,7 @@ import { Dots } from '@fancyapps/ui/dist/carousel/carousel.dots.js'
 
 interface BannerArticle {
   title: string
-  slug: string
+  publicId: number
   cover: string
   createdAt: string
   category: { name: string; slug: string } | null
@@ -128,7 +128,7 @@ onMounted(() => {
   initCarousel()
 })
 
-watch([locale, () => slides.value.map((slide) => slide.slug).join(',')], async () => {
+watch([locale, () => slides.value.map((slide) => slide.publicId).join(',')], async () => {
   destroyCarousel()
   const version = carouselVersion
 
@@ -161,8 +161,8 @@ onBeforeUnmount(() => {
           <div class="f-carousel__viewport">
             <NuxtLink
               v-for="(slide, index) in slides"
-              :key="slide.slug"
-              :to="localePath(`/article/${encodeURIComponent(slide.slug)}`)"
+              :key="slide.publicId"
+              :to="localePath(`/article/${encodeURIComponent(slide.publicId)}`)"
               class="f-carousel__slide group/slide block h-full select-none overflow-hidden"
               :class="{ 'pointer-events-none invisible': !carouselReady && index > 0 }"
               :aria-hidden="!carouselReady && index > 0 ? 'true' : undefined"
@@ -220,8 +220,8 @@ onBeforeUnmount(() => {
       <div v-if="centerPosts.length" class="contents lg:col-span-2 lg:flex lg:flex-col lg:gap-3">
         <NuxtLink
           v-for="post in centerPosts"
-          :key="post.slug"
-          :to="localePath(`/article/${encodeURIComponent(post.slug)}`)"
+          :key="post.publicId"
+          :to="localePath(`/article/${encodeURIComponent(post.publicId)}`)"
           class="group/card relative block aspect-4/3 overflow-hidden rounded lg:aspect-auto lg:flex-1"
         >
           <PostCover
@@ -250,7 +250,7 @@ onBeforeUnmount(() => {
 
       <div v-if="sidePost" class="lg:col-span-3">
         <NuxtLink
-          :to="localePath(`/article/${encodeURIComponent(sidePost.slug)}`)"
+          :to="localePath(`/article/${encodeURIComponent(sidePost.publicId)}`)"
           class="group/card relative block aspect-4/3 overflow-hidden rounded lg:h-full lg:aspect-auto"
         >
           <PostCover

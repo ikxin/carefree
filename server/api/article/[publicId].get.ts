@@ -1,3 +1,4 @@
+import { getArticlePublicId } from '#server/utils/content/publicId'
 import {
   categories,
   comments,
@@ -21,12 +22,8 @@ import { db } from '#server/utils/db'
 import { and, eq, sql } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
-  const slug = getRouterParam(event, 'slug')
+  const publicId = getArticlePublicId(event)
   const requestedLocale = getQuery(event).locale ?? defaultContentLocale
-
-  if (!slug) {
-    throw createError({ statusCode: 404, statusMessage: 'Article not found' })
-  }
 
   if (!isContentLocale(requestedLocale)) {
     throw createError({ statusCode: 400, statusMessage: 'Unsupported article locale' })
@@ -38,7 +35,7 @@ export default defineEventHandler(async (event) => {
       title: contents.title,
       description: contents.description,
       content: contents.content,
-      slug: contents.slug,
+      publicId: contents.publicId,
       views: contents.views,
       createdAt: contents.createdAt,
       updatedAt: contents.updatedAt,
@@ -47,7 +44,11 @@ export default defineEventHandler(async (event) => {
     .from(contents)
     .innerJoin(users, eq(contents.authorId, users.id))
     .where(
-      and(eq(contents.slug, slug), eq(contents.type, 'article'), eq(contents.status, 'publish')),
+      and(
+        eq(contents.publicId, publicId),
+        eq(contents.type, 'article'),
+        eq(contents.status, 'publish'),
+      ),
     )
     .limit(1)
 
@@ -129,7 +130,7 @@ export default defineEventHandler(async (event) => {
     ...parsedContent,
     title: resolvedArticle.title,
     description,
-    slug: article.slug,
+    publicId: article.publicId,
     cover: extractCover(article.content),
     views: article.views,
     createdAt: article.createdAt,

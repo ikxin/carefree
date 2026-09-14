@@ -1,3 +1,4 @@
+import { getArticlePublicId } from '#server/utils/content/publicId'
 import { comments, contents, users } from '#server/database/schema'
 import { auth } from '#server/utils/auth'
 import { getAvatarUrl } from '#server/utils/avatar'
@@ -38,11 +39,7 @@ function normalizeUrl(value: string) {
 }
 
 export default defineEventHandler(async (event) => {
-  const slug = getRouterParam(event, 'slug')
-
-  if (!slug) {
-    throw createError({ statusCode: 404, statusMessage: 'Article not found' })
-  }
+  const publicId = getArticlePublicId(event)
 
   const rawBody = await readBody<unknown>(event)
 
@@ -103,7 +100,11 @@ export default defineEventHandler(async (event) => {
     .select({ id: contents.id })
     .from(contents)
     .where(
-      and(eq(contents.slug, slug), eq(contents.type, 'article'), eq(contents.status, 'publish')),
+      and(
+        eq(contents.publicId, publicId),
+        eq(contents.type, 'article'),
+        eq(contents.status, 'publish'),
+      ),
     )
     .limit(1)
 

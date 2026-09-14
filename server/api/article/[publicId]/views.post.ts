@@ -1,3 +1,4 @@
+import { getArticlePublicId } from '#server/utils/content/publicId'
 import { contents } from '#server/database/schema'
 import { db } from '#server/utils/db'
 import { and, eq, sql } from 'drizzle-orm'
@@ -5,14 +6,10 @@ import { and, eq, sql } from 'drizzle-orm'
 export default defineEventHandler(async (event) => {
   setResponseHeader(event, 'Cache-Control', 'no-store')
 
-  const slug = getRouterParam(event, 'slug')
-
-  if (!slug) {
-    throw createError({ statusCode: 404, statusMessage: 'Article not found' })
-  }
+  const publicId = getArticlePublicId(event)
 
   const condition = and(
-    eq(contents.slug, slug),
+    eq(contents.publicId, publicId),
     eq(contents.type, 'article'),
     eq(contents.status, 'publish'),
   )
@@ -47,7 +44,7 @@ export default defineEventHandler(async (event) => {
   }
 
   setCookie(event, cookieName, '1', {
-    path: `/api/article/${encodeURIComponent(slug)}/views`,
+    path: `/api/article/${publicId}/views`,
     httpOnly: true,
     sameSite: 'lax',
     secure: getRequestURL(event).protocol === 'https:',

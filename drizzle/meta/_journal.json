@@ -50,6 +50,13 @@
       "when": 1788751232079,
       "tag": "0006_update_account_identity",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1789368539283,
+      "tag": "0007_contents_public_id",
+      "breakpoints": true
     }
   ]
 }

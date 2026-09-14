@@ -98,11 +98,11 @@ function hasCover<T extends { cover: string | null }>(
 }
 
 const bannerArticles = computed(() => (bannerResponse.value?.articles ?? []).filter(hasCover))
-const bannerArticleSlugs = computed(
-  () => new Set(bannerArticles.value.map((article) => article.slug)),
+const bannerArticlePublicIds = computed(
+  () => new Set(bannerArticles.value.map((article) => article.publicId)),
 )
 const listArticles = computed(() =>
-  articles.value.filter((article) => !bannerArticleSlugs.value.has(article.slug)),
+  articles.value.filter((article) => !bannerArticlePublicIds.value.has(article.publicId)),
 )
 const hasArticles = computed(() => bannerArticles.value.length > 0 || articles.value.length > 0)
 </script>
@@ -114,7 +114,7 @@ const hasArticles = computed(() => bannerArticles.value.length > 0 || articles.v
     <section class="mx-auto max-w-7xl px-4">
       <div class="grid grid-cols-1 gap-5 lg:grid-cols-12">
         <div class="flex flex-col gap-4 lg:col-span-9">
-          <PostCard v-for="article in listArticles" :key="article.slug" :article="article" />
+          <PostCard v-for="article in listArticles" :key="article.publicId" :article="article" />
 
           <div
             v-if="articleError && !pending"

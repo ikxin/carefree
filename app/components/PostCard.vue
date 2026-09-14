@@ -1,7 +1,7 @@
 <script setup lang="ts">
 interface Article {
   title: string
-  slug: string
+  publicId: number
   description: string
   cover: string | null
   views: number
@@ -24,7 +24,7 @@ const { t } = useI18n()
     <div class="flex gap-3 sm:gap-4">
       <NuxtLink
         v-if="article.cover"
-        :to="localePath(`/article/${encodeURIComponent(article.slug)}`)"
+        :to="localePath(`/article/${encodeURIComponent(article.publicId)}`)"
         :aria-label="article.title"
         class="group block w-20 shrink-0 overflow-hidden rounded sm:w-1/4"
       >
@@ -44,7 +44,7 @@ const { t } = useI18n()
         <div>
           <h2 class="mb-1 line-clamp-2 text-sm font-bold sm:mb-3 sm:text-lg">
             <NuxtLink
-              :to="localePath(`/article/${encodeURIComponent(article.slug)}`)"
+              :to="localePath(`/article/${encodeURIComponent(article.publicId)}`)"
               class="transition-colors hover:text-primary"
             >
               {{ article.title }}
@@ -82,7 +82,7 @@ const { t } = useI18n()
               </span>
             </span>
             <NuxtLink
-              :to="`${localePath(`/article/${encodeURIComponent(article.slug)}`)}#comments`"
+              :to="`${localePath(`/article/${encodeURIComponent(article.publicId)}`)}#comments`"
               class="flex shrink-0 items-center gap-1.5 transition-colors hover:text-primary"
               :aria-label="t('home.comments', { count: article.commentCount })"
               :title="t('home.comments', { count: article.commentCount })"

@@ -47,11 +47,11 @@ const hotRest = computed(() => hotPosts.value.slice(1))
       <ul class="ml-1.5">
         <li
           v-for="article in recent.articles"
-          :key="article.slug"
+          :key="article.publicId"
           class="relative border-l-2 border-neutral-100 pb-5 pl-5 last:pb-0 dark:border-neutral-700"
         >
           <NuxtLink
-            :to="localePath(`/article/${encodeURIComponent(article.slug)}`)"
+            :to="localePath(`/article/${encodeURIComponent(article.publicId)}`)"
             class="group block"
           >
             <span
@@ -104,7 +104,10 @@ const hotRest = computed(() => hotPosts.value.slice(1))
       </h3>
       <ul>
         <li v-if="hotFirst" class="relative mb-5 overflow-hidden rounded">
-          <NuxtLink :to="localePath(`/article/${encodeURIComponent(hotFirst.slug)}`)" class="block">
+          <NuxtLink
+            :to="localePath(`/article/${encodeURIComponent(hotFirst.publicId)}`)"
+            class="block"
+          >
             <div class="aspect-10/7">
               <PostCover
                 :src="hotFirst.cover"
@@ -125,9 +128,9 @@ const hotRest = computed(() => hotPosts.value.slice(1))
             </div>
           </NuxtLink>
         </li>
-        <li v-for="article in hotRest" :key="article.slug" class="mb-5 last:mb-0">
+        <li v-for="article in hotRest" :key="article.publicId" class="mb-5 last:mb-0">
           <NuxtLink
-            :to="localePath(`/article/${encodeURIComponent(article.slug)}`)"
+            :to="localePath(`/article/${encodeURIComponent(article.publicId)}`)"
             class="group flex items-center"
           >
             <div class="mr-3 w-18.75 shrink-0 overflow-hidden rounded">
