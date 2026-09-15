@@ -1,13 +1,10 @@
-import { getArticlePublicId } from '#server/utils/content/publicId'
-import { comments, contents, users } from '#server/database/schema'
+import { comments } from '#server/database/schema'
 import { auth } from '#server/utils/auth'
-import { getAvatarUrl } from '#server/utils/avatar'
+import { getCommentContentId, getComments, parseCommentContent } from '#server/utils/comments'
 import { db } from '#server/utils/db'
-import { getClientInfo } from '#server/utils/userAgent'
 import { and, eq, gt } from 'drizzle-orm'
 import { validate as validateUuid, v7 as uuidv7 } from 'uuid'
 
-const commentMaxLength = 2000
 const nameMaxLength = 50
 const emailMaxLength = 254
 const urlMaxLength = 2048
@@ -39,8 +36,6 @@ function normalizeUrl(value: string) {
 }
 
 export default defineEventHandler(async (event) => {
-  const publicId = getArticlePublicId(event)
-
   const rawBody = await readBody<unknown>(event)
 
   if (!rawBody || typeof rawBody !== 'object' || Array.isArray(rawBody)) {
@@ -54,19 +49,15 @@ export default defineEventHandler(async (event) => {
     return { comment: null }
   }
 
-  const content = readString(payload, 'content').replace(/\r\n?/g, '\n')
-  const parentId = readString(payload, 'parentId') || null
+  const content = parseCommentContent(payload.content)
+  const parentId = payload.parentId ?? null
   const session = await auth.api.getSession({ headers: event.headers })
   const guestName = normalizeName(readString(payload, 'name'))
   const guestEmail = readString(payload, 'email').toLowerCase()
   const guestUrlValue = readString(payload, 'url')
   const userAgent = getHeader(event, 'user-agent')?.slice(0, userAgentMaxLength) ?? null
 
-  if (!content || content.length > commentMaxLength) {
-    throw createError({ statusCode: 400, statusMessage: 'Invalid comment content' })
-  }
-
-  if (parentId && !validateUuid(parentId)) {
+  if (parentId !== null && (typeof parentId !== 'string' || !validateUuid(parentId))) {
     throw createError({ statusCode: 400, statusMessage: 'Invalid parent comment' })
   }
 
@@ -96,37 +87,16 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Invalid commenter URL' })
   }
 
-  const [article] = await db
-    .select({ id: contents.id })
-    .from(contents)
-    .where(
-      and(
-        eq(contents.publicId, publicId),
-        eq(contents.type, 'article'),
-        eq(contents.status, 'publish'),
-      ),
-    )
-    .limit(1)
-
-  if (!article) {
-    throw createError({ statusCode: 404, statusMessage: 'Article not found' })
-  }
-
-  let replyTo: { id: string; name: string | null } | null = null
+  const contentId = await getCommentContentId(payload.contentPublicId)
 
   if (parentId) {
     const [parentComment] = await db
-      .select({
-        id: comments.id,
-        guestName: comments.name,
-        userName: users.name,
-      })
+      .select({ id: comments.id })
       .from(comments)
-      .leftJoin(users, eq(comments.userId, users.id))
       .where(
         and(
           eq(comments.id, parentId),
-          eq(comments.contentId, article.id),
+          eq(comments.contentId, contentId),
           eq(comments.status, 'approved'),
         ),
       )
@@ -134,11 +104,6 @@ export default defineEventHandler(async (event) => {
 
     if (!parentComment) {
       throw createError({ statusCode: 400, statusMessage: 'Invalid parent comment' })
-    }
-
-    replyTo = {
-      id: parentComment.id,
-      name: parentComment.userName ?? parentComment.guestName,
     }
   }
 
@@ -150,7 +115,7 @@ export default defineEventHandler(async (event) => {
     .from(comments)
     .where(
       and(
-        eq(comments.contentId, article.id),
+        eq(comments.contentId, contentId),
         identityCondition,
         gt(comments.createdAt, new Date(Date.now() - rateLimitWindow)),
       ),
@@ -162,39 +127,24 @@ export default defineEventHandler(async (event) => {
   }
 
   const id = uuidv7()
-  const [createdComment] = await db
-    .insert(comments)
-    .values({
-      id,
-      contentId: article.id,
-      userId: session?.user.id ?? null,
-      parentId,
-      name: session?.user ? null : guestName,
-      email: session?.user ? null : guestEmail,
-      url: session?.user ? null : guestUrl,
-      content,
-      status: 'approved',
-      ipAddress: getRequestIP(event) ?? null,
-      userAgent,
-    })
-    .returning({ createdAt: comments.createdAt })
+  await db.insert(comments).values({
+    id,
+    contentId,
+    userId: session?.user.id ?? null,
+    parentId,
+    name: session?.user ? null : guestName,
+    email: session?.user ? null : guestEmail,
+    url: session?.user ? null : guestUrl,
+    content,
+    status: 'approved',
+    ipAddress: getRequestIP(event) ?? null,
+    userAgent,
+  })
+
+  const [comment] = await getComments(eq(comments.id, id))
 
   setResponseStatus(event, 201)
+  setHeader(event, 'Location', `/api/comments/${id}`)
 
-  return {
-    comment: {
-      id,
-      parentId,
-      content,
-      createdAt: createdComment?.createdAt ?? new Date(),
-      author: {
-        name: session?.user.name ?? guestName,
-        image: getAvatarUrl(session?.user.email ?? guestEmail),
-        url: session?.user ? null : guestUrl,
-      },
-      replyTo,
-      client: getClientInfo(userAgent),
-      replies: [],
-    },
-  }
+  return { comment }
 })

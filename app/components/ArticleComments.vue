@@ -80,7 +80,8 @@ const {
   error: commentsError,
   status: commentsStatus,
   refresh,
-} = await useFetch<CommentResponse>(`/api/article/${encodeURIComponent(props.publicId)}/comments`, {
+} = await useFetch<CommentResponse>('/api/comments', {
+  query: { contentPublicId: props.publicId },
   watch: false,
 })
 
@@ -119,20 +120,18 @@ const submitComment = async () => {
   submitting.value = true
 
   try {
-    const response = await $fetch<{ comment: Comment | null }>(
-      `/api/article/${encodeURIComponent(props.publicId)}/comments`,
-      {
-        method: 'POST',
-        body: {
-          content: form.content,
-          name: form.name,
-          email: form.email,
-          url: form.url,
-          company: form.company,
-          parentId: replyTarget.value?.id ?? null,
-        },
+    const response = await $fetch<{ comment: Comment | null }>('/api/comments', {
+      method: 'POST',
+      body: {
+        contentPublicId: props.publicId,
+        content: form.content,
+        name: form.name,
+        email: form.email,
+        url: form.url,
+        company: form.company,
+        parentId: replyTarget.value?.id ?? null,
       },
-    )
+    })
 
     persistIdentity()
     form.content = ''
