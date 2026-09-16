@@ -2,7 +2,7 @@ import { contents, users } from '#server/database/schema'
 import { getArticleDescription } from '#server/utils/content/description'
 import { db } from '#server/utils/db'
 import { createMarkdownParser } from '@nuxtjs/mdc/runtime'
-import { and, desc, eq } from 'drizzle-orm'
+import { and, desc, eq, isNotNull } from 'drizzle-orm'
 import { Feed } from 'feed'
 
 const feedTitle = '一纸忘忧'
@@ -16,7 +16,7 @@ export async function createArticleFeed(siteUrl: string, format: ArticleFeedForm
   const articles = await db
     .select({
       title: contents.title,
-      publicId: contents.publicId,
+      slug: contents.slug,
       description: contents.description,
       content: contents.content,
       createdAt: contents.createdAt,
@@ -25,7 +25,9 @@ export async function createArticleFeed(siteUrl: string, format: ArticleFeedForm
     })
     .from(contents)
     .innerJoin(users, eq(contents.authorId, users.id))
-    .where(and(eq(contents.type, 'article'), eq(contents.status, 'publish')))
+    .where(
+      and(eq(contents.type, 'article'), eq(contents.status, 'publish'), isNotNull(contents.slug)),
+    )
     .orderBy(desc(contents.createdAt))
     .limit(30)
 
@@ -58,10 +60,7 @@ export async function createArticleFeed(siteUrl: string, format: ArticleFeedForm
   const markdownParser = await createMarkdownParser({ highlight: false, toc: false })
 
   for (const article of articles) {
-    const articleUrl = new URL(
-      `article/${encodeURIComponent(article.publicId)}`,
-      baseUrl,
-    ).toString()
+    const articleUrl = new URL(`article/${encodeURIComponent(article.slug!)}`, baseUrl).toString()
     const parsedContent = article.description?.trim()
       ? undefined
       : await markdownParser(article.content)

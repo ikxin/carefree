@@ -1,17 +1,19 @@
 import { categories, contentCategories, contents, contentTags, tags } from '#server/database/schema'
 import { db } from '#server/utils/db'
 import type { SitemapUrlInput } from '#sitemap/types'
-import { and, desc, eq, max } from 'drizzle-orm'
+import { and, desc, eq, isNotNull, max } from 'drizzle-orm'
 
 export default defineSitemapEventHandler(async () => {
   const [articles, categoryArchives, tagArchives] = await Promise.all([
     db
       .select({
-        publicId: contents.publicId,
+        slug: contents.slug,
         updatedAt: contents.updatedAt,
       })
       .from(contents)
-      .where(and(eq(contents.type, 'article'), eq(contents.status, 'publish')))
+      .where(
+        and(eq(contents.type, 'article'), eq(contents.status, 'publish'), isNotNull(contents.slug)),
+      )
       .orderBy(desc(contents.createdAt)),
     db
       .select({
@@ -37,7 +39,7 @@ export default defineSitemapEventHandler(async () => {
 
   return [
     ...articles.map((article) => ({
-      loc: `/article/${article.publicId}`,
+      loc: `/article/${encodeURIComponent(article.slug!)}`,
       lastmod: article.updatedAt,
       _i18nTransform: true,
     })),

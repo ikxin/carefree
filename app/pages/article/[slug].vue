@@ -3,16 +3,16 @@ import ProseImg from '~/components/content/ProseImg.vue'
 import ProsePre from '~/components/content/ProsePre.vue'
 
 const route = useRoute()
-const publicId = route.params.publicId
+const slug = route.params.slug
 const site = useSiteConfig()
 const { locale } = useI18n()
 const localePath = useLocalePath()
 
-if (typeof publicId !== 'string') {
+if (typeof slug !== 'string') {
   throw createError({ statusCode: 404, statusMessage: 'Article not found' })
 }
 
-const { data: article, error } = await useFetch(`/api/article/${encodeURIComponent(publicId)}`, {
+const { data: article, error } = await useFetch(`/api/article/${encodeURIComponent(slug)}`, {
   query: { locale },
 })
 
@@ -24,7 +24,7 @@ onMounted(async () => {
   if (!article.value) return
 
   try {
-    const { views } = await $fetch(`/api/article/${encodeURIComponent(publicId)}/views`, {
+    const { views } = await $fetch(`/api/article/${encodeURIComponent(slug)}/views`, {
       method: 'POST',
     })
 
@@ -151,7 +151,7 @@ defineOgImage(
             </footer>
           </article>
 
-          <ArticleComments :public-id="article.publicId" @count-changed="updateCommentCount" />
+          <ArticleComments :slug="article.slug" @count-changed="updateCommentCount" />
         </div>
 
         <div class="hidden lg:col-span-3 lg:block">

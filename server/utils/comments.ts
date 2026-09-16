@@ -1,5 +1,6 @@
 import { comments, contents, users } from '#server/database/schema'
 import { getAvatarUrl } from '#server/utils/avatar'
+import { isArticleSlug } from '#server/utils/content/slug'
 import { db } from '#server/utils/db'
 import { getClientInfo, type ClientInfo } from '#server/utils/userAgent'
 import { and, asc, eq, type SQL } from 'drizzle-orm'
@@ -17,24 +18,16 @@ export function parseCommentContent(value: unknown) {
 }
 
 export async function getCommentContentId(value: unknown) {
-  if (typeof value !== 'string' && typeof value !== 'number') {
-    throw createError({ statusCode: 400, statusMessage: 'Invalid content public ID' })
-  }
-
-  const publicId = Number(value)
-
-  if (
-    !/^(0|[1-9]\d*)$/.test(String(value)) ||
-    !Number.isInteger(publicId) ||
-    publicId > 2147483647
-  ) {
-    throw createError({ statusCode: 400, statusMessage: 'Invalid content public ID' })
+  if (!isArticleSlug(value)) {
+    throw createError({ statusCode: 400, statusMessage: 'Invalid content slug' })
   }
 
   const [content] = await db
     .select({ id: contents.id })
     .from(contents)
-    .where(and(eq(contents.publicId, publicId), eq(contents.status, 'publish')))
+    .where(
+      and(eq(contents.slug, value), eq(contents.type, 'article'), eq(contents.status, 'publish')),
+    )
     .limit(1)
 
   if (!content) {
@@ -46,7 +39,6 @@ export async function getCommentContentId(value: unknown) {
 
 export interface CommentNode {
   id: string
-  contentPublicId: number
   parentId: string | null
   content: string
   createdAt: Date
@@ -67,7 +59,6 @@ export async function getComments(condition: SQL): Promise<CommentNode[]> {
   const rows = await db
     .select({
       id: comments.id,
-      contentPublicId: contents.publicId,
       parentId: comments.parentId,
       content: comments.content,
       createdAt: comments.createdAt,
@@ -106,7 +97,6 @@ export async function getComments(condition: SQL): Promise<CommentNode[]> {
 
     return {
       id: row.id,
-      contentPublicId: row.contentPublicId,
       parentId: row.parentId,
       content: row.content,
       createdAt: row.createdAt,

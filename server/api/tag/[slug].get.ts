@@ -47,9 +47,9 @@ export default defineEventHandler(async (event) => {
     .select({
       id: contents.id,
       title: contents.title,
+      slug: contents.slug,
       description: contents.description,
       content: contents.content,
-      publicId: contents.publicId,
       views: contents.views,
       commentCount: sql<number>`(
         select count(*)::int
@@ -123,7 +123,7 @@ export default defineEventHandler(async (event) => {
 
       return {
         title: hasCurrentTranslation ? (article.translatedTitle ?? article.title) : article.title,
-        publicId: article.publicId,
+        slug: article.slug!,
         description: description?.trim() || extractExcerpt(content),
         cover: extractCover(article.content),
         views: article.views,

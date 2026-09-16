@@ -1,4 +1,4 @@
-import { getArticlePublicId } from '#server/utils/content/publicId'
+import { getArticleSlug } from '#server/utils/content/slug'
 import {
   categories,
   comments,
@@ -22,7 +22,7 @@ import { db } from '#server/utils/db'
 import { and, eq, sql } from 'drizzle-orm'
 
 export default defineEventHandler(async (event) => {
-  const publicId = getArticlePublicId(event)
+  const slug = getArticleSlug(event)
   const requestedLocale = getQuery(event).locale ?? defaultContentLocale
 
   if (!isContentLocale(requestedLocale)) {
@@ -33,9 +33,9 @@ export default defineEventHandler(async (event) => {
     .select({
       id: contents.id,
       title: contents.title,
+      slug: contents.slug,
       description: contents.description,
       content: contents.content,
-      publicId: contents.publicId,
       views: contents.views,
       createdAt: contents.createdAt,
       updatedAt: contents.updatedAt,
@@ -44,11 +44,7 @@ export default defineEventHandler(async (event) => {
     .from(contents)
     .innerJoin(users, eq(contents.authorId, users.id))
     .where(
-      and(
-        eq(contents.publicId, publicId),
-        eq(contents.type, 'article'),
-        eq(contents.status, 'publish'),
-      ),
+      and(eq(contents.slug, slug), eq(contents.type, 'article'), eq(contents.status, 'publish')),
     )
     .limit(1)
 
@@ -129,8 +125,8 @@ export default defineEventHandler(async (event) => {
   return {
     ...parsedContent,
     title: resolvedArticle.title,
+    slug: article.slug ?? slug,
     description,
-    publicId: article.publicId,
     cover: extractCover(article.content),
     views: article.views,
     createdAt: article.createdAt,

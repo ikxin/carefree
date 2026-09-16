@@ -150,7 +150,7 @@ export const contents = pgTable(
   {
     id: uuid('id').primaryKey(),
     title: text('title').notNull(),
-    publicId: integer('public_id').generatedByDefaultAsIdentity().notNull(),
+    slug: text('slug'),
     type: text('type').notNull(),
     description: text('description'),
     content: text('content').notNull(),
@@ -160,7 +160,7 @@ export const contents = pgTable(
     views: integer('views').default(0).notNull(),
   },
   (table) => [
-    uniqueIndex('contents_public_id_key').on(table.publicId),
+    uniqueIndex('contents_slug_key').on(table.slug),
     index('contents_author_id_idx').on(table.authorId),
     index('contents_type_status_created_at_idx').on(table.type, table.status, table.createdAt),
     foreignKey({

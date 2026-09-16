@@ -26,7 +26,7 @@ function findRootComment(comment: CommentNode, nodesById: Map<string, CommentNod
 }
 
 export default defineEventHandler(async (event) => {
-  const contentId = await getCommentContentId(getQuery(event).contentPublicId)
+  const contentId = await getCommentContentId(getQuery(event).contentSlug)
   const [nodes, session] = await Promise.all([
     getComments(eq(comments.contentId, contentId)),
     auth.api.getSession({ headers: event.headers }),

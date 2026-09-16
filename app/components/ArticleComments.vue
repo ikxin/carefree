@@ -37,7 +37,7 @@ interface CommentIdentity {
 }
 
 const props = defineProps<{
-  publicId: number
+  slug: string
 }>()
 
 const emit = defineEmits<{
@@ -81,7 +81,7 @@ const {
   status: commentsStatus,
   refresh,
 } = await useFetch<CommentResponse>('/api/comments', {
-  query: { contentPublicId: props.publicId },
+  query: { contentSlug: props.slug },
   watch: false,
 })
 
@@ -123,7 +123,7 @@ const submitComment = async () => {
     const response = await $fetch<{ comment: Comment | null }>('/api/comments', {
       method: 'POST',
       body: {
-        contentPublicId: props.publicId,
+        contentSlug: props.slug,
         content: form.content,
         name: form.name,
         email: form.email,

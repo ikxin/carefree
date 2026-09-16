@@ -1,4 +1,4 @@
-import { getArticlePublicId } from '#server/utils/content/publicId'
+import { getArticleSlug } from '#server/utils/content/slug'
 import { contents } from '#server/database/schema'
 import { db } from '#server/utils/db'
 import { and, eq, sql } from 'drizzle-orm'
@@ -6,10 +6,10 @@ import { and, eq, sql } from 'drizzle-orm'
 export default defineEventHandler(async (event) => {
   setResponseHeader(event, 'Cache-Control', 'no-store')
 
-  const publicId = getArticlePublicId(event)
+  const slug = getArticleSlug(event)
 
   const condition = and(
-    eq(contents.publicId, publicId),
+    eq(contents.slug, slug),
     eq(contents.type, 'article'),
     eq(contents.status, 'publish'),
   )
@@ -44,7 +44,7 @@ export default defineEventHandler(async (event) => {
   }
 
   setCookie(event, cookieName, '1', {
-    path: `/api/article/${publicId}/views`,
+    path: `/api/article/${encodeURIComponent(slug)}/views`,
     httpOnly: true,
     sameSite: 'lax',
     secure: getRequestURL(event).protocol === 'https:',

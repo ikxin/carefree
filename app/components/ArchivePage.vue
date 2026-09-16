@@ -1,7 +1,7 @@
 <script setup lang="ts">
 interface ArchiveArticle {
   title: string
-  publicId: number
+  slug: string
   description: string
   cover: string | null
   views: number
@@ -39,7 +39,7 @@ const { t } = useI18n()
           </header>
 
           <div v-if="articles.length" class="flex flex-col gap-3 sm:gap-4">
-            <PostCard v-for="article in articles" :key="article.publicId" :article="article" />
+            <PostCard v-for="article in articles" :key="article.slug" :article="article" />
           </div>
 
           <p

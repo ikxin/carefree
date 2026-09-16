@@ -87,7 +87,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Invalid commenter URL' })
   }
 
-  const contentId = await getCommentContentId(payload.contentPublicId)
+  const contentId = await getCommentContentId(payload.contentSlug)
 
   if (parentId) {
     const [parentComment] = await db
