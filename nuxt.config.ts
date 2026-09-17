@@ -38,7 +38,6 @@ export default defineNuxtConfig({
   colorMode: {
     preference: 'system',
     fallback: 'light',
-    dataValue: 'bs-theme',
   },
   mdc: {
     highlight: {
@@ -159,6 +158,7 @@ export default defineNuxtConfig({
     automaticOgAndTwitterTags: false,
   },
   sitemap: {
+    exclude: ['/admin', '/admin/**'],
     sources: ['/api/__sitemap__/urls'],
   },
 })
