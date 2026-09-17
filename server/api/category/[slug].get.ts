@@ -43,8 +43,15 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: 'Category not found' })
   }
 
+  const childCategories = await db
+    .select({ id: categories.id })
+    .from(categories)
+    .where(eq(categories.parentId, category.id))
+
+  const categoryIds = [category.id, ...childCategories.map((child) => child.id)]
+
   const articles = await db
-    .select({
+    .selectDistinct({
       id: contents.id,
       title: contents.title,
       slug: contents.slug,
@@ -74,7 +81,7 @@ export default defineEventHandler(async (event) => {
     )
     .where(
       and(
-        eq(contentCategories.categoryId, category.id),
+        inArray(contentCategories.categoryId, categoryIds),
         eq(contents.type, 'article'),
         eq(contents.status, 'publish'),
       ),
