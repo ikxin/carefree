@@ -44,6 +44,32 @@ const tagRequest = await useFetch<TaxonomyResponse<AdminTagItem>>('/api/admin/ta
 
 const article = computed(() => articleRequest?.data.value?.content ?? null)
 const categories = computed(() => categoryRequest.data.value?.categories ?? [])
+const categoryOptions = computed(() => {
+  const childrenByParent = new Map<string | null, AdminCategoryItem[]>()
+  for (const category of categories.value) {
+    const siblings = childrenByParent.get(category.parentId) ?? []
+    siblings.push(category)
+    childrenByParent.set(category.parentId, siblings)
+  }
+
+  const options: Array<{ category: AdminCategoryItem; depth: number }> = []
+  const visited = new Set<string>()
+  const visit = (parentId: string | null, depth: number) => {
+    for (const category of childrenByParent.get(parentId) ?? []) {
+      if (visited.has(category.id)) continue
+      visited.add(category.id)
+      options.push({ category, depth })
+      visit(category.id, depth + 1)
+    }
+  }
+
+  visit(null, 0)
+  for (const category of categories.value) {
+    if (!visited.has(category.id)) options.push({ category, depth: 0 })
+  }
+
+  return options
+})
 const tags = computed(() => tagRequest.data.value?.tags ?? [])
 const form = reactive<ContentForm>({
   title: '',
@@ -82,6 +108,10 @@ const loading = computed(() =>
 )
 const hasArticleError = computed(() => Boolean(articleRequest?.error.value))
 const isPublished = computed(() => form.status === 'publish')
+
+function formatCategoryLabel(option: { category: AdminCategoryItem; depth: number }) {
+  return `${'　'.repeat(option.depth)}${option.category.name}`
+}
 
 function getRequestMessage(error: unknown) {
   const requestError = error as {
@@ -355,8 +385,12 @@ async function remove() {
               class="h-10 w-full rounded-lg border border-[#e8edf3] bg-[#fbfcfe] px-3 text-xs text-[#1a2233] outline-none focus:border-[#9cc2ff] focus:ring-4 focus:ring-[#1677ff]/10"
             >
               <option value="">未分类</option>
-              <option v-for="category in categories" :key="category.id" :value="category.id">
-                {{ category.parentId ? '　└ ' : '' }}{{ category.name }}
+              <option
+                v-for="option in categoryOptions"
+                :key="option.category.id"
+                :value="option.category.id"
+              >
+                {{ formatCategoryLabel(option) }}
               </option>
             </select>
           </div>
