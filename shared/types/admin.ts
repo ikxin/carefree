@@ -2,6 +2,10 @@ export type AdminContentStatus = 'draft' | 'review' | 'publish'
 
 export type AdminCommentStatus = 'pending' | 'approved' | 'rejected'
 
+export type AdminUserRole = 'admin' | 'user'
+
+export type AdminUserStatus = 'active' | 'banned'
+
 export type AdminDate = string | Date
 
 export interface AdminCategoryItem {
@@ -85,6 +89,55 @@ export interface AdminCommentListResponse {
   limit: number
   total: number
   hasMore: boolean
+}
+
+export interface AdminUserItem {
+  id: string
+  name: string
+  email: string
+  emailVerified: boolean
+  image: string | null
+  role: AdminUserRole
+  status: AdminUserStatus
+  banned: boolean
+  banReason: string | null
+  banExpires: AdminDate | null
+  articleCount: number
+  commentCount: number
+  createdAt: AdminDate
+  updatedAt: AdminDate
+}
+
+export interface AdminUserListResponse {
+  users: AdminUserItem[]
+  page: number
+  limit: number
+  total: number
+  hasMore: boolean
+}
+
+export interface AdminUserSession {
+  id: string
+  expiresAt: AdminDate
+  ipAddress: string | null
+  userAgent: string | null
+  createdAt: AdminDate
+  updatedAt: AdminDate
+}
+
+export interface AdminUserTransferTarget {
+  id: string
+  name: string
+  email: string
+  role: AdminUserRole
+}
+
+export interface AdminUserDetail extends AdminUserItem {
+  contentCount: number
+  isSelf: boolean
+  isLastAdmin: boolean
+  sessions: AdminUserSession[]
+  transferTargets: AdminUserTransferTarget[]
 }
 
 export interface AdminDashboardResponse {

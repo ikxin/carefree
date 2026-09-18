@@ -81,8 +81,8 @@ useSeoMeta({ title: '登录后台', robots: 'noindex, nofollow' })
           ><Icon name="lucide:sparkles" class="size-6"
         /></span>
         <div>
-          <h1 class="text-xl font-bold tracking-tight">内容后台</h1>
-          <p class="mt-1 text-xs text-[#7a8699]">安全地管理你的内容站</p>
+          <h1 class="text-xl font-bold tracking-tight">文章后台</h1>
+          <p class="mt-1 text-xs text-[#7a8699]">安全地管理你的文章站</p>
         </div>
       </div>
 

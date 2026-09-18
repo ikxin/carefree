@@ -84,7 +84,7 @@ async function updateUrl(next: { q?: string; status?: string; page?: number }) {
   if (next.q) query.q = next.q
   if (next.status && next.status !== 'all') query.status = next.status
   if (next.page && next.page > 1) query.page = String(next.page)
-  await router.replace({ path: '/admin/comments', query })
+  await router.replace({ path: '/admin/comment', query })
 }
 
 async function submitSearch() {
@@ -146,7 +146,7 @@ function formatDate(value: string | Date) {
         <p class="mt-1.5 text-[13px] text-[#7a8699]">审核评论内容，并维护公开讨论区的质量。</p>
       </div>
       <NuxtLink
-        to="/admin/content"
+        to="/admin/article"
         class="inline-flex items-center gap-2 text-xs font-semibold text-[#1677ff] hover:text-[#0d69e8]"
         >查看文章<Icon name="lucide:arrow-up-right" class="size-4"
       /></NuxtLink>

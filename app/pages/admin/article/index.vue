@@ -7,7 +7,7 @@ import type {
 
 definePageMeta({ layout: 'admin', middleware: 'admin' })
 defineI18nRoute(false)
-useSeoMeta({ title: '内容管理', robots: 'noindex, nofollow' })
+useSeoMeta({ title: '文章管理', robots: 'noindex, nofollow' })
 
 type StatusFilter = 'all' | AdminContentStatus
 
@@ -90,7 +90,7 @@ async function updateUrl(next: { q?: string; status?: string; page?: number }) {
   if (next.q) query.q = next.q
   if (next.status && next.status !== 'all') query.status = next.status
   if (next.page && next.page > 1) query.page = String(next.page)
-  await router.replace({ path: '/admin/content', query })
+  await router.replace({ path: '/admin/article', query })
 }
 
 async function submitSearch() {
@@ -147,14 +147,14 @@ async function bulkChangeStatus(status: AdminContentStatus) {
         $fetch(`/api/admin/content/${id}`, { method: 'PATCH', body: { status } }),
       ),
     )
-    showNotice(`已更新 ${selectedIds.value.length} 条内容。`)
+    showNotice(`已更新 ${selectedIds.value.length} 篇文章。`)
     selectedIds.value = []
     await refresh()
   } catch (error) {
     const statusCode = (error as { statusCode?: number }).statusCode
     showNotice(
       statusCode === 400
-        ? '部分内容缺少发布所需的标题、slug 或正文。'
+        ? '部分文章缺少发布所需的标题、slug 或正文。'
         : '批量更新失败，请检查后重试。',
     )
   }
@@ -169,16 +169,16 @@ onBeforeUnmount(() => {
   <div class="space-y-4 sm:space-y-5">
     <section class="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
       <div>
-        <p class="mb-1.5 text-[10px] font-bold tracking-[1.35px] text-[#7f8ba0]">CONTENT LIBRARY</p>
+        <p class="mb-1.5 text-[10px] font-bold tracking-[1.35px] text-[#7f8ba0]">ARTICLE LIBRARY</p>
         <h1
           class="text-[25px] font-bold leading-tight tracking-[-0.3px] text-[#1a2233] max-sm:text-[23px]"
         >
-          内容管理
+          文章管理
         </h1>
-        <p class="mt-1.5 text-[13px] text-[#7a8699]">管理文章草稿、审核状态和已发布内容。</p>
+        <p class="mt-1.5 text-[13px] text-[#7a8699]">管理文章草稿、审核状态和已发布文章。</p>
       </div>
       <NuxtLink
-        to="/admin/content/new"
+        to="/admin/article/new"
         class="inline-flex h-[38px] w-full items-center justify-center gap-2 rounded-lg bg-[#1677ff] px-3.5 text-xs font-semibold text-white shadow-[0_5px_12px_rgba(22,119,255,0.2)] transition hover:bg-[#0d69e8] sm:w-auto"
         ><Icon name="lucide:plus" class="size-4" />新建文章</NuxtLink
       >
@@ -196,7 +196,7 @@ onBeforeUnmount(() => {
       class="flex items-center justify-between gap-4 rounded-xl border border-[#ffc9c9] bg-[#fff0f0] px-4 py-3 text-xs text-[#cf1322]"
       role="alert"
     >
-      <span>暂时无法加载内容列表。</span
+      <span>暂时无法加载文章列表。</span
       ><button type="button" class="font-semibold underline" @click="refresh">重试</button>
     </div>
 
@@ -273,7 +273,7 @@ onBeforeUnmount(() => {
       <div
         class="mt-4 flex flex-col gap-2 border-t border-[#eef1f5] pt-3 text-[11px] text-[#a0aab7] sm:flex-row sm:items-center sm:justify-between"
       >
-        <span>共 {{ data?.total ?? 0 }} 条内容 · 第 {{ page }} / {{ totalPages }} 页</span>
+        <span>共 {{ data?.total ?? 0 }} 篇文章 · 第 {{ page }} / {{ totalPages }} 页</span>
         <div class="flex items-center gap-1">
           <button
             type="button"

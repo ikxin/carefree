@@ -124,13 +124,13 @@ async function remove(category: AdminCategoryItem) {
 <template>
   <div class="space-y-4 sm:space-y-5">
     <section>
-      <p class="mb-1.5 text-[10px] font-bold tracking-[1.35px] text-[#7f8ba0]">CONTENT STRUCTURE</p>
+      <p class="mb-1.5 text-[10px] font-bold tracking-[1.35px] text-[#7f8ba0]">ARTICLE STRUCTURE</p>
       <h1
         class="text-[25px] font-bold leading-tight tracking-[-0.3px] text-[#1a2233] max-sm:text-[23px]"
       >
         分类管理
       </h1>
-      <p class="mt-1.5 text-[13px] text-[#7a8699]">用层级结构整理文章内容。</p>
+      <p class="mt-1.5 text-[13px] text-[#7a8699]">用层级结构整理文章。</p>
     </section>
     <p
       v-if="notice"

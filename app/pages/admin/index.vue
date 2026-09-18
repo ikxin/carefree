@@ -3,7 +3,7 @@ import type { AdminContentListItem, AdminDashboardResponse } from '#shared/types
 
 definePageMeta({ layout: 'admin', middleware: 'admin' })
 defineI18nRoute(false)
-useSeoMeta({ title: '内容总览', robots: 'noindex, nofollow' })
+useSeoMeta({ title: '文章总览', robots: 'noindex, nofollow' })
 
 const range = ref<7 | 30 | 90>(30)
 const rangeOptions: Array<{ key: 7 | 30 | 90; label: string }> = [
@@ -34,7 +34,7 @@ const statCards = computed(() => [
     tone: 'blue',
   },
   {
-    label: '待处理内容',
+    label: '待处理文章',
     value: (stats.value?.draftArticles ?? 0) + (stats.value?.reviewArticles ?? 0),
     meta: `待审核 ${stats.value?.reviewArticles ?? 0} 条`,
     icon: 'lucide:file-pen-line',
@@ -109,14 +109,14 @@ onBeforeUnmount(() => {
     <section class="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
       <div>
         <p class="mb-1.5 text-[10px] font-bold tracking-[1.35px] text-[#7f8ba0]">
-          CONTENT OVERVIEW
+          ARTICLE OVERVIEW
         </p>
         <h1
           class="text-[25px] font-bold leading-tight tracking-[-0.3px] text-[#1a2233] max-sm:text-[23px]"
         >
-          内容总览
+          文章总览
         </h1>
-        <p class="mt-1.5 text-[13px] text-[#7a8699]">查看内容表现、发布进度和最近更新。</p>
+        <p class="mt-1.5 text-[13px] text-[#7a8699]">查看文章表现、发布进度和最近更新。</p>
       </div>
       <div class="flex w-full gap-2 sm:w-auto">
         <button
@@ -124,10 +124,10 @@ onBeforeUnmount(() => {
           class="inline-flex h-[38px] flex-1 items-center justify-center gap-2 rounded-lg border border-[#e8edf3] bg-white px-3.5 text-xs font-semibold text-[#526074] shadow-sm transition hover:border-[#cbd7e5] hover:text-[#1a2233] sm:flex-none"
           @click="showNotice('导入功能将在后续版本开放。')"
         >
-          <Icon name="lucide:upload" class="size-4" />导入内容
+          <Icon name="lucide:upload" class="size-4" />导入文章
         </button>
         <NuxtLink
-          to="/admin/content/new"
+          to="/admin/article/new"
           class="inline-flex h-[38px] flex-1 items-center justify-center gap-2 rounded-lg bg-[#1677ff] px-3.5 text-xs font-semibold text-white shadow-[0_5px_12px_rgba(22,119,255,0.2)] transition hover:bg-[#0d69e8] sm:flex-none"
           ><Icon name="lucide:plus" class="size-4" />新建文章</NuxtLink
         >
@@ -224,35 +224,35 @@ onBeforeUnmount(() => {
         <div class="flex items-start justify-between gap-4">
           <div>
             <h2 class="text-[15px] font-semibold text-[#1a2233]">快捷操作</h2>
-            <p class="mt-1.5 text-[11px] text-[#7a8699]">常用内容管理入口</p>
+            <p class="mt-1.5 text-[11px] text-[#7a8699]">常用文章管理入口</p>
           </div>
           <Icon name="lucide:command" class="size-4 text-[#b0bac6]" />
         </div>
         <div class="mt-4 grid gap-1">
           <NuxtLink
-            to="/admin/content/new"
+            to="/admin/article/new"
             class="flex items-center gap-2.5 rounded-[10px] px-2 py-2.5 hover:bg-[#f6f8fb]"
             ><span
               class="grid size-8 shrink-0 place-items-center rounded-lg bg-[#eaf2ff] text-[#1677ff]"
               ><Icon name="lucide:file-pen-line" class="size-4" /></span
             ><span class="min-w-0 flex-1"
               ><strong class="block text-xs font-semibold">发布文章</strong
-              ><span class="mt-0.5 block text-[11px] text-[#7a8699]">创建一篇新的内容</span></span
+              ><span class="mt-0.5 block text-[11px] text-[#7a8699]">创建一篇新的文章</span></span
             ><Icon name="lucide:chevron-right" class="size-4 text-[#a4aebb]"
           /></NuxtLink>
           <NuxtLink
-            to="/admin/categories"
+            to="/admin/category"
             class="flex items-center gap-2.5 rounded-[10px] px-2 py-2.5 hover:bg-[#f6f8fb]"
             ><span
               class="grid size-8 shrink-0 place-items-center rounded-lg bg-[#fff4e6] text-[#fa8c16]"
               ><Icon name="lucide:folder-plus" class="size-4" /></span
             ><span class="min-w-0 flex-1"
               ><strong class="block text-xs font-semibold">新增分类</strong
-              ><span class="mt-0.5 block text-[11px] text-[#7a8699]">整理内容层级结构</span></span
+              ><span class="mt-0.5 block text-[11px] text-[#7a8699]">整理文章层级结构</span></span
             ><Icon name="lucide:chevron-right" class="size-4 text-[#a4aebb]"
           /></NuxtLink>
           <NuxtLink
-            to="/admin/comments?status=pending"
+            to="/admin/comment?status=pending"
             class="flex items-center gap-2.5 rounded-[10px] px-2 py-2.5 hover:bg-[#f6f8fb]"
             ><span
               class="grid size-8 shrink-0 place-items-center rounded-lg bg-[#f2efff] text-[#7a5af8]"
@@ -281,11 +281,11 @@ onBeforeUnmount(() => {
       >
         <div class="flex items-center justify-between gap-4">
           <div>
-            <h2 class="text-[15px] font-semibold text-[#1a2233]">最近内容</h2>
+            <h2 class="text-[15px] font-semibold text-[#1a2233]">最近文章</h2>
             <p class="mt-1.5 text-[11px] text-[#7a8699]">按最近更新时间排序</p>
           </div>
           <NuxtLink
-            to="/admin/content"
+            to="/admin/article"
             class="inline-flex items-center gap-1 text-[11px] font-semibold text-[#1677ff] hover:text-[#0d69e8]"
             >查看全部<Icon name="lucide:chevron-right" class="size-3.5"
           /></NuxtLink>
@@ -404,7 +404,7 @@ onBeforeUnmount(() => {
             v-else
             class="mt-5 rounded-lg bg-[#f7f9fc] px-3 py-7 text-center text-xs text-[#a2adbd]"
           >
-            暂无内容动态
+            暂无文章动态
           </p>
         </article>
       </aside>
@@ -413,7 +413,7 @@ onBeforeUnmount(() => {
     <footer
       class="flex flex-col gap-1.5 pt-1 text-[10px] text-[#a2acb9] sm:flex-row sm:items-center sm:justify-between"
     >
-      <span>内容后台 · 轻量工作台</span
+      <span>文章后台 · 轻量工作台</span
       ><span>数据同步：{{ data?.syncedAt ? formatDate(data.syncedAt) : '加载中' }}</span>
     </footer>
   </div>

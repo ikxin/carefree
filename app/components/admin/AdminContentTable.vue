@@ -87,7 +87,7 @@ function getStatusClass(status: string) {
               @change="toggleAll"
             />
           </th>
-          <th class="px-2 py-3">内容标题</th>
+          <th class="px-2 py-3">文章标题</th>
           <th class="px-2 py-3">状态</th>
           <th v-if="!compact" class="px-2 py-3">作者</th>
           <th class="px-2 py-3">最近更新</th>
@@ -104,7 +104,7 @@ function getStatusClass(status: string) {
           </tr>
         </template>
         <tr v-else-if="!items.length">
-          <td :colspan="compact ? 6 : 7" class="px-2 py-12 text-center text-[#a2adbd]">暂无内容</td>
+          <td :colspan="compact ? 6 : 7" class="px-2 py-12 text-center text-[#a2adbd]">暂无文章</td>
         </tr>
         <template v-else>
           <tr
@@ -165,7 +165,7 @@ function getStatusClass(status: string) {
             <td class="whitespace-nowrap px-2 py-3 text-right">
               <div class="flex items-center justify-end gap-1 whitespace-nowrap">
                 <NuxtLink
-                  :to="`/admin/content/${item.id}`"
+                  :to="`/admin/article/${item.id}`"
                   class="shrink-0 rounded-md px-2 py-1.5 text-[10px] whitespace-nowrap text-[#1677ff] hover:bg-[#eaf2ff]"
                   >编辑</NuxtLink
                 >

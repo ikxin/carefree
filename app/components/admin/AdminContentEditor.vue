@@ -167,7 +167,7 @@ async function save(status: AdminContentStatus) {
         })
 
     if (!props.id) {
-      await navigateTo(`/admin/content/${response.content.id}`, { replace: true })
+      await navigateTo(`/admin/article/${response.content.id}`, { replace: true })
       return
     }
 
@@ -187,7 +187,7 @@ async function save(status: AdminContentStatus) {
     } else if (statusCode === 400 && /slug/i.test(statusMessage)) {
       errorMessage.value = 'slug 格式无效，请使用小写字母、数字和连字符。'
     } else {
-      errorMessage.value = '保存失败，请检查内容后重试。'
+      errorMessage.value = '保存失败，请检查文章后重试。'
     }
   } finally {
     saving.value = false
@@ -206,7 +206,7 @@ async function remove() {
   errorMessage.value = ''
   try {
     await $fetch(`/api/admin/content/${props.id}`, { method: 'DELETE' })
-    await navigateTo('/admin/content', { replace: true })
+    await navigateTo('/admin/article', { replace: true })
   } catch {
     errorMessage.value = '删除失败，请稍后重试。'
     removing.value = false
@@ -219,18 +219,18 @@ async function remove() {
     <section class="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
       <div>
         <NuxtLink
-          to="/admin/content"
+          to="/admin/article"
           class="mb-3 inline-flex items-center gap-1.5 text-xs text-[#7a8699] hover:text-[#1677ff]"
-          ><Icon name="lucide:arrow-left" class="size-3.5" />返回内容列表</NuxtLink
+          ><Icon name="lucide:arrow-left" class="size-3.5" />返回文章列表</NuxtLink
         >
-        <p class="mb-1.5 text-[10px] font-bold tracking-[1.35px] text-[#7f8ba0]">CONTENT EDITOR</p>
+        <p class="mb-1.5 text-[10px] font-bold tracking-[1.35px] text-[#7f8ba0]">ARTICLE EDITOR</p>
         <h1
           class="text-[25px] font-bold leading-tight tracking-[-0.3px] text-[#1a2233] max-sm:text-[23px]"
         >
           {{ props.id ? '编辑文章' : '新建文章' }}
         </h1>
         <p class="mt-1.5 text-[13px] text-[#7a8699]">
-          使用 Markdown 编写内容，并在发布前实时预览。
+          使用 Markdown 编写文章，并在发布前实时预览。
         </p>
       </div>
       <span
@@ -436,7 +436,7 @@ async function remove() {
               @click="save('publish')"
             >
               <Icon name="lucide:check" class="size-4" />{{
-                isPublished ? '保存已发布内容' : '立即发布'
+                isPublished ? '保存已发布文章' : '立即发布'
               }}</button
             ><button
               v-if="isPublished"

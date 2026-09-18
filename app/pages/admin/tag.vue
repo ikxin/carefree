@@ -87,7 +87,7 @@ async function remove(tag: AdminTagItem) {
 <template>
   <div class="space-y-4 sm:space-y-5">
     <section>
-      <p class="mb-1.5 text-[10px] font-bold tracking-[1.35px] text-[#7f8ba0]">CONTENT LABELS</p>
+      <p class="mb-1.5 text-[10px] font-bold tracking-[1.35px] text-[#7f8ba0]">ARTICLE LABELS</p>
       <h1
         class="text-[25px] font-bold leading-tight tracking-[-0.3px] text-[#1a2233] max-sm:text-[23px]"
       >

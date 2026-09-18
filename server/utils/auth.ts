@@ -6,7 +6,10 @@ import { betterAuth } from 'better-auth'
 import { admin, customSession } from 'better-auth/plugins'
 import { v7 as uuidv7 } from 'uuid'
 
-const adminPlugin = admin()
+const adminPlugin = admin({
+  defaultRole: 'user',
+  adminRoles: ['admin'],
+})
 
 export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET,

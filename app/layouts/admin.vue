@@ -17,23 +17,25 @@ const { data: dashboard } = await useFetch<AdminDashboardResponse>('/api/admin/d
 
 const navItems = [
   { label: '总览', to: '/admin', icon: 'lucide:layout-dashboard', exact: true },
-  { label: '内容', to: '/admin/content', icon: 'lucide:file-text', badge: 'content' },
-  { label: '分类', to: '/admin/categories', icon: 'lucide:folder-tree' },
-  { label: '标签', to: '/admin/tags', icon: 'lucide:tags' },
-  { label: '媒体库', to: '/admin/media', icon: 'lucide:image' },
-  { label: '评论', to: '/admin/comments', icon: 'lucide:message-square', badge: 'comments' },
-  { label: '系统设置', to: '/admin/settings', icon: 'lucide:settings' },
+  { label: '文章', to: '/admin/article', icon: 'lucide:file-text', badge: 'content' },
+  { label: '分类', to: '/admin/category', icon: 'lucide:folder-tree' },
+  { label: '标签', to: '/admin/tag', icon: 'lucide:tags' },
+  { label: '评论', to: '/admin/comment', icon: 'lucide:message-square', badge: 'comments' },
+  { label: '用户', to: '/admin/user', icon: 'lucide:users' },
 ]
 
 const breadcrumb = computed(() => {
-  if (route.path.startsWith('/admin/content')) return '内容'
-  if (route.path.startsWith('/admin/categories')) return '分类'
-  if (route.path.startsWith('/admin/tags')) return '标签'
-  if (route.path.startsWith('/admin/media')) return '媒体库'
-  if (route.path.startsWith('/admin/comments')) return '评论'
-  if (route.path.startsWith('/admin/settings')) return '系统设置'
-  return '内容总览'
+  if (route.path.startsWith('/admin/article')) return '文章'
+  if (route.path.startsWith('/admin/category')) return '分类'
+  if (route.path.startsWith('/admin/tag')) return '标签'
+  if (route.path.startsWith('/admin/comment')) return '评论'
+  if (route.path.startsWith('/admin/user')) return '用户'
+  return '文章总览'
 })
+
+const searchPlaceholder = computed(() =>
+  route.path.startsWith('/admin/user') ? '搜索用户姓名或邮箱' : '搜索文章、作者或标签',
+)
 
 const userName = computed(() => session.value?.user.name || '管理员')
 const userEmail = computed(() => session.value?.user.email || '')
@@ -74,8 +76,9 @@ function toggleUserMenu() {
 
 async function submitSearch() {
   const value = searchQuery.value.trim()
+  const path = route.path.startsWith('/admin/user') ? '/admin/user' : '/admin/article'
   await navigateTo({
-    path: '/admin/content',
+    path,
     query: value ? { q: value } : undefined,
   })
   mobileMenuOpen.value = false
@@ -129,7 +132,7 @@ useHead({ htmlAttrs: { lang: 'zh-CN' } })
           <Icon name="lucide:sparkles" class="size-[19px]" />
         </span>
         <span class="flex flex-col leading-[1.15]" :class="sidebarCollapsed ? 'lg:hidden' : ''">
-          <strong class="text-[15px] tracking-[0.2px] text-white">内容后台</strong>
+          <strong class="text-[15px] tracking-[0.2px] text-white">文章后台</strong>
           <span class="mt-1 text-[10px] uppercase tracking-[1.2px] text-[#8694aa]"
             >studio admin</span
           >
@@ -199,53 +202,10 @@ useHead({ htmlAttrs: { lang: 'zh-CN' } })
             >{{ badgeValue(item.badge) }}</span
           >
         </NuxtLink>
-
-        <p
-          class="mt-5 px-2.5 pb-2 text-[10px] uppercase tracking-[1.2px] text-[#78869c]"
-          :class="sidebarCollapsed ? 'lg:hidden' : ''"
-        >
-          设置
-        </p>
-        <NuxtLink
-          v-for="item in navItems.slice(6)"
-          :key="item.to"
-          :to="item.to"
-          class="group relative flex min-h-[42px] items-center gap-2.5 rounded-[10px] px-2.5 text-[#aeb9c9] transition-colors hover:bg-white/[0.06] hover:text-white"
-          :class="[
-            isActive(item)
-              ? 'bg-gradient-to-r from-[#1677ff]/[0.24] to-[#1677ff]/[0.1] text-white'
-              : '',
-            sidebarCollapsed ? 'lg:justify-center lg:px-0' : '',
-          ]"
-          @click="mobileMenuOpen = false"
-        >
-          <span
-            v-if="isActive(item)"
-            class="absolute -left-3.5 top-2.5 bottom-2.5 w-[3px] rounded-r bg-[#4a9bff]"
-          />
-          <Icon
-            :name="item.icon"
-            class="size-[17px] shrink-0"
-            :class="isActive(item) ? 'text-[#65a9ff]' : 'text-[#8694aa]'"
-          />
-          <span
-            class="flex-1 text-[13px] font-medium"
-            :class="sidebarCollapsed ? 'lg:hidden' : ''"
-            >{{ item.label }}</span
-          >
-        </NuxtLink>
       </nav>
 
       <div class="flex-1" />
       <div class="border-t border-white/[0.08] pt-3.5">
-        <NuxtLink
-          to="/admin/media"
-          class="flex items-center gap-2.5 rounded-[10px] px-2.5 py-2.5 text-xs text-[#9aa7b9] hover:bg-white/[0.06] hover:text-white"
-          :class="sidebarCollapsed ? 'lg:justify-center lg:px-0' : ''"
-        >
-          <Icon name="lucide:circle-help" class="size-[17px] shrink-0" />
-          <span :class="sidebarCollapsed ? 'lg:hidden' : ''">帮助与反馈</span>
-        </NuxtLink>
         <div
           class="flex items-center gap-2.5 px-2 py-3 whitespace-nowrap"
           :class="sidebarCollapsed ? 'lg:justify-center lg:px-0' : ''"
@@ -265,7 +225,7 @@ useHead({ htmlAttrs: { lang: 'zh-CN' } })
             :class="sidebarCollapsed ? 'lg:hidden' : ''"
           >
             <strong class="truncate text-xs font-semibold text-white">{{ userName }}</strong>
-            <span class="mt-1 truncate text-[11px] text-[#7f8ca1]">内容管理员</span>
+            <span class="mt-1 truncate text-[11px] text-[#7f8ca1]">文章管理员</span>
           </span>
         </div>
       </div>
@@ -305,8 +265,8 @@ useHead({ htmlAttrs: { lang: 'zh-CN' } })
               v-model="searchQuery"
               type="search"
               class="w-full min-w-0 bg-transparent text-xs text-[#1a2233] outline-none placeholder:text-[#a3adbb] max-sm:hidden"
-              placeholder="搜索内容、作者或标签"
-              aria-label="搜索内容、作者或标签"
+              :placeholder="searchPlaceholder"
+              :aria-label="searchPlaceholder"
             />
           </form>
 
@@ -330,14 +290,14 @@ useHead({ htmlAttrs: { lang: 'zh-CN' } })
               <div class="flex items-center justify-between px-2.5 py-2">
                 <strong class="text-[13px]">通知</strong
                 ><NuxtLink
-                  to="/admin/comments?status=pending"
+                  to="/admin/comment?status=pending"
                   class="text-[11px] text-[#1677ff]"
                   @click="notificationOpen = false"
                   >查看评论</NuxtLink
                 >
               </div>
               <NuxtLink
-                to="/admin/comments?status=pending"
+                to="/admin/comment?status=pending"
                 class="flex gap-2.5 rounded-[9px] p-2.5 hover:bg-[#f7f9fc]"
                 @click="notificationOpen = false"
               >
@@ -348,7 +308,7 @@ useHead({ htmlAttrs: { lang: 'zh-CN' } })
                 <span class="min-w-0 text-xs"
                   ><strong class="block font-semibold"
                     >有 {{ pendingComments }} 条评论等待处理</strong
-                  ><span class="mt-0.5 block text-[11px] text-[#7a8699]">来自当前内容站</span></span
+                  ><span class="mt-0.5 block text-[11px] text-[#7a8699]">来自当前站点</span></span
                 >
               </NuxtLink>
             </div>

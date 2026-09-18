@@ -73,7 +73,7 @@ const topArticleMax = computed(() =>
   >
     <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
       <div>
-        <h2 class="text-[15px] font-semibold text-[#1a2233]">内容表现</h2>
+        <h2 class="text-[15px] font-semibold text-[#1a2233]">文章表现</h2>
         <p class="mt-1.5 text-[11px] text-[#7a8699]">
           {{ metric === 'top' ? '当前发布文章的阅读量排行' : `${rangeLabel}的真实数据` }}
         </p>
@@ -195,7 +195,7 @@ const topArticleMax = computed(() =>
           activeMetric.label
         }}</span
       >
-      <span>数据来自当前内容记录</span>
+      <span>数据来自当前文章记录</span>
     </div>
   </section>
 </template>
