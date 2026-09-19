@@ -13,7 +13,11 @@ const adminPlugin = admin({
 
 export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET,
-  baseURL: process.env.BETTER_AUTH_URL,
+  baseURL: {
+    allowedHosts: ['localhost:*', '127.0.0.1:*', 'www.ikxin.com', 'ikxin.com'],
+    protocol: 'auto',
+    fallback: 'https://www.ikxin.com',
+  },
   database: drizzleAdapter(db, {
     provider: 'pg',
     schema,
