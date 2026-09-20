@@ -165,3 +165,16 @@ export interface AdminDashboardResponse {
   range: 7 | 30 | 90
   syncedAt: string
 }
+
+export interface AdminOpenAiSettings {
+  apiKey: string
+  baseUrl: string
+  model: string
+  updatedAt: string | null
+}
+
+export interface AdminSettingsResponse {
+  settings: {
+    openai: AdminOpenAiSettings
+  }
+}

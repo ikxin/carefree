@@ -2,6 +2,7 @@ import type { MDCRoot } from '@nuxtjs/mdc'
 import { parseMarkdown } from '@nuxtjs/mdc/runtime'
 import { contentTranslations, contents } from '#server/database/schema'
 import { db } from '#server/utils/db'
+import { getOpenAiSettings } from '#server/utils/settings'
 import { and, eq } from 'drizzle-orm'
 import { createHash } from 'node:crypto'
 import { isDeepStrictEqual } from 'node:util'
@@ -34,7 +35,6 @@ interface ContentTranslationJob extends ContentSource {
   sourceHash: string
 }
 
-const translateModel = 'gpt-5.6-luna'
 const translatePrompt = `你是一名专业内容翻译器。请将输入的简体中文内容准确翻译为目标语言。
 
 ## 字段边界
@@ -68,7 +68,8 @@ const contentTranslationSchema = {
   additionalProperties: false,
 }
 
-let openai: OpenAI | undefined
+let openaiClient: OpenAI | undefined
+let openaiConfigSignature = ''
 const inFlightTranslateJobs = new Map<string, Promise<void>>()
 
 function createTopLevelAstFingerprint(root: MDCRoot) {
@@ -113,8 +114,22 @@ async function validateContentTranslation(source: ContentSource, translation: Co
   }
 }
 
-function getOpenAIClient() {
-  return (openai ??= new OpenAI())
+async function getOpenAIConfig() {
+  const { apiKey, baseUrl, model } = await getOpenAiSettings()
+
+  if (!apiKey || !baseUrl || !model) {
+    throw new Error('OpenAI 配置未完成，请先在后台设置中配置 API Key、Base URL 和模型')
+  }
+
+  const configSignature = `${apiKey}\u0000${baseUrl}\u0000${model}`
+  let client = openaiClient
+  if (!client || openaiConfigSignature !== configSignature) {
+    client = new OpenAI({ apiKey, baseURL: baseUrl })
+    openaiClient = client
+    openaiConfigSignature = configSignature
+  }
+
+  return { client, model }
 }
 
 function parseContentTranslation(output: string): ContentTranslation {
@@ -151,8 +166,9 @@ async function translateContent(
   locale: ContentTargetLocale,
   source: ContentSource,
 ): Promise<ContentTranslation> {
-  const response = await getOpenAIClient().responses.create({
-    model: translateModel,
+  const { client, model } = await getOpenAIConfig()
+  const response = await client.responses.create({
+    model,
     store: false,
     instructions: translatePrompt,
     input: JSON.stringify({

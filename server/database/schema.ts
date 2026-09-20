@@ -110,6 +110,15 @@ export const verifications = pgTable(
   (table) => [index('verifications_identifier_idx').on(table.identifier)],
 )
 
+export const settings = pgTable('settings', {
+  key: text('key').primaryKey(),
+  value: text('value').notNull(),
+  updatedAt: timestamp('updated_at', { mode: 'date', precision: 3 })
+    .defaultNow()
+    .$onUpdate(() => new Date())
+    .notNull(),
+})
+
 export const categories = pgTable(
   'categories',
   {

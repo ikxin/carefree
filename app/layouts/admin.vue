@@ -22,6 +22,7 @@ const navItems = [
   { label: '标签', to: '/admin/tag', icon: 'lucide:tags' },
   { label: '评论', to: '/admin/comment', icon: 'lucide:message-square', badge: 'comments' },
   { label: '用户', to: '/admin/user', icon: 'lucide:users' },
+  { label: '设置', to: '/admin/settings', icon: 'lucide:settings' },
 ]
 
 const breadcrumb = computed(() => {
@@ -30,6 +31,7 @@ const breadcrumb = computed(() => {
   if (route.path.startsWith('/admin/tag')) return '标签'
   if (route.path.startsWith('/admin/comment')) return '评论'
   if (route.path.startsWith('/admin/user')) return '用户'
+  if (route.path.startsWith('/admin/settings')) return '设置'
   return '文章总览'
 })
 
@@ -169,7 +171,7 @@ useHead({ htmlAttrs: { lang: 'zh-CN' } })
           工作台
         </p>
         <NuxtLink
-          v-for="item in navItems.slice(0, 6)"
+          v-for="item in navItems"
           :key="item.to"
           :to="item.to"
           class="group relative flex min-h-[42px] items-center gap-2.5 rounded-[10px] px-2.5 text-[#aeb9c9] transition-colors hover:bg-white/[0.06] hover:text-white"
