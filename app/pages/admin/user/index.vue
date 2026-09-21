@@ -165,7 +165,7 @@ function statusLabel(user: AdminUserItem) {
       </div>
       <NuxtLink
         to="/admin/user/new"
-        class="inline-flex h-[38px] w-full items-center justify-center gap-2 rounded-lg bg-[#1677ff] px-3.5 text-xs font-semibold text-white shadow-[0_5px_12px_rgba(22,119,255,0.2)] transition hover:bg-[#0d69e8] sm:w-auto"
+        class="inline-flex h-9.5 w-full items-center justify-center gap-2 rounded-lg bg-[#1677ff] px-3.5 text-xs font-semibold text-white shadow-[0_5px_12px_rgba(22,119,255,0.2)] transition hover:bg-[#0d69e8] sm:w-auto"
       >
         <Icon name="lucide:user-plus" class="size-4" />添加用户
       </NuxtLink>
@@ -177,7 +177,7 @@ function statusLabel(user: AdminUserItem) {
       role="alert"
     >
       <span>暂时无法加载用户列表。</span>
-      <button type="button" class="font-semibold underline" @click="refresh">重试</button>
+      <button type="button" class="font-semibold underline" @click="refresh()">重试</button>
     </div>
 
     <section
@@ -212,7 +212,7 @@ function statusLabel(user: AdminUserItem) {
             </option>
           </select>
           <form
-            class="flex h-9 w-full items-center gap-2 rounded-lg border border-[#e8edf3] bg-white px-2.5 text-[#98a3b2] focus-within:border-[#a8caff] focus-within:ring-4 focus-within:ring-[#1677ff]/10 sm:w-[280px]"
+            class="flex h-9 w-full items-center gap-2 rounded-lg border border-[#e8edf3] bg-white px-2.5 text-[#98a3b2] focus-within:border-[#a8caff] focus-within:ring-4 focus-within:ring-[#1677ff]/10 sm:w-70"
             @submit.prevent="submitSearch"
           >
             <Icon name="lucide:search" class="size-4 shrink-0" />
@@ -239,7 +239,7 @@ function statusLabel(user: AdminUserItem) {
 
       <div v-else class="mt-4">
         <div class="hidden overflow-x-auto md:block">
-          <table class="min-w-[820px] w-full border-collapse text-left text-[11px]">
+          <table class="min-w-205 w-full border-collapse text-left text-[11px]">
             <thead>
               <tr class="border-b border-[#eef1f5] text-[10px] font-medium text-[#9aa5b4]">
                 <th class="px-2 py-3">用户</th>
@@ -279,10 +279,9 @@ function statusLabel(user: AdminUserItem) {
                         class="block truncate font-semibold text-[#263044] group-hover:text-[#1677ff]"
                         >{{ user.name }}</strong
                       >
-                      <span
-                        class="mt-0.5 block max-w-[230px] truncate text-[10px] text-[#8c97a6]"
-                        >{{ user.email }}</span
-                      >
+                      <span class="mt-0.5 block max-w-57.5 truncate text-[10px] text-[#8c97a6]">{{
+                        user.email
+                      }}</span>
                     </span>
                   </NuxtLink>
                 </td>

@@ -1,3 +1,4 @@
+import type { AdminOpenAiSettings } from '#shared/types/admin'
 import { settings } from '#server/database/schema'
 import { db } from '#server/utils/db'
 import { inArray, sql } from 'drizzle-orm'
@@ -13,13 +14,6 @@ export interface StoredOpenAiSettings {
   baseUrl: string | null
   model: string | null
   updatedAt: Date | null
-}
-
-export interface AdminOpenAiSettings {
-  apiKey: string
-  baseUrl: string
-  model: string
-  updatedAt: string | null
 }
 
 export async function getOpenAiSettings(): Promise<StoredOpenAiSettings> {

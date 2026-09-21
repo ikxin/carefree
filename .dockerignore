@@ -1,0 +1,15 @@
+.git
+.gitignore
+.env
+.env.*
+!.env.example
+node_modules
+.nuxt
+.nitro
+.output
+.cache
+.data
+dist
+logs
+*.log
+README.md

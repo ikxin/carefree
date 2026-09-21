@@ -31,6 +31,7 @@ const breadcrumb = computed(() => {
   if (route.path.startsWith('/admin/tag')) return '标签'
   if (route.path.startsWith('/admin/comment')) return '评论'
   if (route.path.startsWith('/admin/user')) return '用户'
+  if (route.path.startsWith('/admin/settings/backup')) return '数据备份'
   if (route.path.startsWith('/admin/settings')) return '设置'
   return '文章总览'
 })
@@ -121,17 +122,14 @@ useHead({ htmlAttrs: { lang: 'zh-CN' } })
     />
 
     <aside
-      class="fixed inset-y-0 left-0 z-50 flex w-[248px] -translate-x-full flex-col overflow-hidden bg-[#1a2233] px-3.5 py-[18px] text-[#dfe7f4] shadow-[10px_0_28px_rgba(20,27,43,0.14)] transition-[width,transform] duration-200 lg:translate-x-0 lg:shadow-none"
-      :class="[
-        sidebarCollapsed ? 'lg:w-[78px]' : 'lg:w-[248px]',
-        mobileMenuOpen ? 'translate-x-0' : '',
-      ]"
+      class="fixed inset-y-0 left-0 z-50 flex w-62 -translate-x-full flex-col overflow-hidden bg-[#1a2233] px-3.5 py-4.5 text-[#dfe7f4] shadow-[10px_0_28px_rgba(20,27,43,0.14)] transition-[width,transform] duration-200 lg:translate-x-0 lg:shadow-none"
+      :class="[sidebarCollapsed ? 'lg:w-19.5' : 'lg:w-62', mobileMenuOpen ? 'translate-x-0' : '']"
     >
-      <div class="flex items-center gap-2.5 whitespace-nowrap px-2 pb-[22px] pt-1">
+      <div class="flex items-center gap-2.5 whitespace-nowrap px-2 pb-5.5 pt-1">
         <span
-          class="grid size-[34px] shrink-0 place-items-center rounded-[10px] bg-gradient-to-br from-[#3b91ff] to-[#1660d8] text-white shadow-[0_6px_14px_rgba(22,119,255,0.25)]"
+          class="grid size-8.5 shrink-0 place-items-center rounded-[10px] bg-linear-to-br from-[#3b91ff] to-[#1660d8] text-white shadow-[0_6px_14px_rgba(22,119,255,0.25)]"
         >
-          <Icon name="lucide:sparkles" class="size-[19px]" />
+          <Icon name="lucide:sparkles" class="size-4.75" />
         </span>
         <span class="flex flex-col leading-[1.15]" :class="sidebarCollapsed ? 'lg:hidden' : ''">
           <strong class="text-[15px] tracking-[0.2px] text-white">文章后台</strong>
@@ -142,11 +140,11 @@ useHead({ htmlAttrs: { lang: 'zh-CN' } })
       </div>
 
       <div
-        class="mb-[22px] flex min-w-0 items-center gap-2.5 rounded-xl border border-white/10 bg-white/[0.055] px-2 py-2.5 whitespace-nowrap"
+        class="mb-5.5 flex min-w-0 items-center gap-2.5 rounded-xl border border-white/10 bg-white/5.5 px-2 py-2.5 whitespace-nowrap"
         :class="sidebarCollapsed ? 'lg:justify-center lg:px-0' : ''"
       >
         <span
-          class="grid size-[30px] shrink-0 place-items-center rounded-[9px] bg-gradient-to-br from-[#ffb14b] to-[#f27b30] text-xs font-bold text-white"
+          class="grid size-7.5 shrink-0 place-items-center rounded-[9px] bg-linear-to-br from-[#ffb14b] to-[#f27b30] text-xs font-bold text-white"
           >W</span
         >
         <span
@@ -174,22 +172,20 @@ useHead({ htmlAttrs: { lang: 'zh-CN' } })
           v-for="item in navItems"
           :key="item.to"
           :to="item.to"
-          class="group relative flex min-h-[42px] items-center gap-2.5 rounded-[10px] px-2.5 text-[#aeb9c9] transition-colors hover:bg-white/[0.06] hover:text-white"
+          class="group relative flex min-h-10.5 items-center gap-2.5 rounded-[10px] px-2.5 text-[#aeb9c9] transition-colors hover:bg-white/6 hover:text-white"
           :class="[
-            isActive(item)
-              ? 'bg-gradient-to-r from-[#1677ff]/[0.24] to-[#1677ff]/[0.1] text-white'
-              : '',
+            isActive(item) ? 'bg-linear-to-r from-[#1677ff]/24 to-[#1677ff]/10 text-white' : '',
             sidebarCollapsed ? 'lg:justify-center lg:px-0' : '',
           ]"
           @click="mobileMenuOpen = false"
         >
           <span
             v-if="isActive(item)"
-            class="absolute -left-3.5 top-2.5 bottom-2.5 w-[3px] rounded-r bg-[#4a9bff]"
+            class="absolute -left-3.5 top-2.5 bottom-2.5 w-0.75 rounded-r bg-[#4a9bff]"
           />
           <Icon
             :name="item.icon"
-            class="size-[17px] shrink-0"
+            class="size-4.25 shrink-0"
             :class="isActive(item) ? 'text-[#65a9ff]' : 'text-[#8694aa]'"
           />
           <span
@@ -207,19 +203,19 @@ useHead({ htmlAttrs: { lang: 'zh-CN' } })
       </nav>
 
       <div class="flex-1" />
-      <div class="border-t border-white/[0.08] pt-3.5">
+      <div class="border-t border-white/8 pt-3.5">
         <div
           class="flex items-center gap-2.5 px-2 py-3 whitespace-nowrap"
           :class="sidebarCollapsed ? 'lg:justify-center lg:px-0' : ''"
         >
           <span
             v-if="session?.user.image"
-            class="block size-[30px] shrink-0 overflow-hidden rounded-[10px]"
+            class="block size-7.5 shrink-0 overflow-hidden rounded-[10px]"
             ><img :src="session.user.image" :alt="userName" class="size-full object-cover"
           /></span>
           <span
             v-else
-            class="grid size-[30px] shrink-0 place-items-center rounded-[10px] bg-gradient-to-br from-[#6d7cff] to-[#4c55d8] text-xs font-bold text-white"
+            class="grid size-7.5 shrink-0 place-items-center rounded-[10px] bg-linear-to-br from-[#6d7cff] to-[#4c55d8] text-xs font-bold text-white"
             >{{ userInitial }}</span
           >
           <span
@@ -235,19 +231,19 @@ useHead({ htmlAttrs: { lang: 'zh-CN' } })
 
     <div
       class="min-h-screen transition-[padding] duration-200"
-      :class="sidebarCollapsed ? 'lg:pl-[78px]' : 'lg:pl-[248px]'"
+      :class="sidebarCollapsed ? 'lg:pl-19.5' : 'lg:pl-62'"
     >
       <header
-        class="sticky top-0 z-30 flex h-[72px] items-center justify-between gap-4 border-b border-[#e8edf3]/90 bg-[#f6f8fb]/85 px-4 backdrop-blur-[18px] sm:px-6 lg:px-12"
+        class="sticky top-0 z-30 flex h-18 items-center justify-between gap-4 border-b border-[#e8edf3]/90 bg-[#f6f8fb]/85 px-4 backdrop-blur-[18px] sm:px-6 lg:px-12"
       >
         <div class="flex min-w-0 flex-1 items-center gap-3.5">
           <button
             type="button"
-            class="grid size-[34px] shrink-0 place-items-center rounded-[9px] text-[#7a8699] hover:bg-[#e9eef5] hover:text-[#1a2233]"
+            class="grid size-8.5 shrink-0 place-items-center rounded-[9px] text-[#7a8699] hover:bg-[#e9eef5] hover:text-[#1a2233]"
             aria-label="切换侧栏"
             @click="toggleSidebar"
           >
-            <Icon name="lucide:menu" class="size-[18px]" />
+            <Icon name="lucide:menu" class="size-4.5" />
           </button>
           <div
             class="flex items-center gap-2 text-xs whitespace-nowrap text-[#9aa5b4] max-sm:hidden"
@@ -259,7 +255,7 @@ useHead({ htmlAttrs: { lang: 'zh-CN' } })
 
         <div class="flex items-center gap-1 sm:gap-3.5">
           <form
-            class="flex h-9 w-9 items-center gap-2 rounded-[9px] border border-transparent bg-transparent px-2.5 text-[#98a3b2] transition-all focus-within:w-[220px] focus-within:border-[#a8caff] focus-within:bg-white focus-within:shadow-[0_0_0_3px_rgba(22,119,255,0.1)] sm:w-[230px] sm:border-[#e8edf3] sm:bg-white sm:shadow-[0_1px_2px_rgba(16,24,40,0.02)]"
+            class="flex h-9 w-9 items-center gap-2 rounded-[9px] border border-transparent bg-transparent px-2.5 text-[#98a3b2] transition-all focus-within:w-55 focus-within:border-[#a8caff] focus-within:bg-white focus-within:shadow-[0_0_0_3px_rgba(22,119,255,0.1)] sm:w-57.5 sm:border-[#e8edf3] sm:bg-white sm:shadow-[0_1px_2px_rgba(16,24,40,0.02)]"
             @submit.prevent="submitSearch"
           >
             <Icon name="lucide:search" class="size-4 shrink-0" />
@@ -275,11 +271,11 @@ useHead({ htmlAttrs: { lang: 'zh-CN' } })
           <div class="relative">
             <button
               type="button"
-              class="relative grid size-[34px] place-items-center rounded-[9px] text-[#7a8699] hover:bg-[#e9eef5] hover:text-[#1a2233]"
+              class="relative grid size-8.5 place-items-center rounded-[9px] text-[#7a8699] hover:bg-[#e9eef5] hover:text-[#1a2233]"
               aria-label="通知"
               @click="toggleNotification"
             >
-              <Icon name="lucide:bell" class="size-[18px]" />
+              <Icon name="lucide:bell" class="size-4.5" />
               <span
                 v-if="pendingComments"
                 class="absolute right-1.5 top-1.5 size-1.5 rounded-full bg-[#f5222d] ring-2 ring-[#f6f8fb]"
@@ -287,7 +283,7 @@ useHead({ htmlAttrs: { lang: 'zh-CN' } })
             </button>
             <div
               v-if="notificationOpen"
-              class="absolute right-0 top-11 z-40 w-[280px] rounded-xl border border-[#e8edf3] bg-white p-2 shadow-[0_12px_32px_rgba(16,24,40,0.12)]"
+              class="absolute right-0 top-11 z-40 w-70 rounded-xl border border-[#e8edf3] bg-white p-2 shadow-[0_12px_32px_rgba(16,24,40,0.12)]"
             >
               <div class="flex items-center justify-between px-2.5 py-2">
                 <strong class="text-[13px]">通知</strong
@@ -328,14 +324,14 @@ useHead({ htmlAttrs: { lang: 'zh-CN' } })
               /></span>
               <span
                 v-else
-                class="grid size-8 place-items-center rounded-[10px] bg-gradient-to-br from-[#6d7cff] to-[#4c55d8] text-xs font-bold text-white"
+                class="grid size-8 place-items-center rounded-[10px] bg-linear-to-br from-[#6d7cff] to-[#4c55d8] text-xs font-bold text-white"
                 >{{ userInitial }}</span
               >
               <Icon name="lucide:chevron-down" class="size-3.5 text-[#9ba6b4] max-sm:hidden" />
             </button>
             <div
               v-if="userMenuOpen"
-              class="absolute right-0 top-11 z-40 w-[210px] rounded-xl border border-[#e8edf3] bg-white p-2 shadow-[0_12px_32px_rgba(16,24,40,0.12)]"
+              class="absolute right-0 top-11 z-40 w-52.5 rounded-xl border border-[#e8edf3] bg-white p-2 shadow-[0_12px_32px_rgba(16,24,40,0.12)]"
             >
               <div class="border-b border-[#e8edf3] px-2.5 pb-2.5 pt-2">
                 <strong class="block truncate text-[13px]">{{ userName }}</strong

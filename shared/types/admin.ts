@@ -178,3 +178,56 @@ export interface AdminSettingsResponse {
     openai: AdminOpenAiSettings
   }
 }
+
+export type AdminBackupStatus = 'running' | 'completed' | 'failed'
+
+export type AdminBackupTrigger = 'manual' | 'scheduled'
+
+export interface AdminBackupConfig {
+  endpoint: string
+  region: string
+  bucket: string
+  prefix: string
+  accessKeyId: string
+  secretAccessKeyConfigured: boolean
+  forcePathStyle: boolean
+}
+
+export interface AdminBackupSchedule {
+  enabled: boolean
+  cronExpr: string
+  retainDays: number
+  retainCount: number
+}
+
+export interface AdminBackupRecord {
+  id: string
+  status: AdminBackupStatus
+  triggeredBy: AdminBackupTrigger
+  fileName: string
+  sizeBytes: number
+  startedAt: string
+  finishedAt: string | null
+  errorMessage: string | null
+}
+
+export interface AdminBackupConfigResponse {
+  config: AdminBackupConfig
+}
+
+export interface AdminBackupListResponse {
+  backups: AdminBackupRecord[]
+}
+
+export interface AdminBackupResponse {
+  backup: AdminBackupRecord
+}
+
+export interface AdminBackupTestResponse {
+  ok: boolean
+  message: string
+}
+
+export interface AdminBackupScheduleResponse {
+  schedule: AdminBackupSchedule
+}
