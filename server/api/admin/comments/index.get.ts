@@ -1,5 +1,6 @@
 import { comments, contents, users } from '#server/database/schema'
 import { parseAdminPagination, requireAdmin } from '#server/utils/admin'
+import { getAvatarUrl } from '#server/utils/avatar'
 import type { AdminCommentStatus } from '#shared/types/admin'
 import { db } from '#server/utils/db'
 import { and, desc, eq, ilike, or, sql, type SQL } from 'drizzle-orm'
@@ -100,6 +101,7 @@ export default defineEventHandler(async (event) => {
       status: normalizeStatus(row.status),
       author: {
         name: row.userName ?? row.guestName ?? '匿名访客',
+        image: getAvatarUrl(row.userEmail ?? row.guestEmail),
         email: row.userEmail ?? row.guestEmail,
         url: row.guestUrl,
       },

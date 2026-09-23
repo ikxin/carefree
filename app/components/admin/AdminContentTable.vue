@@ -42,6 +42,7 @@ const allSelected = computed(
 const someSelected = computed(
   () => props.items.some((item) => selected.value.has(item.id)) && !allSelected.value,
 )
+const failedAuthorAvatarIds = ref<string[]>([])
 
 function toggleItem(id: string) {
   const next = new Set(selected.value)
@@ -70,11 +71,17 @@ function getStatusLabel(status: string) {
 function getStatusClass(status: string) {
   return statusClasses[status] ?? 'bg-[#f0f2f5] text-[#778397]'
 }
+
+function handleAuthorAvatarError(id: string) {
+  if (!failedAuthorAvatarIds.value.includes(id)) {
+    failedAuthorAvatarIds.value.push(id)
+  }
+}
 </script>
 
 <template>
   <div class="overflow-x-auto">
-    <table class="min-w-[760px] w-full border-collapse text-left text-[11px]">
+    <table class="min-w-190 w-full border-collapse text-left text-[11px]">
       <thead>
         <tr class="border-b border-[#eef1f5] text-[10px] font-medium text-[#9aa5b4]">
           <th v-if="!compact" class="w-8 px-2 py-3">
@@ -122,13 +129,8 @@ function getStatusClass(status: string) {
                 @change="toggleItem(item.id)"
               />
             </td>
-            <td class="max-w-[330px] px-2 py-3">
-              <div class="flex min-w-0 items-center gap-2.5">
-                <span
-                  class="grid size-8 shrink-0 place-items-center rounded-lg bg-[#eaf2ff] text-[11px] font-bold text-[#1677ff]"
-                >
-                  {{ item.title.slice(0, 1) }}
-                </span>
+            <td class="max-w-82.5 px-2 py-3">
+              <div class="min-w-0">
                 <span class="min-w-0">
                   <strong class="block truncate text-[12px] font-semibold text-[#263044]">{{
                     item.title
@@ -149,10 +151,22 @@ function getStatusClass(status: string) {
             </td>
             <td v-if="!compact" class="px-2 py-3">
               <span class="flex items-center gap-1.5 whitespace-nowrap text-[#5d6a7c]">
-                <span
-                  class="grid size-5 place-items-center rounded-full bg-[#5c83d8] text-[9px] font-bold text-white"
-                  >{{ item.author.name.slice(0, 1) }}</span
-                >
+                <span class="block size-5 shrink-0 overflow-hidden rounded-full bg-[#edf2ff]">
+                  <img
+                    v-if="item.author.image && !failedAuthorAvatarIds.includes(item.id)"
+                    :src="item.author.image"
+                    :alt="item.author.name"
+                    class="size-full object-cover"
+                    loading="lazy"
+                    referrerpolicy="no-referrer"
+                    @error="handleAuthorAvatarError(item.id)"
+                  />
+                  <span
+                    v-else
+                    class="grid size-full place-items-center text-[9px] font-bold text-[#5571c9]"
+                    >{{ item.author.name.slice(0, 1) }}</span
+                  >
+                </span>
                 {{ item.author.name }}
               </span>
             </td>

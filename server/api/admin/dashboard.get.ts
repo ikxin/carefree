@@ -1,6 +1,7 @@
 import { comments, contents, users } from '#server/database/schema'
 import { db } from '#server/utils/db'
 import { requireAdmin } from '#server/utils/admin'
+import { getAvatarUrl } from '#server/utils/avatar'
 import { hydrateAdminContentRows, type AdminContentDbRow } from '#server/utils/admin-content'
 import type { AdminCommentItem, AdminCommentStatus } from '#shared/types/admin'
 import { and, desc, eq, gte, sql } from 'drizzle-orm'
@@ -57,6 +58,7 @@ function mapAdminComment(row: {
     status: formatCommentStatus(row.status),
     author: {
       name: row.userName ?? row.guestName ?? '匿名访客',
+      image: getAvatarUrl(row.userEmail ?? row.guestEmail),
       email: row.userEmail ?? row.guestEmail,
       url: row.guestUrl,
     },

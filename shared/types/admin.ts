@@ -76,6 +76,7 @@ export interface AdminCommentItem {
   status: AdminCommentStatus
   author: {
     name: string
+    image: string | null
     email: string | null
     url: string | null
   }

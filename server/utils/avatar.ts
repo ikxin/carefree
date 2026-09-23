@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto'
 
-const avatarServiceUrl = 'https://markhub.ikxin.com'
+const avatarServiceUrl = 'https://markhub.top'
 const qqEmailPattern = /^([1-9]\d*)@qq\.com$/i
 
 export function getAvatarUrl(email: string | null | undefined) {

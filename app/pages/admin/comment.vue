@@ -27,6 +27,7 @@ const page = ref(readPage(route.query.page))
 const actingId = ref<string | null>(null)
 const notice = ref('')
 const errorMessage = ref('')
+const failedAvatarIds = ref<string[]>([])
 
 function readPage(value: unknown) {
   const parsed = typeof value === 'string' ? Number(value) : 1
@@ -129,6 +130,12 @@ function formatDate(value: string | Date) {
     minute: '2-digit',
   }).format(new Date(value))
 }
+
+function handleAvatarError(id: string) {
+  if (!failedAvatarIds.value.includes(id)) {
+    failedAvatarIds.value.push(id)
+  }
+}
 </script>
 
 <template>
@@ -194,7 +201,7 @@ function formatDate(value: string | Date) {
           </button>
         </div>
         <form
-          class="flex h-9 w-full items-center gap-2 rounded-lg border border-[#e8edf3] bg-white px-2.5 text-[#98a3b2] focus-within:border-[#a8caff] focus-within:ring-4 focus-within:ring-[#1677ff]/10 lg:w-[300px]"
+          class="flex h-9 w-full items-center gap-2 rounded-lg border border-[#e8edf3] bg-white px-2.5 text-[#98a3b2] focus-within:border-[#a8caff] focus-within:ring-4 focus-within:ring-[#1677ff]/10 lg:w-75"
           @submit.prevent="submitSearch"
         >
           <Icon name="lucide:search" class="size-4 shrink-0" /><input
@@ -223,37 +230,55 @@ function formatDate(value: string | Date) {
           class="rounded-xl border border-[#eef1f5] p-4 transition-colors hover:border-[#dce3ec] sm:p-5"
         >
           <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-            <div class="min-w-0">
-              <div class="flex flex-wrap items-center gap-2">
-                <strong class="text-sm font-semibold text-[#263044]">{{
-                  comment.author.name
-                }}</strong
-                ><span class="text-[11px] text-[#a2adbd]">{{
-                  comment.author.email || '访客评论'
-                }}</span
-                ><span
-                  class="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[10px]"
-                  :class="statusClasses[comment.status]"
-                  ><i class="size-1.5 rounded-full bg-current" />{{
-                    statusLabels[comment.status]
-                  }}</span
-                >
-              </div>
-              <p class="mt-3 whitespace-pre-wrap break-words text-[13px] leading-6 text-[#526074]">
-                {{ comment.content }}
-              </p>
-              <p
-                class="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] text-[#a0aab7]"
+            <div class="flex min-w-0 gap-3">
+              <div
+                class="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#edf2ff] text-xs font-bold text-[#5571c9]"
               >
-                {{ formatDate(comment.createdAt) }}<span>·</span><span>文章：</span
-                ><NuxtLink
-                  v-if="comment.contentSlug"
-                  :to="`/article/${comment.contentSlug}`"
-                  target="_blank"
-                  class="text-[#1677ff] hover:underline"
-                  >{{ comment.contentTitle }}</NuxtLink
-                ><span v-else>{{ comment.contentTitle }}</span>
-              </p>
+                <img
+                  v-if="comment.author.image && !failedAvatarIds.includes(comment.id)"
+                  :src="comment.author.image"
+                  :alt="comment.author.name"
+                  class="size-full object-cover"
+                  loading="lazy"
+                  referrerpolicy="no-referrer"
+                  @error="handleAvatarError(comment.id)"
+                />
+                <span v-else>{{ comment.author.name.slice(0, 1) }}</span>
+              </div>
+              <div class="min-w-0 flex-1">
+                <div class="flex flex-wrap items-center gap-2">
+                  <strong class="text-sm font-semibold text-[#263044]">{{
+                    comment.author.name
+                  }}</strong
+                  ><span class="text-[11px] text-[#a2adbd]">{{
+                    comment.author.email || '访客评论'
+                  }}</span
+                  ><span
+                    class="inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-[10px]"
+                    :class="statusClasses[comment.status]"
+                    ><i class="size-1.5 rounded-full bg-current" />{{
+                      statusLabels[comment.status]
+                    }}</span
+                  >
+                </div>
+                <p
+                  class="mt-3 whitespace-pre-wrap wrap-break-word text-[13px] leading-6 text-[#526074]"
+                >
+                  {{ comment.content }}
+                </p>
+                <p
+                  class="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] text-[#a0aab7]"
+                >
+                  {{ formatDate(comment.createdAt) }}<span>·</span><span>文章：</span
+                  ><NuxtLink
+                    v-if="comment.contentSlug"
+                    :to="`/article/${comment.contentSlug}`"
+                    target="_blank"
+                    class="text-[#1677ff] hover:underline"
+                    >{{ comment.contentTitle }}</NuxtLink
+                  ><span v-else>{{ comment.contentTitle }}</span>
+                </p>
+              </div>
             </div>
             <div class="flex shrink-0 flex-wrap gap-2">
               <button
