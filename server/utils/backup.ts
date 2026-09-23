@@ -891,6 +891,7 @@ async function applyBackupSchedule(schedule: StoredDatabaseBackupSchedule) {
     cronTime: schedule.cronExpr,
     onTick: () => runScheduledDatabaseBackup(),
     start: true,
+    unrefTimeout: true,
     waitForCompletion: true,
     name: 'backup',
     errorHandler: (error) => console.error('定时备份调度器发生错误：', error),
