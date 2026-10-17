@@ -4,6 +4,7 @@ import { db } from '#server/utils/db'
 import { getAvatarUrl } from '#server/utils/avatar'
 import { betterAuth } from 'better-auth'
 import { admin, customSession } from 'better-auth/plugins'
+import { deriveSecret } from 'nuxt/server'
 import { v7 as uuidv7 } from 'uuid'
 
 const adminPlugin = admin({
@@ -12,7 +13,7 @@ const adminPlugin = admin({
 })
 
 export const auth = betterAuth({
-  secret: process.env.BETTER_AUTH_SECRET,
+  secret: await deriveSecret('carefree:better-auth'),
   baseURL: {
     allowedHosts: ['localhost:*', '127.0.0.1:*', 'www.ikxin.com', 'ikxin.com'],
     protocol: 'auto',

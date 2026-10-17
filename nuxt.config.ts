@@ -76,6 +76,11 @@ export default defineNuxtConfig({
   },
   compatibilityDate: '2026-10-01',
   nitro: {
+    esbuild: {
+      options: {
+        target: 'es2022',
+      },
+    },
     experimental: {
       openAPI: true,
     },
@@ -96,6 +101,11 @@ export default defineNuxtConfig({
   },
   vite: {
     plugins: [tailwindcss()],
+  },
+  typescript: {
+    nodeTsConfig: {
+      include: ['../*.config.ts'],
+    },
   },
   fonts: {
     families: [
