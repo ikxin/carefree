@@ -9,7 +9,7 @@ RUN apk add --no-cache \
 ENV PYTHON=/usr/bin/python3 \
     npm_config_disturl=https://npmmirror.com/mirrors/node
 
-RUN corepack enable && corepack prepare pnpm@12.4.1 --activate
+RUN corepack enable && corepack prepare pnpm@12.14.0 --activate
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
