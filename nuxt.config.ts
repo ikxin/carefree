@@ -20,6 +20,7 @@ export default defineNuxtConfig({
     scripts: {
       registry: {
         googleAnalytics: false,
+        googleAdsense: false,
         umamiAnalytics: false,
       },
     },
@@ -154,6 +155,11 @@ export default defineNuxtConfig({
     registry: {
       googleAnalytics: {
         id: 'G-T5NVREEYP8',
+        trigger: 'onNuxtReady',
+      },
+      googleAdsense: {
+        client: 'ca-pub-7563908414744328',
+        autoAds: true,
         trigger: 'onNuxtReady',
       },
       umamiAnalytics: {
