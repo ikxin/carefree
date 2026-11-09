@@ -408,8 +408,7 @@ async function remove() {
           </div>
           <div class="mt-4 rounded-lg bg-[#f7f9fc] p-3 text-[11px] leading-5 text-[#7a8699]">
             草稿不会出现在公开站点；发布后公开地址为
-            <span class="break-all text-[#526074]">/article/{{ form.slug || 'your-slug' }}</span
-            >。
+            <span class="break-all text-[#526074]">/article/{{ form.slug || 'your-slug' }}</span>。
           </div>
         </section>
         <section

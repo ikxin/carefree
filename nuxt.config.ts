@@ -1,6 +1,5 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
-
 import tailwindcss from '@tailwindcss/vite'
+import legacyRedirectRules from './shared/constants/redirects'
 
 const imageCacheMaxAge = 60 * 60 * 24 * 30
 
@@ -70,9 +69,9 @@ export default defineNuxtConfig({
     },
   },
   routeRules: {
+    ...legacyRedirectRules,
     '/atom.xml': { cache: { maxAge: 600 } },
     '/feed.xml': { cache: { maxAge: 600 } },
-    '/feed': { redirect: { to: '/feed.xml', statusCode: 301 } },
   },
   compatibilityDate: '2026-10-01',
   nitro: {

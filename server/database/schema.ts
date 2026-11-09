@@ -1,7 +1,6 @@
-import { relations, sql } from 'drizzle-orm'
+import { relations } from 'drizzle-orm'
 import {
   boolean,
-  check,
   foreignKey,
   index,
   integer,
@@ -205,28 +204,6 @@ export const contentTranslations = pgTable(
     })
       .onDelete('cascade')
       .onUpdate('cascade'),
-  ],
-)
-
-export const redirects = pgTable(
-  'redirects',
-  {
-    id: uuid('id').primaryKey(),
-    source: text('source').notNull(),
-    destination: text('destination').notNull(),
-    type: text('type', { enum: ['exact', 'regex'] })
-      .default('exact')
-      .notNull(),
-    code: integer('code').default(301).notNull(),
-    enabled: boolean('enabled').default(true).notNull(),
-    priority: integer('priority').default(0).notNull(),
-    ...timestamps(),
-  },
-  (table) => [
-    uniqueIndex('redirects_source_type_key').on(table.source, table.type),
-    index('redirects_enabled_type_priority_idx').on(table.enabled, table.type, table.priority),
-    check('redirects_type_check', sql`${table.type} IN ('exact', 'regex')`),
-    check('redirects_code_check', sql`${table.code} IN (301, 302, 307, 308)`),
   ],
 )
 
