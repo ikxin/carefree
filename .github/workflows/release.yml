@@ -1,0 +1,44 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    uses: docker/github-builder/.github/workflows/build.yml@v1
+    permissions:
+      contents: read
+      packages: write
+    with:
+      output: image
+      push: true
+      platforms: linux/amd64,linux/arm64
+      distribute: true
+      cache: true
+      cache-mode: max
+      sign: 'false'
+      set-meta-labels: true
+      meta-images: |
+        ${{ github.repository }}
+        ghcr.io/${{ github.repository }}
+      meta-tags: |
+        type=raw,value=latest,enable={{is_default_branch}}
+        type=ref,event=branch
+        type=semver,pattern={{version}}
+        type=semver,pattern={{major}}.{{minor}}
+        type=sha
+    secrets:
+      registry-auths: |
+        - registry: docker.io
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+        - registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}

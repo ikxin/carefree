@@ -2,6 +2,10 @@
   "name": "carefree",
   "version": "0.1.0",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ikxin/carefree.git"
+  },
   "type": "module",
   "scripts": {
     "dev": "nuxt dev",
@@ -9,6 +13,8 @@
     "start": "node --env-file-if-exists=.env .output/server/index.mjs",
     "fmt": "oxfmt",
     "lint": "oxlint",
+    "changelog": "changelogen --no-output",
+    "release": "changelogen --bump",
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
@@ -35,6 +41,7 @@
     "@vueuse/nuxt": "^15.0.0",
     "better-auth": "^1.7.18",
     "better-sqlite3": "^13.0.3",
+    "changelogen": "^0.6.2",
     "cron": "^4.4.0",
     "dotenv": "^18.0.9",
     "drizzle-kit": "^0.31.11",

@@ -93,9 +93,8 @@ export default defineNuxtConfig({
         swagger: {},
       },
     },
-    prerender: {
-      concurrency: 8,
-      ignore: ['/_ipx'],
+    hooks: {
+      'prerender:routes': (routes) => routes.clear(),
     },
   },
   vite: {
