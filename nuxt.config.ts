@@ -128,11 +128,7 @@ export default defineNuxtConfig({
     ],
   },
   image: {
-    domains: ['img.8b5.cn'],
-    screens: {
-      xxs: 320,
-      xs: 412,
-    },
+    domains: ['edge.ikxin.com'],
     ipx: {
       maxAge: imageCacheMaxAge,
       http: {
@@ -146,6 +142,9 @@ export default defineNuxtConfig({
   },
   linkChecker: {
     skipInspections: ['absolute-site-urls'],
+  },
+  ogImage: {
+    includeTwitter: false,
   },
   scripts: {
     privacy: false,

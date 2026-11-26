@@ -111,7 +111,7 @@ const hotRest = computed(() => hotPosts.value.slice(1))
                 :alt="hotFirst.title"
                 width="10"
                 height="7"
-                sizes="lg:20vw xl:257px"
+                sizes="320px"
               />
             </div>
             <div
@@ -132,7 +132,7 @@ const hotRest = computed(() => hotPosts.value.slice(1))
           >
             <div class="mr-3 w-18.75 shrink-0 overflow-hidden rounded">
               <div class="aspect-10/7">
-                <PostCover :src="article.cover" :alt="article.title" width="75" height="53" />
+                <PostCover :src="article.cover" :alt="article.title" width="80" height="56" />
               </div>
             </div>
             <div class="min-w-0">

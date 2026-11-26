@@ -174,7 +174,7 @@ onBeforeUnmount(() => {
                   :alt="slide.title"
                   width="7"
                   height="4"
-                  sizes="92vw xxs:92vw xs:92vw sm:95vw md:96vw lg:58vw xl:724px"
+                  sizes="sm:100vw xl:1280px"
                   :loading="index === 0 ? 'eager' : 'lazy'"
                   :fetchpriority="index === 0 ? 'high' : 'auto'"
                   class="pointer-events-none transition-transform duration-300 group-hover/slide:scale-110"
@@ -227,7 +227,9 @@ onBeforeUnmount(() => {
           <PostCover
             :src="post.cover"
             :alt="post.title"
-            sizes="30vw sm:31vw lg:16vw xl:198px"
+            width="4"
+            height="3"
+            sizes="md:50vw lg:384px"
             loading="eager"
             class="transition-transform duration-300 group-hover/card:scale-110 lg:absolute lg:inset-0"
           />
@@ -256,7 +258,9 @@ onBeforeUnmount(() => {
           <PostCover
             :src="sidePost.cover"
             :alt="sidePost.title"
-            sizes="30vw sm:31vw lg:24vw xl:303px"
+            width="4"
+            height="3"
+            sizes="md:50vw lg:768px"
             loading="eager"
             class="transition-transform duration-300 group-hover/card:scale-110 lg:absolute lg:inset-0"
           />

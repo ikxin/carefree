@@ -12,7 +12,7 @@ const props = withDefaults(
   {
     src: '',
     alt: '',
-    sizes: '78vw xxs:78vw xs:88vw sm:88vw md:90vw lg:67vw xl:867px',
+    sizes: 'sm:100vw xl:1280px',
   },
 )
 </script>

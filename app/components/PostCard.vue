@@ -34,7 +34,7 @@ const { t } = useI18n()
             :alt="article.title"
             width="10"
             height="7"
-            sizes="80px sm:23vw lg:18vw xl:224px"
+            sizes="80px sm:25vw lg:320px"
             class="transition-transform duration-500 group-hover:scale-110"
           />
         </div>
