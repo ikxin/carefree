@@ -29,7 +29,7 @@ const { t } = useI18n()
             <h1 class="flex items-center gap-3 text-lg font-bold sm:text-xl">
               <span
                 aria-hidden="true"
-                class="size-2 shrink-0 rounded-full bg-linear-to-t from-[#6598ff] to-primary-deep"
+                class="size-2 shrink-0 rounded-full bg-linear-to-t from-primary-light to-primary-deep"
               />
               <span class="min-w-0 wrap-break-word">{{ title }}</span>
             </h1>

@@ -12,7 +12,6 @@ type ViewTransitionDocument = Document & {
 
 const colorModeTransitionDuration = 500
 
-const site = useSiteConfig()
 const localePath = useLocalePath()
 const switchLocalePath = useSwitchLocalePath()
 const { locale, locales, t } = useI18n()
@@ -190,12 +189,8 @@ onBeforeUnmount(() => document.removeEventListener('click', handleLocaleDocument
             <Icon name="lucide:menu" class="size-5" />
           </button>
 
-          <NuxtLink
-            :to="localePath('/')"
-            class="mr-6 flex items-center gap-2 text-xl font-bold tracking-wide"
-          >
-            <Icon name="lucide:feather" class="size-6 text-primary" />
-            <b>{{ site.name }}</b>
+          <NuxtLink :to="localePath('/')" class="shrink-0 lg:mr-6">
+            <AppLogo class="w-32 sm:w-40" />
           </NuxtLink>
 
           <nav class="hidden lg:block">
@@ -277,7 +272,7 @@ onBeforeUnmount(() => document.removeEventListener('click', handleLocaleDocument
 
           <button
             type="button"
-            class="flex size-8 items-center justify-center rounded-full bg-neutral-100 text-neutral-500 transition-colors hover:bg-neutral-200 dark:bg-neutral-800 dark:text-amber-400 dark:hover:bg-neutral-700"
+            class="flex size-8 items-center justify-center rounded-full bg-neutral-100 text-neutral-500 transition-colors hover:bg-neutral-200 dark:bg-neutral-800 dark:text-primary-light dark:hover:bg-neutral-700"
             :aria-label="isDark ? t('home.switch_to_light') : t('home.switch_to_dark')"
             @click="toggleColorMode"
           >
@@ -351,10 +346,7 @@ onBeforeUnmount(() => document.removeEventListener('click', handleLocaleDocument
           class="fixed inset-y-0 left-0 z-50 flex w-72 flex-col bg-canvas lg:hidden dark:bg-canvas-dark"
         >
           <div class="flex items-center justify-between bg-black/10 px-5 py-4 dark:bg-black/30">
-            <div class="flex items-center gap-2 text-lg font-bold">
-              <Icon name="lucide:feather" class="size-5 text-primary" />
-              <b>{{ site.name }}</b>
-            </div>
+            <AppLogo class="w-36" />
             <button
               type="button"
               class="flex size-8 items-center justify-center rounded-full bg-card text-neutral-500 dark:bg-card-dark dark:text-neutral-400"

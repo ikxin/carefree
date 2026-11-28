@@ -6,17 +6,22 @@ const year = new Date().getFullYear()
 </script>
 
 <template>
-  <footer class="mt-8 bg-[#1f2327] text-neutral-400">
+  <footer class="dark mt-8 bg-card-dark text-neutral-400">
     <div class="mx-auto max-w-7xl px-4">
       <div
         class="flex flex-col items-center gap-5 border-b border-white/10 py-8 text-center md:flex-row md:justify-between md:gap-12 md:py-10 md:text-left"
       >
         <NuxtLink
           :to="localePath('/')"
-          class="group inline-flex shrink-0 items-center gap-3 rounded-sm text-lg font-bold tracking-wide text-neutral-100 transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
+          class="inline-flex shrink-0 rounded-sm transition-opacity hover:opacity-90 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary"
         >
-          <Icon name="lucide:feather" class="size-6 text-primary" aria-hidden="true" />
-          <span>{{ site.name }}</span>
+          <img
+            src="/logo-dark.svg"
+            :alt="site.name"
+            width="1962"
+            height="524"
+            class="h-auto w-40"
+          />
         </NuxtLink>
         <p class="max-w-2xl text-xs leading-6 md:text-right">
           {{ site.description }}

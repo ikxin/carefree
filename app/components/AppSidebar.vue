@@ -40,7 +40,7 @@ const hotRest = computed(() => hotPosts.value.slice(1))
 
     <section v-if="recent?.articles.length" class="rounded bg-card p-5 dark:bg-card-dark">
       <h3
-        class="relative mb-6 border-b border-neutral-100 pb-4 pl-5 text-base font-bold before:absolute before:left-0.5 before:top-1.5 before:size-2 before:rounded-full before:bg-linear-to-t before:from-[#6598ff] before:to-primary-deep dark:border-neutral-700"
+        class="relative mb-6 border-b border-neutral-100 pb-4 pl-5 text-base font-bold before:absolute before:left-0.5 before:top-1.5 before:size-2 before:rounded-full before:bg-linear-to-t before:from-primary-light before:to-primary-deep dark:border-neutral-700"
       >
         {{ t('home.recent_posts') }}
       </h3>
@@ -56,7 +56,7 @@ const hotRest = computed(() => hotPosts.value.slice(1))
           >
             <span
               aria-hidden="true"
-              class="absolute -left-px top-1 z-10 flex size-3.5 -translate-x-1/2 items-center justify-center rounded-full border-3 border-card bg-primary transition-[background-color,box-shadow,transform] duration-200 ease-out group-hover:scale-110 group-hover:bg-amber-400 group-hover:shadow-[0_0_0_3px_rgb(251_191_36/0.18)] group-focus-visible:scale-110 group-focus-visible:bg-amber-400 group-focus-visible:shadow-[0_0_0_3px_rgb(251_191_36/0.18)] motion-reduce:transition-none dark:border-card-dark"
+              class="absolute -left-px top-1 z-10 flex size-3.5 -translate-x-1/2 items-center justify-center rounded-full border-3 border-card bg-primary transition-[background-color,box-shadow,transform] duration-200 ease-out group-hover:scale-110 group-hover:bg-primary-light group-hover:ring-3 group-hover:ring-primary-light/25 group-focus-visible:scale-110 group-focus-visible:bg-primary-light group-focus-visible:ring-3 group-focus-visible:ring-primary-light/25 motion-reduce:transition-none dark:border-card-dark"
             >
               <span class="size-1 rounded-full bg-card dark:bg-card-dark" />
             </span>
@@ -75,7 +75,7 @@ const hotRest = computed(() => hotPosts.value.slice(1))
 
     <section v-if="tagCloud?.length" class="rounded bg-card p-5 dark:bg-card-dark">
       <h3
-        class="relative mb-5 border-b border-neutral-100 pb-4 pl-5 text-base font-bold before:absolute before:left-0.5 before:top-1.5 before:size-2 before:rounded-full before:bg-linear-to-t before:from-[#6598ff] before:to-primary-deep dark:border-neutral-700"
+        class="relative mb-5 border-b border-neutral-100 pb-4 pl-5 text-base font-bold before:absolute before:left-0.5 before:top-1.5 before:size-2 before:rounded-full before:bg-linear-to-t before:from-primary-light before:to-primary-deep dark:border-neutral-700"
       >
         {{ t('home.tag_cloud') }}
       </h3>
@@ -98,7 +98,7 @@ const hotRest = computed(() => hotPosts.value.slice(1))
 
     <section v-if="hotPosts.length" class="rounded bg-card p-5 dark:bg-card-dark">
       <h3
-        class="relative mb-6 border-b border-neutral-100 pb-4 pl-5 text-base font-bold before:absolute before:left-0.5 before:top-1.5 before:size-2 before:rounded-full before:bg-linear-to-t before:from-[#6598ff] before:to-primary-deep dark:border-neutral-700"
+        class="relative mb-6 border-b border-neutral-100 pb-4 pl-5 text-base font-bold before:absolute before:left-0.5 before:top-1.5 before:size-2 before:rounded-full before:bg-linear-to-t before:from-primary-light before:to-primary-deep dark:border-neutral-700"
       >
         {{ t('home.hot_posts') }}
       </h3>
